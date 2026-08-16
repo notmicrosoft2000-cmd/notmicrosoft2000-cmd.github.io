@@ -16,6 +16,7 @@
     home: '<path d="M10 28 L32 12 L54 28"/><path d="M18 32 v20 h28 V32"/><path d="M27 52 v-11 h10 v11"/>',
     gear: '<circle cx="32" cy="32" r="9"/><path d="M32 10 v8 M32 46 v8 M10 32 h8 M46 32 h8 M16 16 l6 6 M42 42 l6 6 M48 16 l-6 6 M22 42 l-6 6"/>',
     news: '<rect x="8" y="14" width="48" height="36" rx="3"/><path d="M8 24 h48"/><path d="M14 32 h14 M14 38 h14 M14 44 h26 M34 32 h16 M34 38 h16"/>',
+    chart: '<path d="M10 52 h44"/><rect x="16" y="30" width="8" height="22"/><rect x="28" y="18" width="8" height="34"/><rect x="40" y="36" width="8" height="16"/><path d="M16 28 l8-2 4 8 8-14 4 10"/>',
     contact: '<path d="M12 20 v30 h40 V20"/><path d="M12 20 L32 8 L52 20"/><circle cx="26" cy="30" r="3.4"/><circle cx="38" cy="30" r="3.4"/><path d="M26 36 h12 v8 H26 Z"/>'
   };
 
@@ -112,19 +113,55 @@
 
   var PREMADE = ["webring", "dark", "neon", "paper"];
 
-  var NEWS_NAV = ["TOP", "TECH", "LOCAL", "TRAGEDY", "WEATHER", "BUSINESS", "SPORT"];
+  var NEWS_NAV = ["TOP", "MARKETS", "SCANDAL", "TECH", "LOCAL", "TRAGEDY", "WEATHER", "SPORT"];
 
   var NEWS = [
-    { cat: "TOP", time: "just now", title: "Webring reports no exit, says it 'never had one to begin with'", body: "Analysts who attempted to leave the hallway have repeatedly ended up at another page of the same hallway. The hallway says this is a feature. The hallway has not commented further because the hallway does not talk; it just is, at length." },
-    { cat: "TECH", time: "3 min ago", title: "NeptuneOS 2.0 delayed after orb refuses to stop glowing", body: "Sources say the orb has entered a state of continuous glow and will not power down for the release build. Engineers are asking the orb nicely. The orb's response, according to one source, was to glow slightly harder." },
-    { cat: "LOCAL", time: "9 min ago", title: "Floppy disk found humming the old songs at 3am", body: "Residents report a 1.44MB diskette in The Simpler Times folder producing faint amber audio long after boot. It denies everything. It also remembered your name, which residents describe as 'unsettling and flattering at once'." },
-    { cat: "TRAGEDY", time: "12 min ago", title: "640K deemed 'not enough' for the fifth time this week", body: "NeptuneDOS has again been told that its base memory fails to satisfy modern requirements. It has responded by beeping. Analysts believe it is handling the news as well as can be expected of a box with the emotional range of a beep." },
-    { cat: "BUSINESS", time: "18 min ago", title: "DropChat reports zero registered accounts, 'excellent vibes'", body: "In a surprise earnings call held inside a single python file, DropChat confirmed it has no accounts because it does not need them. 'You bring your own presence,' the file said. Shares of vibes are up across the LAN." },
-    { cat: "WEATHER", time: "24 min ago", title: "Mostly retro. Chance of static. 87.7 FM with breaks of cold start.", body: "A warm front of nostalgia is moving in from the floppy era, followed by scattered noise after midnight. Cold starts will be chilly at first but reliable once they warm up. The static is thematic." },
-    { cat: "SPORT", time: "31 min ago", title: "Bakugo's target observed moving at walking pace", body: "Analysts following the target describe its trajectory as 'deliberate but deeply suspicious'. Redacted coordinates showed no change for forty minutes, then a single deliberate step. Cameras remain rolling. The target knows." },
-    { cat: "TECH", time: "44 min ago", title: "Normidian word for 'delete' located; no one can say it", body: "Linguists have confirmed the existence of the Normidian term for permanent removal. When asked to pronounce it, the dictionary page turned a slightly darker shade of parchment and the researchers agreed to move on." },
-    { cat: "LOCAL", time: "1 hr ago", title: "Carrier pigeon union rejects same-day delivery, demands bread", body: "Talks broke down this morning over working conditions. The pigeon, a veteran of the webring's most urgent messages, said it would only carry correspondence 'at least three business days old'. Bread was offered. The pigeon accepted bread but will still be late." },
-    { cat: "TRAGEDY", time: "2 hrs ago", title: "Network scan scheduled for the weekend takes the whole weekend", body: "SlowFuck Pro's flagship scan, estimated at one weekend, used the entire weekend and requested a second one. The tool has apologised in a series of extremely slow packets, each more sincere than the last." }
+    { cat: "TOP", time: "just now", title: "NEPT stock tumbles 400% after annual report turns out to be a sandwich", body: "Investors who arrived for the annual report found, in a paper bag, one sandwich. Analysts rate the sandwich 'better than the fundamentals'. The exchange, upon reviewing the filing, made a single beep. Shares of NEPT are now priced in sandwiches. The company says the report was 'filed, swallowed, and forgotten, in that order'." },
+    { cat: "MARKETS", time: "2 min ago", title: "Analysts upgrade Neptune Productions from 'what' to 'hmm', citing the orb", body: "In a rare double upgrade, the firm's analysts — who have never seen a product — now rate NEPT 'hold indefinitely, or until the glow stops'. The orb remains in a glow position. Trading halts have been scheduled for whenever the glow gets too into it." },
+    { cat: "SCANDAL", time: "4 min ago", title: "Floppy disk laid off for 'not being a person', says company", body: "The Simpler Times' 1.44MB diskette has been terminated for failing to meet the definition of 'person'. It was reportedly the only employee doing anything. Severance was one amber hum. The diskette has since begun a music career, humming the old songs at 3am, apparently by choice this time." },
+    { cat: "SCANDAL", time: "7 min ago", title: "Shareholders demand a vote; board provides tote bags instead", body: "Shareholders who requested a board vote were issued tote bags and the reassurance that their vote had been 'read aloud, then considered'. The board then confirmed a quorum of one, which was the toaster. Voting rights have been reclassified as suggestions, allegedly." },
+    { cat: "MARKETS", time: "11 min ago", title: "Quarterly earnings call lasts 11 seconds, comprises one beep", body: "The Neptune-DOS earnings call was 11 seconds long and consisted of a single beep. Analysts were invited to 'do with that what you will'. Several have filed it under 'forward-looking statements'. The beep did not take questions." },
+    { cat: "TECH", time: "16 min ago", title: "NeptuneOS 2.0 delayed after orb refuses to stop glowing", body: "Sources say the orb has entered a state of continuous glow and will not power down for the release build. Engineers are asking the orb nicely. The orb responded by glowing with more conviction. The release is now scheduled for whenever the orb says so." },
+    { cat: "LOCAL", time: "21 min ago", title: "Carrier pigeon union rejects same-day delivery, demands bread", body: "Talks broke down this morning over working conditions. The pigeon, a veteran of the webring's most urgent messages, said it would only carry correspondence 'at least three business days old'. Bread was offered. The pigeon accepted the bread but will still be late." },
+    { cat: "TRAGEDY", time: "26 min ago", title: "640K deemed 'not enough' for the fifth time this week", body: "NeptuneDOS has again been told that its base memory fails to satisfy modern requirements. It has responded by beeping. Analysts believe it is handling the news as well as can be expected of a box with the emotional range of a beep." },
+    { cat: "WEATHER", time: "33 min ago", title: "Mostly retro. Chance of static. 87.7 FM with breaks of cold start.", body: "A warm front of nostalgia is moving in from the floppy era, followed by scattered noise after midnight. Cold starts will be chilly at first but reliable once they warm up. The static is thematic. The markets weather is worse." },
+    { cat: "SPORT", time: "41 min ago", title: "Bakugo's target observed moving at walking pace", body: "Analysts following the target describe its trajectory as 'deliberate but deeply suspicious'. Redacted coordinates showed no change for forty minutes, then a single deliberate step. Cameras remain rolling. The target knows." }
+  ];
+
+  var FILINGS = [
+    ["10-K", "it is a sandwich"],
+    ["10-Q", "unanswered"],
+    ["8-K", "board replaced with a toaster"],
+    ["DEF 14A", "your vote is a suggestion"],
+    ["87.7 FM", "the radio is also a filing, allegedly"],
+    ["S-1", "lost in the hallway"]
+  ];
+
+  var BOARD = [
+    ["the orb", "chairman, glow position"],
+    ["a toaster", "vice chair, quorum of one"],
+    ["the floppy disk", "laid off, still on the board"],
+    ["a pigeon", "on strike"],
+    ["CEO", "[redacted]"],
+    ["the hallway", "non-voting"]
+  ];
+
+  var SCANDALS = [
+    ["1987", "company founded. the founding is also a scandal, allegedly."],
+    ["2001", "the beep scandal. 640K was 'not enough' and the company beeped about it for a year."],
+    ["2019", "the orb began glowing. nobody ordered this."],
+    ["2026", "annual report is a sandwich. stock tumbles 400%."],
+    ["2026", "shareholders disenfranchised; given tote bags and 'suggestions'."],
+    ["2026", "floppy disk laid off for 'not being a person'."]
+  ];
+
+  var DISENFRAN = [
+    ["VOTES", "every share is exactly one suggestion."],
+    ["PREFERRED STOCK", "half a suggestion, plus a tote bag."],
+    ["QUORUM", "one director required. the toaster counts."],
+    ["YOUR VOTE", "read aloud at the next meeting, then politely ignored."],
+    ["COMPLAINTS", "direct to the pigeon. the pigeon is on strike for bread."],
+    ["CEO ANSWERS", "in the next earnings call, which was a single beep."]
   ];
 
   var CONTACTS = [
@@ -132,17 +169,19 @@
     { label: "GITHUB", value: "notmicrosoft2000-cmd", note: "the whole source, the whole weirdness.", href: "https://github.com/notmicrosoft2000-cmd" },
     { label: "DISCORD", value: "the hallway", note: "the invite is posted somewhere in the hallway. the hallway forgets where." },
     { label: "RADIO", value: "87.7 FM", note: "the webring's frequency, allegedly. the static between songs is thematic." },
+    { label: "INVESTOR RELATIONS", value: "the toaster", note: "available during all board meetings (most of which are snacks). filings filed into a paper bag." },
+    { label: "TRANSFER AGENT", value: "the pigeon", note: "holdings held. occasionally delivered. requires bread and 3\u20137 business days." },
     { label: "CARRIER PIGEON", value: "the usual roof", note: "returns within 3\u20137 business days. requires bread." },
     { label: "SEANCE", value: "after dark, thursdays", note: "responds faster than support. do not ask how." }
   ];
 
   var HOME_NEWS = [
-    ["LIVE", "the broadcast is live — read NEPTUNE NEWS, the webring's premier (only) newsroom. every story generated by TalkGPT. accuracy: alleged."],
-    ["08.16.2026", "the hub grew a menu and a left-edge switcher. hover the left edge (or tap the dots) to hop between programs like a very quick hallway."],
-    ["08.16.2026", "settings live under the NEPTUNE PRODUCTIONS wordmark: theme previews, sound, reduced motion, the works. the logo goes home."],
-    ["08.16.2026", "neptuneos has a real pages site now. it is an operating system. it is also fake. both of these are true and the orb glows because of it."],
-    ["08.16.2026", "the question game and the simpler times still swap into each other across the webring. nothing else to report. we are checking."],
-    ["08.16.2026", "contact the productions by email, github, radio, or pigeon. the pigeon requires bread and will still be late."]
+    ["LIVE", "the markets have spoken: NEPT is down 400% and the annual report was a sandwich. full coverage in NEPTUNE NEWS and the investors room."],
+    ["08.16.2026", "navigation has moved to the left edge. hover it (or tap the dots) to hop between programs. the top-right nav has been disenfranchised like the rest of the shareholders."],
+    ["08.16.2026", "quick settings live under the logo, top-left. the board is a toaster and it approves this message, allegedly."],
+    ["08.16.2026", "layoffs: the floppy disk was let go for 'not being a person'. it has since started a music career at 3am."],
+    ["08.16.2026", "shareholders demanded a vote and received tote bags. voting rights are now 'suggestions'."],
+    ["08.16.2026", "contact the productions by email, github, radio, or pigeon. investor relations is the toaster. the pigeon is on strike for bread."]
   ];
 
   var state = {
@@ -270,19 +309,19 @@
       '<div class="hero">' +
         '<span class="hero-kicker">THE WEBRING</span>' +
         '<h2 class="hero-title">NEPTUNE<br>PRODUCTIONS</h2>' +
-        '<p class="hero-sub">Every corner of this hallway is a different website wearing different clothes. Hit MENU to move around, hover the left edge (or tap the dots) to hop between programs, and click the NEPTUNE PRODUCTIONS wordmark to open settings. Or just pick a program below and let the whole site become it.</p>' +
+        '<p class="hero-sub">A publicly traded company, allegedly — symbol NEPT, board of directors: a toaster, disenfranchisement: ongoing. Every corner of this hallway is a different website wearing different clothes. Hover the left edge (or tap the dots) to navigate, and click the logo, top-left, for quick settings. Or just pick a program below and let the whole site become it.</p>' +
       '</div>' +
       '<h3 class="section-title">THE PROGRAMS</h3>' +
-      '<p class="section-tag">each one is a different aesthetic, a different room, a different promise.</p>' +
+      '<p class="section-tag">each one is a different aesthetic, a different room, a different promise — and, allegedly, a product line.</p>' +
       '<div class="webring" id="homeGrid"></div>' +
       '<h3 class="section-title">NEWS FROM THE HALLWAY</h3>' +
-      '<p class="section-tag">short dispatches, plus a full broadcast in the newsroom.</p>' +
+      '<p class="section-tag">short dispatches, plus a full broadcast in the newsroom. the markets are not doing well.</p>' +
       '<div class="news">' +
         HOME_NEWS.map(function (n) {
           return '<div class="nitem"><b>' + n[0] + '</b><p>' + n[1] + '</p></div>';
         }).join("") +
       '</div>' +
-      '<button class="pv-launch news-go" id="newsGo" type="button" style="margin-top:18px">OPEN THE NEWSROOM \u25b8</button>' +
+      '<button class="pv-launch news-go" id="newsGo" type="button">OPEN THE NEWSROOM \u25b8</button>' +
     '</section>';
 
     Object.keys(PROJECTS).forEach(function (k) {
@@ -315,6 +354,7 @@
     });
 
     html += buildNewsView();
+    html += buildInvestView();
     html += buildContactView();
 
     stage.innerHTML = html;
@@ -343,14 +383,28 @@
     });
 
     $("#newsGo").addEventListener("click", function () { SFX.click(); setView("news"); });
+
+    var newsNav = $(".news-nav", stage);
+    if (newsNav) {
+      newsNav.addEventListener("click", function (e) {
+        var s = e.target.closest(".news-nav span");
+        if (!s) return;
+        var cat = s.textContent;
+        $$(".news-nav span", newsNav).forEach(function (c) { c.classList.toggle("on", c === s); });
+        $$(".ncard", stage).forEach(function (card) {
+          card.classList.toggle("hide", cat !== "TOP" && card.getAttribute("data-cat") !== cat);
+        });
+        SFX.click();
+      });
+    }
   }
 
   function buildNewsView() {
-    var tickerText = NEWS.map(function (n) { return n.title; }).join("  \u2022  ") + "  \u2022  the hallway continues to hallway  \u2022  ";
+    var tickerText = "NEPT 0.00 \u25bc 400%  \u2022  annual report: a sandwich  \u2022  board of directors: a toaster  \u2022  disenfranchisement: ongoing  \u2022  " + NEWS.map(function (n) { return n.title; }).join("  \u2022  ") + "  \u2022  the hallway continues to hallway  \u2022  ";
     var html = '<section class="view" data-view="news" role="tabpanel">' +
       '<div class="news-masthead">' +
         '<span class="news-logo">NEPTUNE <b>NEWS</b></span>' +
-        '<span class="news-tag">THE HALLWAY\u2019S BROADCAST. NOTHING IS CONFIRMED. ALL STORIES GENERATED BY TALKGPT.</span>' +
+        '<span class="news-tag">THE PRODUCTION\u2019S BROADCAST \u2014 NEPT INC., MARKET &amp; SCANDAL DESK. ALL STORIES GENERATED BY TALKGPT. ACCURACY: ALLEGED.</span>' +
       '</div>' +
       '<div class="news-nav">' + NEWS_NAV.map(function (c, i) {
         return '<span class="' + (i === 0 ? "on" : "") + '">' + c + '</span>';
@@ -359,7 +413,7 @@
         '<span class="tick-live"><i class="live-dot"></i>LIVE</span>' +
         '<div class="tick-track"><span class="tt">' + tickerText + '</span></div>' +
       '</div>' +
-      '<div class="breaking">BREAKING \u2014 the webring has a menu now. see the memo at the top of the hallway. more at eleven.</div>' +
+      '<div class="breaking">BREAKING \u2014 the annual report is a sandwich and NEPT is down 400%. more at eleven, or whenever the beep says so.</div>' +
       '<div class="news-feature">' +
         '<div class="nf-body">' +
           '<span class="ncat">' + NEWS[0].cat + '</span>' +
@@ -369,12 +423,46 @@
         '</div>' +
       '</div>' +
       '<div class="news-grid">' + NEWS.slice(1).map(function (n) {
-        return '<article class="ncard"><span class="ncat">' + n.cat + '</span>' +
+        return '<article class="ncard" data-cat="' + n.cat + '"><span class="ncat">' + n.cat + '</span>' +
           '<h3>' + n.title + '</h3>' +
           '<p>' + n.body + '</p>' +
           '<span class="nmeta">by <b>TalkGPT</b> \u2022 ' + n.time + '</span></article>';
       }).join("") + '</div>' +
-      '<p class="news-note">all stories generated by an AI that has never seen the hallway and is very sure about it. accuracy: alleged. do not act on any of this. especially the weather.</p>' +
+      '<p class="news-note">all stories generated by an AI that has never seen the hallway and is very sure about it. accuracy: alleged. do not invest. do not divest. the toaster holds your shares. especially do not act on the weather.</p>' +
+    '</section>';
+    return html;
+  }
+
+  function buildInvestView() {
+    var html = '<section class="view" data-view="investors" role="tabpanel">' +
+      '<div class="inv-head">' +
+        '<h2>NEPTUNE PRODUCTIONS <b>INC.</b></h2>' +
+        '<p>THE HOLDINGS OF THE HALLWAY. SYMBOL: NEPT. NOTHING IS CONFIRMED. EVERYTHING IS FILED.</p>' +
+      '</div>' +
+      win("nep", "NEPT \u2014 daily", '<div class="stock">' +
+        '<div class="stock-price"><b>0.00</b><span>NEPT</span></div>' +
+        '<div class="stock-change red">\u25bc -400.00% (-0.00)</div>' +
+        '<div class="stock-facts">' +
+          '<span>VOLUME <b>1 (the orb)</b></span>' +
+          '<span>HIGH <b>once</b></span>' +
+          '<span>LOW <b>always</b></span>' +
+          '<span>CEILING <b>the hallway</b></span>' +
+        '</div>' +
+        '<div class="spark"><svg viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true"><polyline points="2,8 26,20 46,14 70,30 92,24 116,40 138,34 160,48 180,44 198,56"/></svg></div>' +
+      '</div>') +
+      win("nep", "latest filings (the paper bag)", '<ul class="filing-list">' + FILINGS.map(function (f) {
+        return '<li><b>' + f[0] + '</b><span>' + f[1] + '</span></li>';
+      }).join("") + '</ul>') +
+      win("nep", "board of directors", '<ul class="board-list">' + BOARD.map(function (b) {
+        return '<li><b>' + b[0] + '</b><span>' + b[1] + '</span></li>';
+      }).join("") + '</ul>') +
+      win("nep", "scandal timeline", SCANDALS.map(function (s) {
+        return '<div class="tl-item"><span class="tl-yr">' + s[0] + '</span><span class="tl-txt">' + s[1] + '</span></div>';
+      }).join("")) +
+      win("nep", "disenfranchisement, in writing", DISENFRAN.map(function (d) {
+        return '<div class="disf-item"><span class="d-marker">\u25b8</span><span><b>' + d[0] + '</b> \u2014 ' + d[1] + '</span></div>';
+      }).join("")) +
+      '<p class="news-note">this section is a public service for shareholders. the public service has been discontinued, like the vote. not investment advice \u2014 the toaster is not a licensed advisor.</p>' +
     '</section>';
     return html;
   }
@@ -391,7 +479,7 @@
           '<span class="cc-value">' + val + '</span>' +
           '<p class="cc-note">' + c.note + '</p></div>');
       }).join("") + '</div>' +
-      '<p class="news-note">responses take 3\u20137 business days, or roughly one pigeon. for urgent matters, the seance is faster and slightly less reliable.</p>' +
+      '<p class="news-note">responses take 3\u20137 business days, or roughly one pigeon. for urgent matters, the seance is faster and slightly less reliable. for investor matters, the toaster is faster still.</p>' +
     '</section>';
     return html;
   }
@@ -404,98 +492,13 @@
     if (state.view === k) return;
     state.view = k;
     Object.keys(views).forEach(function (v) { views[v].classList.toggle("active", v === k); });
-    homeBtn.classList.toggle("active", k === "home");
     updateRail();
     if (PROJECTS[k]) loadStats(k);
     applyTheme();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  /* ---------------- menu ---------------- */
-
-  var menuOverlay = $("#menuOverlay");
-  var menuList = $("#menuList");
-
-  function viewLabel(k) {
-    if (k === "home") return "HOME";
-    if (k === "news") return "NEPTUNE NEWS";
-    if (k === "contact") return "CONTACT";
-    return PROJECTS[k] ? PROJECTS[k].name : k;
-  }
-
-  function buildMenu() {
-    var html = '<li class="menu-now">NOW: <b>' + viewLabel(state.view) + '</b></li>' +
-      '<li><button class="m-item" type="button" data-view="home">' + svgIcon("home", "") +
-        '<span><b>HOME</b><small>the webring, the news, the hallway</small></span></button></li>' +
-      '<li><button class="m-item" type="button" data-view="news">' + svgIcon("news", "") +
-        '<span><b>NEPTUNE NEWS</b><small>the broadcast. accuracy alleged.</small></span></button></li>' +
-      '<li><button class="m-item" type="button" data-view="contact">' + svgIcon("contact", "") +
-        '<span><b>CONTACT</b><small>email, radio, pigeon, seance</small></span></button></li>' +
-      '<li class="m-sep"></li>';
-    Object.keys(PROJECTS).forEach(function (k) {
-      var p = PROJECTS[k];
-      html += '<li><button class="m-item" type="button" data-view="' + k + '">' + svgIcon(k, "") +
-        '<span><b>' + p.name + '</b><small>' + p.tag + '</small></span></button></li>';
-    });
-    html += '<li class="m-sep"></li>' +
-      '<li><button class="m-item" type="button" data-action="settings">' + svgIcon("gear", "") +
-        '<span><b>SETTINGS</b><small>themes, previews, sound, motion</small></span></button></li>' +
-      '<li><button class="m-item" type="button" data-ext="https://github.com/notmicrosoft2000-cmd">' + svgIcon("contact", "") +
-        '<span><b>GITHUB \u2197</b><small>all the source, all the weirdness</small></span></button></li>';
-    menuList.innerHTML = html;
-
-    $$(".m-item", menuList).forEach(function (it) {
-      var v = it.getAttribute("data-view");
-      it.classList.toggle("active", v === state.view);
-    });
-  }
-
-  function openMenu() {
-    buildMenu();
-    menuOverlay.classList.add("open");
-    menuOverlay.setAttribute("aria-hidden", "false");
-    SFX.open();
-  }
-
-  function closeMenu() {
-    menuOverlay.classList.remove("open");
-    menuOverlay.setAttribute("aria-hidden", "true");
-    SFX.close();
-  }
-
-  $("#menuBtn").addEventListener("click", function () {
-    if (menuOverlay.classList.contains("open")) { closeMenu(); } else { openMenu(); }
-    SFX.click();
-  });
-  $("#menuClose").addEventListener("click", function () { closeMenu(); SFX.click(); });
-
-  menuList.addEventListener("click", function (e) {
-    var it = e.target.closest(".m-item");
-    if (!it) return;
-    var ext = it.getAttribute("data-ext");
-    if (ext) {
-      closeMenu();
-      SFX.click();
-      window.open(ext, "_blank", "noopener");
-      return;
-    }
-    if (it.getAttribute("data-action") === "settings") {
-      closeMenu();
-      openSettings();
-      return;
-    }
-    var k = it.getAttribute("data-view");
-    if (!k) return;
-    closeMenu();
-    setView(k);
-    if (k === "home") SFX.click(); else SFX.select(k);
-  });
-
-  menuOverlay.addEventListener("click", function (e) {
-    if (e.target === menuOverlay) closeMenu();
-  });
-
-  /* ---------------- rail ---------------- */
+  /* ---------------- rail (left-edge navigation) ---------------- */
 
   var rail = $("#rail");
   var railList = $("#railList");
@@ -503,12 +506,15 @@
   function buildRail() {
     var html = '<button class="r-item" type="button" data-view="home">' + svgIcon("home", "") + '<b>HOME</b></button>' +
       '<button class="r-item" type="button" data-view="news">' + svgIcon("news", "") + '<b>NEWS</b></button>' +
+      '<button class="r-item" type="button" data-view="investors">' + svgIcon("chart", "") + '<b>INVESTORS</b></button>' +
       '<button class="r-item" type="button" data-view="contact">' + svgIcon("contact", "") + '<b>CONTACT</b></button>' +
       '<span class="r-sep"></span>';
     Object.keys(PROJECTS).forEach(function (k) {
       var p = PROJECTS[k];
       html += '<button class="r-item" type="button" data-view="' + k + '">' + svgIcon(k, "") + '<b>' + p.name + '</b></button>';
     });
+    html += '<span class="r-sep"></span>' +
+      '<button class="r-item" type="button" data-action="settings">' + svgIcon("gear", "") + '<b>SETTINGS</b></button>';
     railList.innerHTML = html;
   }
 
@@ -528,16 +534,28 @@
   railList.addEventListener("click", function (e) {
     var it = e.target.closest(".r-item");
     if (!it) return;
+    if (it.getAttribute("data-action") === "settings") {
+      closeRail();
+      openSettings();
+      return;
+    }
     var k = it.getAttribute("data-view");
+    if (!k) return;
     closeRail();
     setView(k);
     if (k === "home") SFX.click(); else SFX.select(k);
   });
 
-  $("#railTab").addEventListener("click", function () {
+  var railTab = $("#railTab");
+  var touchDevice = window.matchMedia && window.matchMedia("(hover: none)").matches;
+  railTab.addEventListener("click", function () {
+    dismissToast();
+    if (!touchDevice) return;
     rail.classList.toggle("open");
     SFX.click();
   });
+
+  $("#railWrap").addEventListener("mouseenter", function () { dismissToast(); });
 
   /* ---------------- settings ---------------- */
 
@@ -628,6 +646,7 @@
   }
 
   function openSettings() {
+    dismissToast();
     buildSettings();
     markActivePreviews();
     settingsOverlay.classList.add("open");
@@ -641,18 +660,38 @@
     SFX.close();
   }
 
-  var brandText = $("#brandText");
-  var brandMark = $("#brandMark");
-  brandText.addEventListener("click", function () { SFX.click(); openSettings(); });
-  brandMark.addEventListener("click", function (e) { e.stopPropagation(); SFX.click(); setView("home"); });
+  $("#brandBtn").addEventListener("click", function () { SFX.click(); openSettings(); });
   $("#settingsClose").addEventListener("click", function () { closeSettings(); SFX.click(); });
-
-  var homeBtn = $("#homeBtn");
-  homeBtn.addEventListener("click", function () { SFX.click(); setView("home"); });
 
   settingsOverlay.addEventListener("click", function (e) {
     if (e.target === settingsOverlay) closeSettings();
   });
+
+  /* ---------------- onboarding toast ---------------- */
+
+  var toast = $("#toast");
+  var toastBody = $("#toastBody");
+
+  function maybeToast() {
+    var done = false;
+    try { done = localStorage.getItem("hub_intro_v2") === "1"; } catch (e) {}
+    if (done) return;
+    var touch = touchDevice;
+    toastBody.innerHTML = touch
+      ? 'This is the webring. Tap the <b>dots on the left edge</b> to navigate between programs \u2014 the top-right nav has been disenfranchised like the rest of the shareholders. Click the <b>logo</b>, top-left, for quick settings.'
+      : 'This is the webring. Move your cursor to the <b>left edge</b> (or the dots) to navigate between programs \u2014 the top-right nav has been disenfranchised like the rest of the shareholders. Click the <b>logo</b>, top-left, for quick settings.';
+    setTimeout(function () { toast.classList.add("open"); toast.setAttribute("aria-hidden", "false"); }, 900);
+    setTimeout(dismissToast, 10000);
+  }
+
+  function dismissToast() {
+    if (!toast.classList.contains("open")) return;
+    toast.classList.remove("open");
+    toast.setAttribute("aria-hidden", "true");
+    try { localStorage.setItem("hub_intro_v2", "1"); } catch (e) {}
+  }
+
+  $("#toastX").addEventListener("click", function () { SFX.click(); dismissToast(); });
 
   /* ---------------- github stats ---------------- */
 
@@ -829,7 +868,7 @@
     document.addEventListener("mouseover", function (e) {
       var t = e.target;
       if (!t || !t.closest) return;
-      var isInter = !!t.closest("a,button,.wcard,[data-go],select,input,label,.tpreview,.m-item,.r-item,.ctl,.ov-close,.set-row,.chip");
+      var isInter = !!t.closest("a,button,.wcard,[data-go],select,input,label,.tpreview,.r-item,.ctl,.ov-close,.set-row,.chip,.news-nav");
       ring.classList.toggle("big", isInter);
       if (isInter) {
         var now = performance.now();
@@ -843,7 +882,6 @@
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Escape") return;
     if (swap.classList.contains("open")) { swapClose(); return; }
-    if (menuOverlay.classList.contains("open")) { closeMenu(); return; }
     if (settingsOverlay.classList.contains("open")) { closeSettings(); }
   });
 
@@ -851,4 +889,5 @@
   setView("home");
   initCursor();
   applyTheme();
+  maybeToast();
 })();

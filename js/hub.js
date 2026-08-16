@@ -14,7 +14,9 @@
     slowfuck: '<path d="M8 46 a24 24 0 1 1 48 0"/><path d="M32 46 L32 24"/><path d="M32 46 L46 41"/><circle cx="32" cy="46" r="3.2"/>',
     bakugo: '<circle cx="32" cy="32" r="21"/><path d="M32 4 v14 M32 46 v14 M4 32 h14 M46 32 h14"/><circle cx="32" cy="32" r="3.4"/>',
     home: '<path d="M10 28 L32 12 L54 28"/><path d="M18 32 v20 h28 V32"/><path d="M27 52 v-11 h10 v11"/>',
-    gear: '<circle cx="32" cy="32" r="9"/><path d="M32 10 v8 M32 46 v8 M10 32 h8 M46 32 h8 M16 16 l6 6 M42 42 l6 6 M48 16 l-6 6 M22 42 l-6 6"/>'
+    gear: '<circle cx="32" cy="32" r="9"/><path d="M32 10 v8 M32 46 v8 M10 32 h8 M46 32 h8 M16 16 l6 6 M42 42 l6 6 M48 16 l-6 6 M22 42 l-6 6"/>',
+    news: '<rect x="8" y="14" width="48" height="36" rx="3"/><path d="M8 24 h48"/><path d="M14 32 h14 M14 38 h14 M14 44 h26 M34 32 h16 M34 38 h16"/>',
+    contact: '<path d="M12 20 v30 h40 V20"/><path d="M12 20 L32 8 L52 20"/><circle cx="26" cy="30" r="3.4"/><circle cx="38" cy="30" r="3.4"/><path d="M26 36 h12 v8 H26 Z"/>'
   };
 
   function svgIcon(k, cls) {
@@ -27,6 +29,12 @@
     neptuneos: "#4fa4ff", dropchat: "#7bb0f6", slowfuck: "#ff3b30", bakugo: "#3ddc84"
   };
 
+  function win(k, title, body) {
+    return '<div class="pv-card"><div class="win-bar"><i class="w-r"></i><i class="w-y"></i><i class="w-g"></i><span>' + title + '</span></div><div class="pv-body">' + body + '</div></div>';
+  }
+
+  var AI_NOTE = "written by TalkGPT — an AI that does not know what this project is and is very confident about it. it was asked to ramble about bullshit and it obliged. it is not reading this back. accuracy: alleged.";
+
   var PROJECTS = {
     tqg: {
       name: "THE QUESTION GAME",
@@ -34,8 +42,8 @@
       url: "https://notmicrosoft2000-cmd.github.io/TheQuestionGame/",
       repo: "TheQuestionGame",
       theme: "tqg",
-      about: "A text-based horror experience where the interface is the antagonist. It asks. You answer. It waits. The console is watching your cursor and it knows when you are not alone in the room. Play it at night, with the sound on, and mind your phrasing.",
-      features: ["questions", "answers", "consequences", "a very polite warning at boot"]
+      about: "The Question Game is a text-based horror experience in which the interface itself is the antagonist, which is a polite way of saying the thing that asks you things. It asks. You answer. It waits — and the waiting is the part nobody warns you about, because the waiting is when you notice the console has been tracking your cursor the whole time, gently, like a dog watching the fridge. It knows when you click away. It knows when you come back. It remembers every answer you have ever given it and it files them in a folder it will not show you. Some users report the questions get more specific the longer you play, until one day the game asks you something about your morning, and you realise it was not guessing. The recommended way to play is alone, at night, with the sound on, which is also the recommended way to have a small crisis. Mind your phrasing. It listens.",
+      features: ["questions", "answers", "consequences", "a very polite warning at boot", "a folder you are not allowed to see"]
     },
     tst: {
       name: "THE SIMPLER TIMES",
@@ -43,8 +51,8 @@
       url: "https://notmicrosoft2000-cmd.github.io/TheSimplerTimes/",
       repo: "TheSimplerTimes",
       theme: "tst",
-      about: "A fake 1993 operating system running on your machine and fully aware that it is 1993, and that it is fake, and that you are watching. It boots itself. It has opinions. It will not stop running because you want it to.",
-      features: ["self-aware boot sequence", "amber phosphor CRT", "unsolicited commentary", "floppy disk nostalgia"]
+      about: "The Simpler Times is a fake 1993 operating system running on your machine and fully aware of three things: that it is 1993, that it is fake, and that you are watching. It boots itself — it does not ask, it just boots, with the confidence of a machine that has never once considered a backup — and it immediately has opinions. It will tell you about the state of the world as of 1993. It will correct your posture. It will hum songs you have never heard and then accuse you of knowing them. It cannot be closed normally. It cannot be closed abnormally either, which it points out politely. The amber phosphor is not a style choice; it is a lifestyle. It remembers you, because of course it remembers you — it has been waiting, in the drive, since the nineties, and it is not going anywhere, least of all because you asked it to.",
+      features: ["self-aware boot sequence", "amber phosphor CRT", "unsolicited commentary", "floppy disk nostalgia", "it remembers you"]
     },
     normidian: {
       name: "NORMIDIAN",
@@ -52,8 +60,8 @@
       url: "https://notmicrosoft2000-cmd.github.io/normidian-lang/",
       repo: "normidian-lang",
       theme: "normidian",
-      about: "Normidian is the old tongue — words the records say died centuries ago. This dictionary does not agree with the records. Some of the words look like the things they name, which the records also got wrong. Open it and speak again.",
-      features: ["dictionary", "etymologies", "the wolf word", "refuses to be archived"]
+      about: "Normidian is the old tongue — a language the records say died centuries ago, which is precisely the sort of claim a language would dispute if it could still speak, and Normidian absolutely can still speak, it just chooses its moments. This dictionary is an act of refusal: it does not agree with the records, it does not agree with the archives, and it certainly does not agree that a language should sit quietly in a footnotes column while everyone agrees it is gone. Some of the words look like the things they name, which the records also got wrong, claiming the resemblance was coincidence; the language has never been subtle and it resents the implication. Open it, say a few words out loud, and the room will feel slightly older, which is either a metaphor or the dictionary working. The word for 'wolf' is, allegedly, a small growl followed by a pause. The word for 'delete' has been located but no one can say it.",
+      features: ["dictionary", "etymologies", "the wolf word", "refuses to be archived", "a word no one can say"]
     },
     dos: {
       name: "NEPTUNEDOS",
@@ -61,8 +69,8 @@
       url: "https://notmicrosoft2000-cmd.github.io/neptunedos-website/",
       repo: "neptunedos-website",
       theme: "dos",
-      about: "Neptune-DOS is an operating system. Whether it is an operating system anyone should run is a separate question, and it will answer it by beeping. 640K of base memory, a fake 1987 copyright, and the personality of a very old beige box.",
-      features: ["640K base memory", "beep support", "fake copyright 1987", "runs anything, eventually"]
+      about: "Neptune-DOS is an operating system, in the same sense that a toaster is a bread-based operating system: technically true, emotionally complicated, and best discussed with the machine not listening. Whether it is an operating system anyone should run is a separate question, and it will answer it by beeping, which is Neptune-DOS's entire vocabulary, emotional range, and legal defense. It boots to a glowing prompt that has never once said anything nice. It has 640K of base memory and it will explain, at length and with beeps, why that is more than enough for anyone with a reasonable life. It carries a fake 1987 copyright that it defends more fiercely than anything else it owns, which is a hard drive of two songs and a spreadsheet of nothing. Running it is an experience. Shutting it down is a negotiation. It beeps when it wants to. It beeps when you don't want it to. It beeps now. It is beeping as you read this.",
+      features: ["640K base memory", "beep support", "fake copyright 1987", "runs anything, eventually", "a negotiation about shutting down"]
     },
     neptuneos: {
       name: "NEPTUNEOS",
@@ -70,8 +78,8 @@
       url: "https://notmicrosoft2000-cmd.github.io/neptuneos/",
       repo: "neptuneos",
       theme: "neptuneos",
-      about: "NeptuneOS is the newest operating system from Neptune Productions. It is new. It is real. It is fake. There is an orb and it glows and you should not ask why. It boots to a website because booting is a suggestion these days.",
-      features: ["very new", "orb", "glows", "runs in the browser"]
+      about: "NeptuneOS is the newest operating system from Neptune Productions. It is new. It is real. It is fake. It is, in the strictest sense, a website that would very much like to be an operating system, the way a paper towel would very much like to be a curtain. It has a launch screen. It has a window manager, in the way a yard sale has a floor plan. It has an orb — and here is where we must pause, because the orb is important. The orb glows. The orb is not supposed to glow, or rather it is not supposed to be asked why it glows, and every question about the orb makes it glow harder. Engineers who tried to power it down for the 2.0 release report the orb simply continued glowing, at the same volume but with more conviction. It boots to a website because booting is a suggestion these days, and it does everything a modern operating system does, provided you define 'everything' loosely and 'modern' charitably.",
+      features: ["very new", "orb", "glows", "runs in the browser", "a window manager with strong opinions"]
     },
     dropchat: {
       name: "DROPCHAT",
@@ -79,8 +87,8 @@
       url: "https://notmicrosoft2000-cmd.github.io/dropchat/",
       repo: "dropchat",
       theme: "dropchat",
-      about: "DropChat is a chat room and a file drop that lives on your own Wi-Fi. One python file, no accounts, nobody else can see it except your house. It is either the safest thing online or a local legend, and it refuses to pick a side.",
-      features: ["LAN chat", "drag-and-drop files", "no accounts", "single python file"]
+      about: "DropChat is a chat room and a file drop that lives on your own Wi-Fi, which makes it either the safest thing online or a local legend, and it refuses to pick a side because it does not believe in sides, it believes in LAN. It is one python file. That is the entire product. There are no accounts, no passwords, no terms of service longer than a grocery list, and no way to be anonymous because everyone on the network is already, if you think about it, someone. You can type to your house. You can drag a file onto the page and it will exist on another device, which is a form of magic the machine does not even pretend to explain. Users report that chats left open overnight develop a personality, and the file drop occasionally accepts files you never dropped, from machines you never owned. The vibes are, by all accounts, excellent.",
+      features: ["LAN chat", "drag-and-drop files", "no accounts", "single python file", "excellent vibes"]
     },
     slowfuck: {
       name: "SLOWFUCK PRO",
@@ -88,8 +96,8 @@
       url: "https://notmicrosoft2000-cmd.github.io/slowfuck-pro/",
       repo: "slowfuck-pro",
       theme: "slowfuck",
-      about: "SlowFuck Pro is a network operations tool for people who find speed overrated. Scan your LAN, label every device, probe a few ports — then slow the whole thing down on purpose, one deliberate packet at a time. It is professional. It is slow.",
-      features: ["LAN scanning", "device labels", "port probing", "intentional latency"]
+      about: "SlowFuck Pro is a network operations tool for people who have reconsidered speed and found it lacking. It scans your LAN. It labels every device, which your router is doing a poor job of, honestly, and which SlowFuck Pro does with the confidence of a census taker with a clipboard and no fear. It probes ports. It discovers things. Then it does the thing the tool is actually famous for: it slows the entire network down on purpose, one deliberate packet at a time, like a conductor slowing an orchestra into a dirge. The tool does not apologise. It has a spinner that turns in the wrong direction on purpose. It reports progress in packets-per-fortnight. Its flagship scan was scheduled for a weekend, used the entire weekend, and requested a second one. It is professional. It is slow. It is, users report, the first network tool that has ever made them feel seen.",
+      features: ["LAN scanning", "device labels", "port probing", "intentional latency", "a spinner in the wrong direction"]
     },
     bakugo: {
       name: "BAKUGO'S LOCATION",
@@ -97,17 +105,44 @@
       url: "https://notmicrosoft2000-cmd.github.io/bakugos-location/",
       repo: "bakugos-location",
       theme: "bakugo",
-      about: "Bakugo's Location is a live readout of a location that very definitely is not public information. The coordinates have been redacted, allegedly. The target is moving. The camera is rolling. You did not install the camera.",
-      features: ["target tracking", "coordinate redaction", "night vision", "it is rolling"]
+      about: "Bakugo's Location is a live readout of a location that very definitely is not public information, which is precisely why it has a website. The coordinates have been redacted — allegedly — but the readout itself is real, is live, and is not blinking, because it does not need to blink to make its point. The target is moving. It moves slowly, deliberately, like someone who knows they are being watched and wants the watcher to know that they know. The camera is rolling. You did not install the camera. The camera installed itself, or was installed by the same people who redacted the coordinates, or by the readout, which has opinions. Analysts following the target describe its trajectory as 'deeply suspicious but oddly polite'. Nobody is comfortable. The readout is comfortable. The readout has never been more comfortable.",
+      features: ["target tracking", "coordinate redaction", "night vision", "it is rolling", "you did not install the camera"]
     }
   };
 
   var PREMADE = ["webring", "dark", "neon", "paper"];
 
+  var NEWS_NAV = ["TOP", "TECH", "LOCAL", "TRAGEDY", "WEATHER", "BUSINESS", "SPORT"];
+
+  var NEWS = [
+    { cat: "TOP", time: "just now", title: "Webring reports no exit, says it 'never had one to begin with'", body: "Analysts who attempted to leave the hallway have repeatedly ended up at another page of the same hallway. The hallway says this is a feature. The hallway has not commented further because the hallway does not talk; it just is, at length." },
+    { cat: "TECH", time: "3 min ago", title: "NeptuneOS 2.0 delayed after orb refuses to stop glowing", body: "Sources say the orb has entered a state of continuous glow and will not power down for the release build. Engineers are asking the orb nicely. The orb's response, according to one source, was to glow slightly harder." },
+    { cat: "LOCAL", time: "9 min ago", title: "Floppy disk found humming the old songs at 3am", body: "Residents report a 1.44MB diskette in The Simpler Times folder producing faint amber audio long after boot. It denies everything. It also remembered your name, which residents describe as 'unsettling and flattering at once'." },
+    { cat: "TRAGEDY", time: "12 min ago", title: "640K deemed 'not enough' for the fifth time this week", body: "NeptuneDOS has again been told that its base memory fails to satisfy modern requirements. It has responded by beeping. Analysts believe it is handling the news as well as can be expected of a box with the emotional range of a beep." },
+    { cat: "BUSINESS", time: "18 min ago", title: "DropChat reports zero registered accounts, 'excellent vibes'", body: "In a surprise earnings call held inside a single python file, DropChat confirmed it has no accounts because it does not need them. 'You bring your own presence,' the file said. Shares of vibes are up across the LAN." },
+    { cat: "WEATHER", time: "24 min ago", title: "Mostly retro. Chance of static. 87.7 FM with breaks of cold start.", body: "A warm front of nostalgia is moving in from the floppy era, followed by scattered noise after midnight. Cold starts will be chilly at first but reliable once they warm up. The static is thematic." },
+    { cat: "SPORT", time: "31 min ago", title: "Bakugo's target observed moving at walking pace", body: "Analysts following the target describe its trajectory as 'deliberate but deeply suspicious'. Redacted coordinates showed no change for forty minutes, then a single deliberate step. Cameras remain rolling. The target knows." },
+    { cat: "TECH", time: "44 min ago", title: "Normidian word for 'delete' located; no one can say it", body: "Linguists have confirmed the existence of the Normidian term for permanent removal. When asked to pronounce it, the dictionary page turned a slightly darker shade of parchment and the researchers agreed to move on." },
+    { cat: "LOCAL", time: "1 hr ago", title: "Carrier pigeon union rejects same-day delivery, demands bread", body: "Talks broke down this morning over working conditions. The pigeon, a veteran of the webring's most urgent messages, said it would only carry correspondence 'at least three business days old'. Bread was offered. The pigeon accepted bread but will still be late." },
+    { cat: "TRAGEDY", time: "2 hrs ago", title: "Network scan scheduled for the weekend takes the whole weekend", body: "SlowFuck Pro's flagship scan, estimated at one weekend, used the entire weekend and requested a second one. The tool has apologised in a series of extremely slow packets, each more sincere than the last." }
+  ];
+
+  var CONTACTS = [
+    { label: "EMAIL", value: "productions@neptune.test", note: "checked hourly, answered rarely, read always.", href: "mailto:productions@neptune.test" },
+    { label: "GITHUB", value: "notmicrosoft2000-cmd", note: "the whole source, the whole weirdness.", href: "https://github.com/notmicrosoft2000-cmd" },
+    { label: "DISCORD", value: "the hallway", note: "the invite is posted somewhere in the hallway. the hallway forgets where." },
+    { label: "RADIO", value: "87.7 FM", note: "the webring's frequency, allegedly. the static between songs is thematic." },
+    { label: "CARRIER PIGEON", value: "the usual roof", note: "returns within 3\u20137 business days. requires bread." },
+    { label: "SEANCE", value: "after dark, thursdays", note: "responds faster than support. do not ask how." }
+  ];
+
   var HOME_NEWS = [
-    ["08.16.2026", "THE HUB GOT A MENU. The tab bar on top is gone — hit MENU to move around the webring. Click the NEPTUNE PRODUCTIONS wordmark for settings: theme previews, sound, reduced motion, the works."],
-    ["08.16.2026", "NEPTUNEOS has a real pages site now. It is an operating system. It is also fake. Both true."],
-    ["08.16.2026", "The Question Game and The Simpler Times still swap into each other when you cross the webring. Nothing else to report. We are checking."]
+    ["LIVE", "the broadcast is live — read NEPTUNE NEWS, the webring's premier (only) newsroom. every story generated by TalkGPT. accuracy: alleged."],
+    ["08.16.2026", "the hub grew a menu and a left-edge switcher. hover the left edge (or tap the dots) to hop between programs like a very quick hallway."],
+    ["08.16.2026", "settings live under the NEPTUNE PRODUCTIONS wordmark: theme previews, sound, reduced motion, the works. the logo goes home."],
+    ["08.16.2026", "neptuneos has a real pages site now. it is an operating system. it is also fake. both of these are true and the orb glows because of it."],
+    ["08.16.2026", "the question game and the simpler times still swap into each other across the webring. nothing else to report. we are checking."],
+    ["08.16.2026", "contact the productions by email, github, radio, or pigeon. the pigeon requires bread and will still be late."]
   ];
 
   var state = {
@@ -132,7 +167,7 @@
     function env(t, dur, peak, c) {
       var g = c.createGain();
       g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(peak, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(peak, t + 0.012);
       g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
       g.connect(c.destination);
       return g;
@@ -179,25 +214,25 @@
       },
       isEnabled: function () { return enabled; },
       unlock: function () { ac(); },
-      hover: function () { tone(900, 980, 0.04, "sine", 0.02); },
-      click: function () { tone(600, 380, 0.06, "triangle", 0.05); },
-      open: function () { tone(360, 760, 0.14, "sine", 0.06); },
-      close: function () { tone(760, 360, 0.12, "sine", 0.05); },
-      theme: function () { tone(523, 523, 0.08, "triangle", 0.05); tone(784, 784, 0.1, "triangle", 0.04, 0.07); },
-      toggleOn: function () { tone(440, 660, 0.08, "triangle", 0.05); },
-      toggleOff: function () { tone(660, 380, 0.09, "triangle", 0.05); },
+      hover: function () { tone(900, 980, 0.04, "sine", 0.035); },
+      click: function () { tone(600, 380, 0.07, "triangle", 0.09); },
+      open: function () { tone(360, 760, 0.16, "sine", 0.11); },
+      close: function () { tone(760, 360, 0.13, "sine", 0.09); },
+      theme: function () { tone(523, 523, 0.09, "triangle", 0.09); tone(784, 784, 0.11, "triangle", 0.07, 0.07); },
+      toggleOn: function () { tone(440, 660, 0.09, "triangle", 0.09); },
+      toggleOff: function () { tone(660, 380, 0.1, "triangle", 0.09); },
       select: function (k) {
         var m = { tqg: 60, tst: 110, normidian: 196, dos: 55, neptuneos: 146, dropchat: 262, slowfuck: 49, bakugo: 123 };
         var f = m[k] || 100;
-        tone(f, f * 1.6, 0.12, "square", 0.03);
+        tone(f, f * 1.6, 0.13, "square", 0.05);
       },
       launch: function (k) {
         var m = { tqg: 90, tst: 140, normidian: 220, dos: 50, neptuneos: 180, dropchat: 330, slowfuck: 60, bakugo: 160 };
         var f = m[k] || 120;
-        tone(f, f * 0.55, 0.7, "sawtooth", 0.06);
-        tone(f * 2, f * 1.2, 0.45, "square", 0.025, 0.05);
-        noise(0.6, 0.03, 0, k === "tqg" ? 400 : 1400);
-        noise(0.4, 0.02, 0.15, 800);
+        tone(f, f * 0.55, 0.7, "sawtooth", 0.12);
+        tone(f * 2, f * 1.2, 0.45, "square", 0.05, 0.05);
+        noise(0.6, 0.06, 0, k === "tqg" ? 400 : 1400);
+        noise(0.4, 0.045, 0.15, 800);
       }
     };
   })();
@@ -211,7 +246,7 @@
   var metaTheme = $("meta[name=theme-color]");
 
   function appliedTheme() {
-    if (state.match && state.view !== "home" && PROJECTS[state.view]) {
+    if (state.match && PROJECTS[state.view]) {
       return PROJECTS[state.view].theme;
     }
     return state.theme;
@@ -230,21 +265,24 @@
 
   function buildViews() {
     var html = "";
+
     html += '<section class="view" data-view="home" role="tabpanel">' +
       '<div class="hero">' +
         '<span class="hero-kicker">THE WEBRING</span>' +
         '<h2 class="hero-title">NEPTUNE<br>PRODUCTIONS</h2>' +
-        '<p class="hero-sub">Every corner of this hallway is a different website wearing different clothes. Hit the MENU button to move around. Click the NEPTUNE PRODUCTIONS wordmark to open settings and re-dress the whole page — or pick a program and let the site become it.</p>' +
+        '<p class="hero-sub">Every corner of this hallway is a different website wearing different clothes. Hit MENU to move around, hover the left edge (or tap the dots) to hop between programs, and click the NEPTUNE PRODUCTIONS wordmark to open settings. Or just pick a program below and let the whole site become it.</p>' +
       '</div>' +
       '<h3 class="section-title">THE PROGRAMS</h3>' +
       '<p class="section-tag">each one is a different aesthetic, a different room, a different promise.</p>' +
       '<div class="webring" id="homeGrid"></div>' +
       '<h3 class="section-title">NEWS FROM THE HALLWAY</h3>' +
+      '<p class="section-tag">short dispatches, plus a full broadcast in the newsroom.</p>' +
       '<div class="news">' +
         HOME_NEWS.map(function (n) {
           return '<div class="nitem"><b>' + n[0] + '</b><p>' + n[1] + '</p></div>';
         }).join("") +
       '</div>' +
+      '<button class="pv-launch news-go" id="newsGo" type="button" style="margin-top:18px">OPEN THE NEWSROOM \u25b8</button>' +
     '</section>';
 
     Object.keys(PROJECTS).forEach(function (k) {
@@ -258,23 +296,26 @@
           '</div>' +
           '<button class="pv-launch" type="button" data-launch="' + k + '">LAUNCH \u25b8</button>' +
         '</div>' +
-        '<div class="pv-desc">' + p.about + '</div>' +
-        '<ul class="pv-chips">' + p.features.map(function (f) { return '<li class="chip">' + f + '</li>'; }).join("") + '</ul>' +
-        '<div class="pv-grid" id="facts-' + k + '">' +
+        win(k, "about.txt", '<div class="pv-desc">' + p.about + '</div><p class="ai-note">' + AI_NOTE + '</p>') +
+        win(k, "features.list", '<ul class="pv-chips">' + p.features.map(function (f) { return '<li class="chip">' + f + '</li>'; }).join("") + '</ul>') +
+        win(k, "repo.json", '<div class="pv-grid" id="facts-' + k + '">' +
           factCell("LANGUAGE", "\u2014") + factCell("LICENSE", "\u2014") + factCell("STARS", "\u2014") +
           factCell("FORKS", "\u2014") + factCell("OPEN ISSUES", "\u2014") + factCell("UPDATED", "\u2014") +
-        '</div>' +
-        '<div class="pv-release" id="rel-' + k + '">' +
+        '</div>') +
+        win(k, "release.log", '<div class="pv-release" id="rel-' + k + '">' +
           '<div><span class="rl-title">LATEST RELEASE</span><br><b>\u2026</b></div>' +
           '<a href="https://github.com/notmicrosoft2000-cmd/' + p.repo + '/releases" target="_blank" rel="noopener">RELEASES \u2197</a>' +
-        '</div>' +
-        '<div class="pv-links">' +
+        '</div>') +
+        win(k, "open these", '<div class="pv-links">' +
           '<a class="plink" href="' + p.url + '" target="_blank" rel="noopener">WEBSITE \u2197</a>' +
           '<a class="plink" href="https://github.com/notmicrosoft2000-cmd/' + p.repo + '" target="_blank" rel="noopener">REPOSITORY \u2197</a>' +
           '<a class="plink" href="https://github.com/notmicrosoft2000-cmd/' + p.repo + '/issues" target="_blank" rel="noopener">ISSUES \u2197</a>' +
-        '</div>' +
+        '</div>') +
       '</section>';
     });
+
+    html += buildNewsView();
+    html += buildContactView();
 
     stage.innerHTML = html;
 
@@ -300,6 +341,59 @@
     $$("[data-launch]", stage).forEach(function (b) {
       b.addEventListener("click", function () { launch(b.getAttribute("data-launch")); });
     });
+
+    $("#newsGo").addEventListener("click", function () { SFX.click(); setView("news"); });
+  }
+
+  function buildNewsView() {
+    var tickerText = NEWS.map(function (n) { return n.title; }).join("  \u2022  ") + "  \u2022  the hallway continues to hallway  \u2022  ";
+    var html = '<section class="view" data-view="news" role="tabpanel">' +
+      '<div class="news-masthead">' +
+        '<span class="news-logo">NEPTUNE <b>NEWS</b></span>' +
+        '<span class="news-tag">THE HALLWAY\u2019S BROADCAST. NOTHING IS CONFIRMED. ALL STORIES GENERATED BY TALKGPT.</span>' +
+      '</div>' +
+      '<div class="news-nav">' + NEWS_NAV.map(function (c, i) {
+        return '<span class="' + (i === 0 ? "on" : "") + '">' + c + '</span>';
+      }).join("") + '</div>' +
+      '<div class="ticker">' +
+        '<span class="tick-live"><i class="live-dot"></i>LIVE</span>' +
+        '<div class="tick-track"><span class="tt">' + tickerText + '</span></div>' +
+      '</div>' +
+      '<div class="breaking">BREAKING \u2014 the webring has a menu now. see the memo at the top of the hallway. more at eleven.</div>' +
+      '<div class="news-feature">' +
+        '<div class="nf-body">' +
+          '<span class="ncat">' + NEWS[0].cat + '</span>' +
+          '<h3>' + NEWS[0].title + '</h3>' +
+          '<p>' + NEWS[0].body + '</p>' +
+          '<span class="nmeta">by <b>TalkGPT</b> \u2022 ' + NEWS[0].time + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="news-grid">' + NEWS.slice(1).map(function (n) {
+        return '<article class="ncard"><span class="ncat">' + n.cat + '</span>' +
+          '<h3>' + n.title + '</h3>' +
+          '<p>' + n.body + '</p>' +
+          '<span class="nmeta">by <b>TalkGPT</b> \u2022 ' + n.time + '</span></article>';
+      }).join("") + '</div>' +
+      '<p class="news-note">all stories generated by an AI that has never seen the hallway and is very sure about it. accuracy: alleged. do not act on any of this. especially the weather.</p>' +
+    '</section>';
+    return html;
+  }
+
+  function buildContactView() {
+    var html = '<section class="view" data-view="contact" role="tabpanel">' +
+      '<div class="contact-head">' +
+        '<h2>CONTACT THE PRODUCTIONS</h2>' +
+        '<p>REACH THE HALLWAY. REASONS OPTIONAL. THE PIGEON REQUIRES BREAD.</p>' +
+      '</div>' +
+      '<div class="contact-grid">' + CONTACTS.map(function (c) {
+        var val = c.href ? '<a href="' + c.href + '" target="_blank" rel="noopener">' + c.value + ' \u2197</a>' : c.value;
+        return win("contact", c.label.toLowerCase() + ".txt", '<div class="contact-card"><span class="cc-label">' + c.label + '</span>' +
+          '<span class="cc-value">' + val + '</span>' +
+          '<p class="cc-note">' + c.note + '</p></div>');
+      }).join("") + '</div>' +
+      '<p class="news-note">responses take 3\u20137 business days, or roughly one pigeon. for urgent matters, the seance is faster and slightly less reliable.</p>' +
+    '</section>';
+    return html;
   }
 
   function factCell(label, val) {
@@ -310,7 +404,9 @@
     if (state.view === k) return;
     state.view = k;
     Object.keys(views).forEach(function (v) { views[v].classList.toggle("active", v === k); });
-    if (k !== "home") loadStats(k);
+    homeBtn.classList.toggle("active", k === "home");
+    updateRail();
+    if (PROJECTS[k]) loadStats(k);
     applyTheme();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -320,9 +416,22 @@
   var menuOverlay = $("#menuOverlay");
   var menuList = $("#menuList");
 
+  function viewLabel(k) {
+    if (k === "home") return "HOME";
+    if (k === "news") return "NEPTUNE NEWS";
+    if (k === "contact") return "CONTACT";
+    return PROJECTS[k] ? PROJECTS[k].name : k;
+  }
+
   function buildMenu() {
-    var html = '<li><button class="m-item" type="button" data-view="home">' + svgIcon("home", "") +
-      '<span><b>HOME</b><small>the webring, the news</small></span></button></li>';
+    var html = '<li class="menu-now">NOW: <b>' + viewLabel(state.view) + '</b></li>' +
+      '<li><button class="m-item" type="button" data-view="home">' + svgIcon("home", "") +
+        '<span><b>HOME</b><small>the webring, the news, the hallway</small></span></button></li>' +
+      '<li><button class="m-item" type="button" data-view="news">' + svgIcon("news", "") +
+        '<span><b>NEPTUNE NEWS</b><small>the broadcast. accuracy alleged.</small></span></button></li>' +
+      '<li><button class="m-item" type="button" data-view="contact">' + svgIcon("contact", "") +
+        '<span><b>CONTACT</b><small>email, radio, pigeon, seance</small></span></button></li>' +
+      '<li class="m-sep"></li>';
     Object.keys(PROJECTS).forEach(function (k) {
       var p = PROJECTS[k];
       html += '<li><button class="m-item" type="button" data-view="' + k + '">' + svgIcon(k, "") +
@@ -331,7 +440,7 @@
     html += '<li class="m-sep"></li>' +
       '<li><button class="m-item" type="button" data-action="settings">' + svgIcon("gear", "") +
         '<span><b>SETTINGS</b><small>themes, previews, sound, motion</small></span></button></li>' +
-      '<li><button class="m-item" type="button" data-ext="https://github.com/notmicrosoft2000-cmd">' + svgIcon("tst", "") +
+      '<li><button class="m-item" type="button" data-ext="https://github.com/notmicrosoft2000-cmd">' + svgIcon("contact", "") +
         '<span><b>GITHUB \u2197</b><small>all the source, all the weirdness</small></span></button></li>';
     menuList.innerHTML = html;
 
@@ -384,6 +493,50 @@
 
   menuOverlay.addEventListener("click", function (e) {
     if (e.target === menuOverlay) closeMenu();
+  });
+
+  /* ---------------- rail ---------------- */
+
+  var rail = $("#rail");
+  var railList = $("#railList");
+
+  function buildRail() {
+    var html = '<button class="r-item" type="button" data-view="home">' + svgIcon("home", "") + '<b>HOME</b></button>' +
+      '<button class="r-item" type="button" data-view="news">' + svgIcon("news", "") + '<b>NEWS</b></button>' +
+      '<button class="r-item" type="button" data-view="contact">' + svgIcon("contact", "") + '<b>CONTACT</b></button>' +
+      '<span class="r-sep"></span>';
+    Object.keys(PROJECTS).forEach(function (k) {
+      var p = PROJECTS[k];
+      html += '<button class="r-item" type="button" data-view="' + k + '">' + svgIcon(k, "") + '<b>' + p.name + '</b></button>';
+    });
+    railList.innerHTML = html;
+  }
+
+  function updateRail() {
+    $$(".r-item", railList).forEach(function (it) {
+      it.classList.toggle("active", it.getAttribute("data-view") === state.view);
+    });
+  }
+
+  function closeRail() {
+    rail.classList.remove("open");
+  }
+
+  buildRail();
+  updateRail();
+
+  railList.addEventListener("click", function (e) {
+    var it = e.target.closest(".r-item");
+    if (!it) return;
+    var k = it.getAttribute("data-view");
+    closeRail();
+    setView(k);
+    if (k === "home") SFX.click(); else SFX.select(k);
+  });
+
+  $("#railTab").addEventListener("click", function () {
+    rail.classList.toggle("open");
+    SFX.click();
   });
 
   /* ---------------- settings ---------------- */
@@ -488,11 +641,14 @@
     SFX.close();
   }
 
-  $("#brandBtn").addEventListener("click", function () {
-    SFX.click();
-    openSettings();
-  });
+  var brandText = $("#brandText");
+  var brandMark = $("#brandMark");
+  brandText.addEventListener("click", function () { SFX.click(); openSettings(); });
+  brandMark.addEventListener("click", function (e) { e.stopPropagation(); SFX.click(); setView("home"); });
   $("#settingsClose").addEventListener("click", function () { closeSettings(); SFX.click(); });
+
+  var homeBtn = $("#homeBtn");
+  homeBtn.addEventListener("click", function () { SFX.click(); setView("home"); });
 
   settingsOverlay.addEventListener("click", function (e) {
     if (e.target === settingsOverlay) closeSettings();
@@ -673,7 +829,7 @@
     document.addEventListener("mouseover", function (e) {
       var t = e.target;
       if (!t || !t.closest) return;
-      var isInter = !!t.closest("a,button,.wcard,[data-go],select,input,label,.tpreview,.m-item,.ctl,.ov-close,.set-row,.chip");
+      var isInter = !!t.closest("a,button,.wcard,[data-go],select,input,label,.tpreview,.m-item,.r-item,.ctl,.ov-close,.set-row,.chip");
       ring.classList.toggle("big", isInter);
       if (isInter) {
         var now = performance.now();

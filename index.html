@@ -25,14 +25,20 @@
   <div class="bgfx" aria-hidden="true"></div>
 
   <header class="top">
-    <button class="brand" id="brandBtn" type="button" aria-label="NEPTUNE PRODUCTIONS — open settings">
-      <span class="brand-mark">NP</span>
-      <span class="brand-text">
+    <button class="brand" id="brandBtn" type="button" aria-label="NEPTUNE PRODUCTIONS">
+      <span class="brand-mark" id="brandMark" title="go home">NP</span>
+      <span class="brand-text" id="brandText" title="open settings">
         <span class="brand-name">NEPTUNE PRODUCTIONS</span>
-        <span class="brand-tag">click for settings</span>
+        <span class="brand-tag">click the wordmark for settings</span>
       </span>
     </button>
     <div class="top-actions">
+      <button class="home-btn" id="homeBtn" type="button" aria-label="go home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 11 L12 3 L21 11"/>
+          <path d="M5 10 v10 h5 v-6 h4 v6 h5 V10"/>
+        </svg>
+      </button>
       <button class="menu-btn" id="menuBtn" type="button" aria-label="open menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
           <path d="M3 6h18 M3 12h18 M3 18h12"/>
@@ -48,6 +54,17 @@
     <p>NEPTUNE PRODUCTIONS — est. 1987 (allegedly). every program is a different corner of the same hallway.</p>
     <p class="foot-gh"><a href="https://github.com/notmicrosoft2000-cmd" target="_blank" rel="noopener">GITHUB ↗</a></p>
   </footer>
+
+  <div class="rail-wrap" id="railWrap">
+    <div class="rail-zone" aria-hidden="true"></div>
+    <aside class="rail" id="rail" aria-label="webring switcher">
+      <p class="rail-title">THE WEBRING</p>
+      <nav class="rail-list" id="railList"></nav>
+    </aside>
+  </div>
+  <button class="rail-tab" id="railTab" type="button" aria-label="open webring switcher">
+    <span></span><span></span><span></span>
+  </button>
 
   <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
     <div class="menu-panel">

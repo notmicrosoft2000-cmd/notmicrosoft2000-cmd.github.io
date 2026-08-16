@@ -194,7 +194,7 @@
   var state = {
     theme: (function () { try { return localStorage.getItem("hub_theme") || "webring"; } catch (e) { return "webring"; } })(),
     match: (function () { try { return localStorage.getItem("hub_match") !== "off"; } catch (e) { return true; } })(),
-    simple: (function () { try { return localStorage.getItem("hub_simple") === "on"; } catch (e) { return false; } })(),
+    simple: (function () { try { return localStorage.getItem("hub_simple") !== "off"; } catch (e) { return true; } })(),
     view: null
   };
 
@@ -473,6 +473,7 @@
     $$(".wcard", grid).forEach(function (c) {
       c.addEventListener("click", function () {
         var k = c.getAttribute("data-go");
+        flyIcon(c);
         setView(k);
         SFX.select(k);
       });
@@ -846,9 +847,12 @@
 
   function buildRail() {
     var simple = state.simple;
-    var html = '<button class="r-item" type="button" data-view="home">' + svgIcon("home", "") + '<b>HOME</b></button>';
+    var html = '<button class="r-item" type="button" data-action="settings">' + svgIcon("gear", "") + '<b>SETTINGS</b></button>' +
+      '<span class="r-sep"></span>' +
+      '<button class="r-item" type="button" data-view="home">' + svgIcon("home", "") + '<b>HOME</b></button>';
     if (!simple) {
-      html += '<button class="r-item" type="button" data-view="news">' + svgIcon("news", "") + '<b>NEWS</b></button>' +
+      html += '<span class="r-sep"></span>' +
+        '<button class="r-item" type="button" data-view="news">' + svgIcon("news", "") + '<b>NEWS</b></button>' +
         '<button class="r-item" type="button" data-view="investors">' + svgIcon("chart", "") + '<b>INVESTORS</b></button>' +
         '<button class="r-item" type="button" data-view="forum">' + svgIcon("chat", "") + '<b>FORUM</b></button>' +
         '<button class="r-item" type="button" data-view="previews">' + svgIcon("neptuneos", "") + '<b>PREVIEWS</b></button>' +
@@ -859,8 +863,6 @@
       var p = PROJECTS[k];
       html += '<button class="r-item" type="button" data-view="' + k + '">' + svgIcon(k, "") + '<b>' + p.name + '</b></button>';
     });
-    html += '<span class="r-sep"></span>' +
-      '<button class="r-item" type="button" data-action="settings">' + svgIcon("gear", "") + '<b>SETTINGS</b></button>';
     railList.innerHTML = html;
   }
 
@@ -868,6 +870,14 @@
     $$(".r-item", railList).forEach(function (it) {
       it.classList.toggle("active", it.getAttribute("data-view") === state.view);
     });
+    if (rail.classList.contains("collapsed")) {
+      var act = railList.querySelector(".r-item.active");
+      if (act) {
+        act.classList.remove("dockbounce");
+        void act.offsetWidth;
+        act.classList.add("dockbounce");
+      }
+    }
   }
 
   function closeRail() {
@@ -902,6 +912,42 @@
   });
 
   $("#railWrap").addEventListener("mouseenter", function () { dismissToast(); });
+
+  var railCollapseBtn = $("#railCollapse");
+  function setCollapseLabel() {
+    railCollapseBtn.textContent = rail.classList.contains("collapsed") ? "\u00bb" : "\u00ab";
+  }
+  try { if (localStorage.getItem("hub_rail_collapsed") === "on") rail.classList.add("collapsed"); } catch (e) {}
+  setCollapseLabel();
+  railCollapseBtn.addEventListener("click", function () {
+    rail.classList.toggle("collapsed");
+    try { localStorage.setItem("hub_rail_collapsed", rail.classList.contains("collapsed") ? "on" : "off"); } catch (e) {}
+    setCollapseLabel();
+    SFX.click();
+  });
+
+  function flyIcon(host) {
+    if (!host || root.classList.contains("rm")) return;
+    var ico = host.querySelector("svg");
+    if (!ico) return;
+    var r = host.getBoundingClientRect();
+    var cx = r.left + r.width / 2;
+    var cy = r.top + r.height / 2;
+    var el = document.createElement("div");
+    el.className = "fly-ico";
+    el.innerHTML = ico.outerHTML;
+    el.style.left = (cx - 23) + "px";
+    el.style.top = (cy - 23) + "px";
+    document.body.appendChild(el);
+    var dx = 26 - cx;
+    var dy = (window.innerHeight * 0.5) - cy;
+    try {
+      el.animate([
+        { transform: "translate(0, 0) scale(1)", opacity: 1 },
+        { transform: "translate(" + dx + "px, " + dy + "px) scale(.25)", opacity: 0 }
+      ], { duration: 560, easing: "cubic-bezier(.35, .6, .3, 1)" }).onfinish = function () { el.remove(); };
+    } catch (err) { el.remove(); }
+  }
 
   /* ---------------- settings ---------------- */
 
@@ -968,6 +1014,7 @@
     $("#setRm").addEventListener("change", function (e) {
       root.classList.toggle("rm", e.target.checked);
       try { localStorage.setItem("hub_rm", e.target.checked ? "on" : "off"); } catch (err) {}
+      if (e.target.checked) root.classList.remove("idle");
       SFX.click();
     });
   }
@@ -1274,6 +1321,18 @@
   renderMarket();
   setInterval(renderMarket, 5000);
   maybeToast();
+
+  var idleTimer = null;
+  function armIdle() {
+    if (root.classList.contains("rm")) return;
+    clearTimeout(idleTimer);
+    root.classList.remove("idle");
+    idleTimer = setTimeout(function () { root.classList.add("idle"); }, 9000);
+  }
+  ["pointermove", "pointerdown", "keydown", "scroll", "wheel", "touchstart"].forEach(function (ev) {
+    document.addEventListener(ev, armIdle, { passive: true });
+  });
+  armIdle();
 
   var brandNameEl = $(".brand-name");
   if (brandNameEl && !root.classList.contains("rm")) {

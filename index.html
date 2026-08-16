@@ -1,56 +1,46 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="webring" data-match="on">
+<html lang="en" data-theme="webring">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Neptune Productions — the webring. The Question Game, The Simpler Times, Normidian, NeptuneDOS, NeptuneOS, DropChat, SlowFuck Pro, Bakugo's Location. Pick a thing. The whole site becomes it.">
   <meta name="theme-color" content="#8a2b2b">
   <title>NEPTUNE PRODUCTIONS — HUB</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <script>
     (function () {
       try {
         var t = localStorage.getItem("hub_theme");
         if (t) document.documentElement.setAttribute("data-theme", t);
-        var m = localStorage.getItem("hub_match");
-        if (m === "off") document.documentElement.setAttribute("data-match", "off");
+        if (localStorage.getItem("hub_rm") === "on") document.documentElement.classList.add("rm");
       } catch (e) {}
     })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=IBM+Plex+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div class="bgfx" aria-hidden="true"></div>
 
   <header class="top">
-    <div class="brand">
+    <button class="brand" id="brandBtn" type="button" aria-label="NEPTUNE PRODUCTIONS — open settings">
       <span class="brand-mark">NP</span>
-      <div class="brand-text">
-        <h1 class="brand-name">NEPTUNE PRODUCTIONS</h1>
-        <p class="brand-tag">a webring of small, terrible, beautiful things</p>
-      </div>
-    </div>
-    <div class="top-controls">
-      <label class="ctl">
-        <span class="ctl-label">THEME</span>
-        <select id="themeSelect" class="ctl-select">
-          <option value="webring">WEBRING</option>
-          <option value="dark">DARK</option>
-          <option value="neon">NEON</option>
-          <option value="paper">PAPER</option>
-        </select>
-      </label>
-      <label class="ctl ctl-toggle">
-        <input type="checkbox" id="matchTheme" checked>
-        <span class="ctl-box" aria-hidden="true"></span>
-        <span class="ctl-label">MATCH PROJECT</span>
-      </label>
+      <span class="brand-text">
+        <span class="brand-name">NEPTUNE PRODUCTIONS</span>
+        <span class="brand-tag">click for settings</span>
+      </span>
+    </button>
+    <div class="top-actions">
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+          <path d="M3 6h18 M3 12h18 M3 18h12"/>
+        </svg>
+        <span>MENU</span>
+      </button>
     </div>
   </header>
-
-  <nav class="tabs" id="tabs" role="tablist" aria-label="programs"></nav>
 
   <main class="stage" id="stage"></main>
 
@@ -59,12 +49,31 @@
     <p class="foot-gh"><a href="https://github.com/notmicrosoft2000-cmd" target="_blank" rel="noopener">GITHUB ↗</a></p>
   </footer>
 
+  <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+    <div class="menu-panel">
+      <button class="ov-close" id="menuClose" type="button">CLOSE</button>
+      <ul class="menu-list" id="menuList"></ul>
+    </div>
+  </div>
+
+  <div class="settings-overlay" id="settingsOverlay" aria-hidden="true">
+    <div class="settings-panel">
+      <div class="settings-head">
+        <h2>SETTINGS</h2>
+        <button class="ov-close" id="settingsClose" type="button">CLOSE</button>
+      </div>
+      <div class="settings-body" id="settingsBody"></div>
+    </div>
+  </div>
+
   <div class="swap" id="swap" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="swap-piece" id="swapPiece"></div>
     <h2 class="swap-title" id="swapTitle"></h2>
     <div class="swap-progress" id="swapProgress"><span></span></div>
     <span class="swap-skip">ESC TO CANCEL</span>
   </div>
+
+  <div class="cur-ring" id="curRing" aria-hidden="true"></div>
 
   <script src="js/hub.js"></script>
 </body>

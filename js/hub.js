@@ -17,11 +17,18 @@
     gear: '<circle cx="32" cy="32" r="9"/><path d="M32 10 v8 M32 46 v8 M10 32 h8 M46 32 h8 M16 16 l6 6 M42 42 l6 6 M48 16 l-6 6 M22 42 l-6 6"/>',
     news: '<rect x="8" y="14" width="48" height="36" rx="3"/><path d="M8 24 h48"/><path d="M14 32 h14 M14 38 h14 M14 44 h26 M34 32 h16 M34 38 h16"/>',
     chart: '<path d="M10 52 h44"/><rect x="16" y="30" width="8" height="22"/><rect x="28" y="18" width="8" height="34"/><rect x="40" y="36" width="8" height="16"/><path d="M16 28 l8-2 4 8 8-14 4 10"/>',
+    chat: '<path d="M12 18 h40 v26 h-22 l-8 8 v-8 h-10 Z"/><path d="M20 27 h24 M20 34 h16"/>',
     contact: '<path d="M12 20 v30 h40 V20"/><path d="M12 20 L32 8 L52 20"/><circle cx="26" cy="30" r="3.4"/><circle cx="38" cy="30" r="3.4"/><path d="M26 36 h12 v8 H26 Z"/>'
   };
 
   function svgIcon(k, cls) {
     return '<svg class="' + cls + '" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[k] || ICONS.home) + '</svg>';
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
   }
 
   var ACCENT = {
@@ -176,8 +183,8 @@
   ];
 
   var HOME_NEWS = [
-    ["LIVE", "the markets have spoken: NEPT is down 400% and the annual report was a sandwich. full coverage in NEPTUNE NEWS and the investors room."],
-    ["08.16.2026", "navigation has moved to the left edge. hover it (or tap the dots) to hop between programs. the top-right nav has been disenfranchised like the rest of the shareholders."],
+    ["LIVE", "the markets have spoken: NEPT is down and the annual report was a sandwich. full coverage in NEPTUNE NEWS and the investors room."],
+    ["08.16.2026", "navigation lives on the left edge. hover it (or tap the dots) to hop between programs. the top-right nav has been disenfranchised like the rest of the shareholders."],
     ["08.16.2026", "quick settings live under the logo, top-left. the board is a toaster and it approves this message, allegedly."],
     ["08.16.2026", "layoffs: the floppy disk was let go for 'not being a person'. it has since started a music career at 3am."],
     ["08.16.2026", "shareholders demanded a vote and received tote bags. voting rights are now 'suggestions'."],
@@ -187,8 +194,11 @@
   var state = {
     theme: (function () { try { return localStorage.getItem("hub_theme") || "webring"; } catch (e) { return "webring"; } })(),
     match: (function () { try { return localStorage.getItem("hub_match") !== "off"; } catch (e) { return true; } })(),
+    simple: (function () { try { return localStorage.getItem("hub_simple") === "on"; } catch (e) { return false; } })(),
     view: null
   };
+
+  root.classList.toggle("simple", state.simple);
 
   /* ---------------- sfx ---------------- */
 
@@ -260,6 +270,7 @@
       theme: function () { tone(523, 523, 0.09, "triangle", 0.09); tone(784, 784, 0.11, "triangle", 0.07, 0.07); },
       toggleOn: function () { tone(440, 660, 0.09, "triangle", 0.09); },
       toggleOff: function () { tone(660, 380, 0.1, "triangle", 0.09); },
+      chat: function () { tone(1400, 1800, 0.06, "sine", 0.03); },
       select: function (k) {
         var m = { tqg: 60, tst: 110, normidian: 196, dos: 55, neptuneos: 146, dropchat: 262, slowfuck: 49, bakugo: 123 };
         var f = m[k] || 100;
@@ -297,6 +308,83 @@
     if (metaTheme) metaTheme.setAttribute("content", ACCENT[cur] || "#8a2b2b");
   }
 
+  /* ---------------- deterministic live market ---------------- */
+
+  function hashStr(s) {
+    var h = 2166136261;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+
+  function mulberry32(a) {
+    return function () {
+      a |= 0;
+      a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  var Market = (function () {
+    var series = [], open = 1, high = 1, low = 1, volume = 0, dayKey = "";
+    function keyOf(d) { return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+    function build() {
+      dayKey = keyOf(new Date());
+      var rand = mulberry32(hashStr(dayKey));
+      var p = 1.0;
+      series = [];
+      for (var i = 0; i < 240; i++) { p = Math.max(0.01, p * (1 + (rand() - 0.485) * 0.03)); series.push(p); }
+      open = series[0];
+      high = Math.max.apply(null, series);
+      low = Math.min.apply(null, series);
+      volume = Math.round(40 + rand() * 960) * 1000;
+    }
+    function ensure() { if (dayKey !== keyOf(new Date())) build(); }
+    function idx() { ensure(); var d = new Date(); return Math.min(239, Math.floor((d.getHours() * 60 + d.getMinutes()) / 6)); }
+    return {
+      ensure: ensure,
+      price: function () { ensure(); return series[idx()]; },
+      change: function () { ensure(); return (series[idx()] / open - 1) * 100; },
+      open: function () { ensure(); return open; },
+      high: function () { ensure(); return high; },
+      low: function () { ensure(); return low; },
+      volume: function () { ensure(); return volume; },
+      last48: function () { ensure(); return series.slice(Math.max(0, idx() - 47), idx() + 1); },
+      fmt: function (v) { return v.toFixed(2); }
+    };
+  })();
+
+  function renderMarket() {
+    Market.ensure();
+    var p = Market.price(), ch = Market.change();
+    var pEl = $("#nepPrice");
+    if (pEl) pEl.textContent = Market.fmt(p);
+    var cEl = $("#nepChange");
+    if (cEl) {
+      cEl.className = "stock-change " + (ch >= 0 ? "grn" : "red");
+      cEl.textContent = (ch >= 0 ? "\u25b2 +" : "\u25bc ") + ch.toFixed(1) + "%";
+    }
+    var set = function (id, v) { var e = $("#" + id); if (e) e.textContent = v; };
+    set("nepHigh", Market.fmt(Market.high()));
+    set("nepLow", Market.fmt(Market.low()));
+    set("nepVol", String(Market.volume()));
+    var spark = $("#nepSpark");
+    if (spark) {
+      var pts = Market.last48(), n = pts.length;
+      var mn = Math.min.apply(null, pts), mx = Math.max.apply(null, pts), rg = (mx - mn) || 1;
+      var poly = "", i;
+      for (i = 0; i < n; i++) {
+        poly += (i === 0 ? "" : " ") + ((i / (n - 1)) * 200).toFixed(1) + "," + (52 - ((pts[i] - mn) / rg) * 44).toFixed(1);
+      }
+      spark.setAttribute("points", poly);
+      var dot = $("#nepDot");
+      if (dot) dot.setAttribute("cy", (52 - ((pts[n - 1] - mn) / rg) * 44).toFixed(1));
+    }
+    var t = $("#tickNep");
+    if (t) t.textContent = "NEPT " + Market.fmt(p) + " " + (ch >= 0 ? "\u25b2 +" : "\u25bc ") + ch.toFixed(1) + "%  \u2022  ";
+  }
+
   /* ---------------- views ---------------- */
 
   var stage = $("#stage");
@@ -304,24 +392,27 @@
 
   function buildViews() {
     var html = "";
+    var simple = state.simple;
 
     html += '<section class="view" data-view="home" role="tabpanel">' +
       '<div class="hero">' +
         '<span class="hero-kicker">THE WEBRING</span>' +
         '<h2 class="hero-title">NEPTUNE<br>PRODUCTIONS</h2>' +
-        '<p class="hero-sub">A publicly traded company, allegedly — symbol NEPT, board of directors: a toaster, disenfranchisement: ongoing. Every corner of this hallway is a different website wearing different clothes. Hover the left edge (or tap the dots) to navigate, and click the logo, top-left, for quick settings. Or just pick a program below and let the whole site become it.</p>' +
+        (simple
+          ? '<p class="hero-sub">Pick a program. The whole site becomes it. Nothing else here, allegedly.</p>'
+          : '<p class="hero-sub">A publicly traded company, allegedly — symbol NEPT, board of directors: a toaster, disenfranchisement: ongoing. Every corner of this hallway is a different website wearing different clothes. Hover the left edge (or tap the dots) to navigate, and click the logo, top-left, for quick settings. Or just pick a program below and let the whole site become it.</p>') +
       '</div>' +
       '<h3 class="section-title">THE PROGRAMS</h3>' +
       '<p class="section-tag">each one is a different aesthetic, a different room, a different promise — and, allegedly, a product line.</p>' +
       '<div class="webring" id="homeGrid"></div>' +
-      '<h3 class="section-title">NEWS FROM THE HALLWAY</h3>' +
-      '<p class="section-tag">short dispatches, plus a full broadcast in the newsroom. the markets are not doing well.</p>' +
+      '<h3 class="section-title">' + (simple ? "UPDATES" : "NEWS FROM THE HALLWAY") + '</h3>' +
+      '<p class="section-tag">' + (simple ? "the essentials, briefly." : "short dispatches, plus a full broadcast in the newsroom. the markets are not doing well.") + '</p>' +
       '<div class="news">' +
         HOME_NEWS.map(function (n) {
           return '<div class="nitem"><b>' + n[0] + '</b><p>' + n[1] + '</p></div>';
         }).join("") +
       '</div>' +
-      '<button class="pv-launch news-go" id="newsGo" type="button">OPEN THE NEWSROOM \u25b8</button>' +
+      (simple ? "" : '<button class="pv-launch news-go" id="newsGo" type="button">OPEN THE NEWSROOM \u25b8</button>') +
     '</section>';
 
     Object.keys(PROJECTS).forEach(function (k) {
@@ -353,13 +444,22 @@
       '</section>';
     });
 
-    html += buildNewsView();
-    html += buildInvestView();
-    html += buildContactView();
+    if (!simple) {
+      html += buildNewsView();
+      html += buildInvestView();
+      html += buildContactView();
+      html += buildForumView();
+      html += buildPreviewsView();
+    }
 
     stage.innerHTML = html;
 
-    $$(".view", stage).forEach(function (v) { views[v.getAttribute("data-view")] = v; });
+    $$(".view", stage).forEach(function (v) {
+      views[v.getAttribute("data-view")] = v;
+      Array.prototype.forEach.call(v.children, function (c, i) {
+        c.style.setProperty("--ed", (i * 0.06) + "s");
+      });
+    });
 
     var grid = $("#homeGrid");
     grid.innerHTML = Object.keys(PROJECTS).map(function (k) {
@@ -382,7 +482,8 @@
       b.addEventListener("click", function () { launch(b.getAttribute("data-launch")); });
     });
 
-    $("#newsGo").addEventListener("click", function () { SFX.click(); setView("news"); });
+    var newsGo = $("#newsGo");
+    if (newsGo) newsGo.addEventListener("click", function () { SFX.click(); setView("news"); });
 
     var newsNav = $(".news-nav", stage);
     if (newsNav) {
@@ -397,10 +498,15 @@
         SFX.click();
       });
     }
+
+    bindForum();
+    bindPreviews();
+
+    renderMarket();
   }
 
   function buildNewsView() {
-    var tickerText = "NEPT 0.00 \u25bc 400%  \u2022  annual report: a sandwich  \u2022  board of directors: a toaster  \u2022  disenfranchisement: ongoing  \u2022  " + NEWS.map(function (n) { return n.title; }).join("  \u2022  ") + "  \u2022  the hallway continues to hallway  \u2022  ";
+    var tickerText = NEWS.map(function (n) { return n.title; }).join("  \u2022  ") + "  \u2022  the hallway continues to hallway  \u2022  ";
     var html = '<section class="view" data-view="news" role="tabpanel">' +
       '<div class="news-masthead">' +
         '<span class="news-logo">NEPTUNE <b>NEWS</b></span>' +
@@ -411,9 +517,9 @@
       }).join("") + '</div>' +
       '<div class="ticker">' +
         '<span class="tick-live"><i class="live-dot"></i>LIVE</span>' +
-        '<div class="tick-track"><span class="tt">' + tickerText + '</span></div>' +
+        '<div class="tick-track"><span class="tt"><span class="tick-nep" id="tickNep"></span>' + tickerText + '</span></div>' +
       '</div>' +
-      '<div class="breaking">BREAKING \u2014 the annual report is a sandwich and NEPT is down 400%. more at eleven, or whenever the beep says so.</div>' +
+      '<div class="breaking">BREAKING \u2014 the annual report is a sandwich and NEPT is down. more at eleven, or whenever the beep says so.</div>' +
       '<div class="news-feature">' +
         '<div class="nf-body">' +
           '<span class="ncat">' + NEWS[0].cat + '</span>' +
@@ -440,15 +546,15 @@
         '<p>THE HOLDINGS OF THE HALLWAY. SYMBOL: NEPT. NOTHING IS CONFIRMED. EVERYTHING IS FILED.</p>' +
       '</div>' +
       win("nep", "NEPT \u2014 daily", '<div class="stock">' +
-        '<div class="stock-price"><b>0.00</b><span>NEPT</span></div>' +
-        '<div class="stock-change red">\u25bc -400.00% (-0.00)</div>' +
+        '<div class="stock-price"><b id="nepPrice">\u2014</b><span><i class="stock-live"></i>NEPT</span></div>' +
+        '<div class="stock-change red" id="nepChange">\u2014</div>' +
         '<div class="stock-facts">' +
-          '<span>VOLUME <b>1 (the orb)</b></span>' +
-          '<span>HIGH <b>once</b></span>' +
-          '<span>LOW <b>always</b></span>' +
-          '<span>CEILING <b>the hallway</b></span>' +
+          '<span>VOLUME <b id="nepVol">\u2014</b></span>' +
+          '<span>HIGH <b id="nepHigh">\u2014</b></span>' +
+          '<span>LOW <b id="nepLow">\u2014</b></span>' +
+          '<span>OPEN <b id="nepOpen">\u2014</b></span>' +
         '</div>' +
-        '<div class="spark"><svg viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true"><polyline points="2,8 26,20 46,14 70,30 92,24 116,40 138,34 160,48 180,44 198,56"/></svg></div>' +
+        '<div class="spark"><svg viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true"><polyline id="nepSpark" points=""/><circle id="nepDot" class="spark-dot" cx="200" cy="30" r="3"/></svg></div>' +
       '</div>') +
       win("nep", "latest filings (the paper bag)", '<ul class="filing-list">' + FILINGS.map(function (f) {
         return '<li><b>' + f[0] + '</b><span>' + f[1] + '</span></li>';
@@ -484,17 +590,252 @@
     return html;
   }
 
+  /* ---------------- forum ---------------- */
+
+  var TOPIC = "nepub/chat";
+  var forumState = { name: "", msgs: [], client: null, ready: false };
+  try { forumState.name = localStorage.getItem("hub_name") || ""; } catch (e) {}
+
+  var forumRendered = false;
+  var forumMsgsEl = null;
+  var forumStatusEl = null;
+  var forumNameEl = null;
+  var forumMsgEl = null;
+
+  function buildForumView() {
+    var html = '<section class="view" data-view="forum" role="tabpanel">' +
+      '<div class="forum-head">' +
+        '<h2 class="forum-title">THE FORUM</h2>' +
+        '<p>THE HALLWAY\u2019S PUBLIC BENCH. A USERNAME AND YOU ARE IN. THAT\u2019S THE WHOLE CONTRACT.</p>' +
+      '</div>' +
+      win("chat", "the forum, allegedly public", '<div class="forum">' +
+        '<div class="forum-name">' +
+          '<input id="forumName" type="text" maxlength="24" placeholder="username" value="' + esc(forumState.name) + '" aria-label="username">' +
+          '<button id="forumJoin" class="pv-launch" type="button">THAT\u2019S ME</button>' +
+        '</div>' +
+        '<div class="forum-status" id="forumStatus">the phone line is being installed\u2026</div>' +
+        '<div class="forum-msgs" id="forumMsgs" aria-live="polite"></div>' +
+        '<div class="forum-send">' +
+          '<input id="forumMsg" type="text" maxlength="280" placeholder="message the hallway" aria-label="message">' +
+          '<button id="forumSend" type="button">SEND</button>' +
+        '</div>' +
+      '</div>') +
+      '<p class="news-note">messages go to a public rooftop. do not say anything you would not say to a pigeon with a notepad. the pigeon is on strike but it still hears everything.</p>' +
+    '</section>';
+    return html;
+  }
+
+  function setForumStatus(text, live) {
+    if (!forumStatusEl) return;
+    forumStatusEl.textContent = text;
+    forumStatusEl.className = "forum-status" + (live ? " live" : "");
+  }
+
+  function forumConnect() {
+    if (forumState.client) return;
+    if (!window.mqtt) {
+      setForumStatus("the phone line is still being installed\u2026");
+      setTimeout(forumConnect, 2500);
+      return;
+    }
+    setForumStatus("connecting to the hallway\u2026");
+    var client;
+    try {
+      client = window.mqtt.connect("wss://broker.emqx.io:8084/mqtt", { clientId: "nephub_" + Math.random().toString(16).slice(2, 10) });
+    } catch (e) {
+      setForumStatus("the phone line is down. try again in a moment.");
+      return;
+    }
+    forumState.client = client;
+    client.on("connect", function () {
+      forumState.ready = true;
+      setForumStatus("LIVE \u2014 connected. say hello.", true);
+      client.subscribe(TOPIC);
+    });
+    client.on("message", function (t, m) { forumIncoming(m.toString()); });
+    client.on("close", function () {
+      forumState.ready = false;
+      forumState.client = null;
+      setForumStatus("the hallway went quiet \u2014 reconnecting\u2026");
+      setTimeout(forumConnect, 4000);
+    });
+    client.on("error", function () {
+      setForumStatus("the hallway is busy. standing by.");
+    });
+  }
+
+  function forumIncoming(raw) {
+    var d;
+    try { d = JSON.parse(raw); } catch (e) { return; }
+    if (!d || typeof d.u !== "string" || typeof d.m !== "string") return;
+    if (!d.t) d.t = Date.now();
+    forumState.msgs.push(d);
+    if (forumState.msgs.length > 80) forumState.msgs.shift();
+    if (forumRendered && forumMsgsEl) {
+      appendMsg(d, false);
+      if (d.u !== (forumState.name || "anonymous")) SFX.chat();
+    }
+  }
+
+  function appendMsg(d, mine) {
+    var el = document.createElement("div");
+    el.className = "chat-msg" + (mine ? " me" : "");
+    var when = "";
+    try { when = new Date(d.t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); } catch (e) {}
+    el.innerHTML = '<b>' + esc(d.u || "anonymous") + '</b><span class="t">' + when + '</span><p>' + esc(d.m) + '</p>';
+    forumMsgsEl.appendChild(el);
+    forumMsgsEl.scrollTop = forumMsgsEl.scrollHeight;
+    if (forumMsgsEl.children.length > 80) forumMsgsEl.removeChild(forumMsgsEl.firstChild);
+  }
+
+  function forumSend() {
+    var m = forumMsgEl.value.trim();
+    if (!m) return;
+    var name = forumState.name.trim() || "anonymous";
+    forumState.name = name;
+    try { localStorage.setItem("hub_name", name); } catch (e) {}
+    forumMsgEl.value = "";
+    var d = { u: name, m: m, t: Date.now() };
+    forumState.msgs.push(d);
+    appendMsg(d, true);
+    SFX.select("dropchat");
+    if (forumState.ready && forumState.client) {
+      forumState.client.publish(TOPIC, JSON.stringify(d), { qos: 0 });
+    }
+  }
+
+  function bindForum() {
+    forumMsgsEl = $("#forumMsgs");
+    forumStatusEl = $("#forumStatus");
+    forumNameEl = $("#forumName");
+    forumMsgEl = $("#forumMsg");
+    forumRendered = !!forumMsgsEl;
+    if (!forumRendered) return;
+
+    forumState.msgs.forEach(function (d) { appendMsg(d, false); });
+
+    $("#forumJoin").addEventListener("click", function () {
+      var v = forumNameEl.value.trim().slice(0, 24);
+      if (!v) v = "anonymous";
+      forumState.name = v;
+      try { localStorage.setItem("hub_name", v); } catch (e) {}
+      setForumStatus("talking as " + v, forumState.ready);
+      forumMsgEl.focus();
+      SFX.click();
+    });
+    $("#forumSend").addEventListener("click", function () { forumSend(); });
+    forumMsgEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); forumSend(); }
+    });
+    forumNameEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); $("#forumJoin").click(); }
+    });
+    forumConnect();
+  }
+
+  /* ---------------- previews ---------------- */
+
+  var previewKey = "tqg";
+
+  function buildPreviewsView() {
+    var html = '<section class="view" data-view="previews" role="tabpanel">' +
+      '<div class="pv-head">' +
+        '<div><h2 class="preview-title">PREVIEWS</h2>' +
+        '<p class="pv-tag">step inside each program without leaving the hallway. pick a program, look around, and launch when you are ready.</p></div>' +
+      '</div>' +
+      '<div class="preview-pick" id="previewPick">' +
+        Object.keys(PROJECTS).map(function (k) {
+          return '<button class="ppick' + (k === previewKey ? " active" : "") + '" type="button" data-pp="' + k + '">' + svgIcon(k, "") + '<span>' + PROJECTS[k].name + '</span></button>';
+        }).join("") +
+      '</div>' +
+      '<div class="pv-card preview-card">' +
+        '<div class="win-bar"><i class="w-r"></i><i class="w-y"></i><i class="w-g"></i><span id="previewTitle">' + PROJECTS[previewKey].name + '</span></div>' +
+        '<div class="preview-body"><iframe id="previewFrame" src="' + PROJECTS[previewKey].url + '" title="project preview"></iframe></div>' +
+        '<div class="preview-actions"><button class="pv-launch" id="previewOpen" type="button">OPEN FULL \u2197</button></div>' +
+      '</div>' +
+    '</section>';
+    return html;
+  }
+
+  function bindPreviews() {
+    var pick = $("#previewPick");
+    if (!pick) return;
+    var frame = $("#previewFrame");
+    var title = $("#previewTitle");
+    var open = $("#previewOpen");
+    pick.addEventListener("click", function (e) {
+      var b = e.target.closest(".ppick");
+      if (!b) return;
+      var k = b.getAttribute("data-pp");
+      if (k === previewKey) return;
+      previewKey = k;
+      $$(".ppick", pick).forEach(function (x) { x.classList.toggle("active", x.getAttribute("data-pp") === k); });
+      if (title) title.textContent = PROJECTS[k].name;
+      if (frame) frame.setAttribute("src", PROJECTS[k].url);
+      SFX.select(k);
+    });
+    if (open) {
+      open.addEventListener("click", function () {
+        var p = PROJECTS[previewKey];
+        if (!p) return;
+        SFX.click();
+        window.open(p.url, "_blank", "noopener");
+      });
+    }
+  }
+
   function factCell(label, val) {
     return '<div class="pcell"><span>' + label + '</span><b>' + val + '</b></div>';
   }
 
+  /* ---------------- entrance: slide + type ---------------- */
+
+  var TYPABLE = ".hero-kicker,.hero-title,.section-title,.pv-name,.news-logo,.inv-head h2,.contact-head h2,.forum-title,.preview-title";
+
+  function typeEl(el, done) {
+    var chars = el.innerHTML.replace(/<br\s*\/?>/gi, "\u2028").replace(/<[^>]+>/g, "");
+    el.innerHTML = "";
+    var i = 0;
+    var iv = setInterval(function () {
+      var ch = chars.charAt(i);
+      if (ch === "\u2028") el.innerHTML += "<br>";
+      else el.innerHTML += esc(ch);
+      i++;
+      if (i >= chars.length) { clearInterval(iv); if (done) done(); }
+    }, 22);
+  }
+
+  function typeHeadings(scope) {
+    if (root.classList.contains("rm")) return;
+    var els = $$(TYPABLE, scope);
+    var i = 0;
+    function next() {
+      while (i < els.length && els[i].getAttribute("data-typed")) i++;
+      if (i >= els.length) return;
+      var el = els[i];
+      el.setAttribute("data-typed", "1");
+      typeEl(el, function () { setTimeout(next, 180); });
+    }
+    next();
+  }
+
   function setView(k) {
     if (state.view === k) return;
+    var old = state.view;
     state.view = k;
+    if (old && views[old]) views[old].classList.remove("entered");
     Object.keys(views).forEach(function (v) { views[v].classList.toggle("active", v === k); });
     updateRail();
     if (PROJECTS[k]) loadStats(k);
     applyTheme();
+    if (k === "forum") forumConnect();
+    var v = views[k];
+    if (v) {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { v.classList.add("entered"); });
+      });
+      typeHeadings(v);
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -504,11 +845,16 @@
   var railList = $("#railList");
 
   function buildRail() {
-    var html = '<button class="r-item" type="button" data-view="home">' + svgIcon("home", "") + '<b>HOME</b></button>' +
-      '<button class="r-item" type="button" data-view="news">' + svgIcon("news", "") + '<b>NEWS</b></button>' +
-      '<button class="r-item" type="button" data-view="investors">' + svgIcon("chart", "") + '<b>INVESTORS</b></button>' +
-      '<button class="r-item" type="button" data-view="contact">' + svgIcon("contact", "") + '<b>CONTACT</b></button>' +
-      '<span class="r-sep"></span>';
+    var simple = state.simple;
+    var html = '<button class="r-item" type="button" data-view="home">' + svgIcon("home", "") + '<b>HOME</b></button>';
+    if (!simple) {
+      html += '<button class="r-item" type="button" data-view="news">' + svgIcon("news", "") + '<b>NEWS</b></button>' +
+        '<button class="r-item" type="button" data-view="investors">' + svgIcon("chart", "") + '<b>INVESTORS</b></button>' +
+        '<button class="r-item" type="button" data-view="forum">' + svgIcon("chat", "") + '<b>FORUM</b></button>' +
+        '<button class="r-item" type="button" data-view="previews">' + svgIcon("neptuneos", "") + '<b>PREVIEWS</b></button>' +
+        '<button class="r-item" type="button" data-view="contact">' + svgIcon("contact", "") + '<b>CONTACT</b></button>';
+    }
+    html += '<span class="r-sep"></span>';
     Object.keys(PROJECTS).forEach(function (k) {
       var p = PROJECTS[k];
       html += '<button class="r-item" type="button" data-view="' + k + '">' + svgIcon(k, "") + '<b>' + p.name + '</b></button>';
@@ -576,7 +922,7 @@
   }
 
   function toggleSwitch(id, kind) {
-    var checked = kind === "match" ? state.match : kind === "sound" ? SFX.isEnabled() : root.classList.contains("rm");
+    var checked = kind === "match" ? state.match : kind === "sound" ? SFX.isEnabled() : kind === "simple" ? state.simple : root.classList.contains("rm");
     return '<label class="ctl ctl-toggle"><input type="checkbox" id="' + id + '" ' + (checked ? "checked" : "") + '><span class="ctl-box" aria-hidden="true"></span></label>';
   }
 
@@ -596,6 +942,7 @@
         '<h3 class="set-section-title">OPTIONS</h3>' +
         '<div class="set-row"><span>MATCH PROJECT<small>each program restyles the whole site while you are in its tab</small></span>' + toggleSwitch("setMatch", "match") + '</div>' +
         '<div class="set-row"><span>SOUND<small>sfx for clicks, tabs, themes, launches and everything in between</small></span>' + toggleSwitch("setSound", "sound") + '</div>' +
+        '<div class="set-row"><span>SIMPLE MODE<small>just the programs and the updates. no broadcast, no markets, no forum, no previews</small></span>' + toggleSwitch("setSimple", "simple") + '</div>' +
         '<div class="set-row"><span>REDUCED MOTION<small>calm the animations, transitions and drift</small></span>' + toggleSwitch("setRm", "rm") + '</div>' +
       '</div>';
 
@@ -608,6 +955,14 @@
     });
     $("#setSound").addEventListener("change", function (e) {
       SFX.setEnabled(e.target.checked);
+      if (e.target.checked) SFX.toggleOn(); else SFX.toggleOff();
+    });
+    $("#setSimple").addEventListener("change", function (e) {
+      state.simple = e.target.checked;
+      try { localStorage.setItem("hub_simple", state.simple ? "on" : "off"); } catch (err) {}
+      root.classList.toggle("simple", state.simple);
+      rebuildViews();
+      closeSettings();
       if (e.target.checked) SFX.toggleOn(); else SFX.toggleOff();
     });
     $("#setRm").addEventListener("change", function (e) {
@@ -667,6 +1022,16 @@
     if (e.target === settingsOverlay) closeSettings();
   });
 
+  function rebuildViews() {
+    state.view = null;
+    views = {};
+    stage.innerHTML = "";
+    buildViews();
+    buildRail();
+    updateRail();
+    setView("home");
+  }
+
   /* ---------------- onboarding toast ---------------- */
 
   var toast = $("#toast");
@@ -676,10 +1041,9 @@
     var done = false;
     try { done = localStorage.getItem("hub_intro_v2") === "1"; } catch (e) {}
     if (done) return;
-    var touch = touchDevice;
-    toastBody.innerHTML = touch
+    toastBody.innerHTML = touchDevice
       ? 'This is the webring. Tap the <b>dots on the left edge</b> to navigate between programs \u2014 the top-right nav has been disenfranchised like the rest of the shareholders. Click the <b>logo</b>, top-left, for quick settings.'
-      : 'This is the webring. Move your cursor to the <b>left edge</b> (or the dots) to navigate between programs \u2014 the top-right nav has been disenfranchised like the rest of the shareholders. Click the <b>logo</b>, top-left, for quick settings.';
+      : 'This is the webring. Move your cursor to the <b>left edge</b> to navigate between programs \u2014 the top-right nav has been disenfranchised like the rest of the shareholders. Click the <b>logo</b>, top-left, for quick settings.';
     setTimeout(function () { toast.classList.add("open"); toast.setAttribute("aria-hidden", "false"); }, 900);
     setTimeout(dismissToast, 10000);
   }
@@ -774,7 +1138,7 @@
 
   function swapPieces() {
     return {
-      tqg: '<canvas class="sw-cv"></canvas><div class="sw-crt"></div><span class="sw-pct">0%</span><span class="sw-line">IT KNOWS YOU CLICKED</span>',
+      tqg: '<canvas class="sw-cv"></canvas><div class="sw-crt"></div><div class="sw-tear"></div><div class="sw-tty"><span class="sw-tty-pct">0%</span><span class="sw-tty-lines"></span><span class="sw-blk"></span></div>',
       tst: '<div class="sw-drive"><span class="sw-disk"><b>1.44 MB</b><i></i></span><span class="sw-led"></span></div><span class="sw-caption">IT BOOTS ITSELF</span>',
       normidian: '<div class="sw-parch"><span class="sw-old">the wolf</span><span class="sw-rune">\u01bfulf</span></div>',
       dos: '<div class="sw-term"><div class="sw-term-bar">NEPTUNE-DOS</div><div class="sw-term-body"><span class="sw-tl">Neptune-DOS 13.2</span><span class="sw-tl">Copyright 1987 (allegedly)</span><span class="sw-tl">640K OK</span><span class="sw-tl">C:\\NEPTUNE32&gt;<b>boot</b><span class="sw-cur">\u2588</span></span></div></div>',
@@ -822,13 +1186,31 @@
         ctx.putImageData(img, 0, 0);
       }, 60);
     }
+    var out = $(".sw-tty-lines", swapPiece);
+    var lines = ["IT KNOWS YOU CLICKED.", "YOU WERE EXPECTED.", "DO NOT CLOSE THE WINDOW.", "LOADING."];
     var start = performance.now();
     swapPctTimer = setTimeout(function tick() {
       var pct = Math.min(100, Math.round(((performance.now() - start) / 2300) * 100));
-      var el = $(".sw-pct", swapPiece);
+      var el = $(".sw-tty-pct", swapPiece);
       if (el) el.textContent = pct + "%";
       if (pct < 100) swapPctTimer = setTimeout(tick, 90);
     }, 90);
+    if (!out) return;
+    var li = 0, ci = 0;
+    function typeLine() {
+      if (li >= lines.length) return;
+      var line = lines[li];
+      if (ci <= line.length) {
+        out.textContent = line.slice(0, ci) + "\u2588";
+        ci++;
+        swapIv = setTimeout(typeLine, 22);
+      } else {
+        out.textContent = line;
+        li++; ci = 0;
+        swapIv = setTimeout(typeLine, 380);
+      }
+    }
+    typeLine();
   }
 
   function swapClose() {
@@ -837,7 +1219,7 @@
     swap.setAttribute("aria-hidden", "true");
     swapPiece.innerHTML = "";
     clearTimeout(swapTimer);
-    if (swapIv) { clearInterval(swapIv); swapIv = null; }
+    if (swapIv) { clearTimeout(swapIv); swapIv = null; }
     if (swapPctTimer) { clearTimeout(swapPctTimer); swapPctTimer = null; }
   }
 
@@ -868,7 +1250,7 @@
     document.addEventListener("mouseover", function (e) {
       var t = e.target;
       if (!t || !t.closest) return;
-      var isInter = !!t.closest("a,button,.wcard,[data-go],select,input,label,.tpreview,.r-item,.ctl,.ov-close,.set-row,.chip,.news-nav");
+      var isInter = !!t.closest("a,button,.wcard,[data-go],select,input,label,.tpreview,.r-item,.ctl,.ov-close,.set-row,.chip,.news-nav,.ppick");
       ring.classList.toggle("big", isInter);
       if (isInter) {
         var now = performance.now();
@@ -889,5 +1271,12 @@
   setView("home");
   initCursor();
   applyTheme();
+  renderMarket();
+  setInterval(renderMarket, 5000);
   maybeToast();
+
+  var brandNameEl = $(".brand-name");
+  if (brandNameEl && !root.classList.contains("rm")) {
+    typeEl(brandNameEl, null);
+  }
 })();

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="webring" data-match="on">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Neptune Productions — the webring. The Question Game, The Simpler Times, Normidian, NeptuneDOS, NeptuneOS, DropChat, SlowFuck Pro, Bakugo's Location. Pick a thing. The whole site becomes it.">
+  <meta name="theme-color" content="#8a2b2b">
+  <title>NEPTUNE PRODUCTIONS — HUB</title>
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("hub_theme");
+        if (t) document.documentElement.setAttribute("data-theme", t);
+        var m = localStorage.getItem("hub_match");
+        if (m === "off") document.documentElement.setAttribute("data-match", "off");
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="bgfx" aria-hidden="true"></div>
+
+  <header class="top">
+    <div class="brand">
+      <span class="brand-mark">NP</span>
+      <div class="brand-text">
+        <h1 class="brand-name">NEPTUNE PRODUCTIONS</h1>
+        <p class="brand-tag">a webring of small, terrible, beautiful things</p>
+      </div>
+    </div>
+    <div class="top-controls">
+      <label class="ctl">
+        <span class="ctl-label">THEME</span>
+        <select id="themeSelect" class="ctl-select">
+          <option value="webring">WEBRING</option>
+          <option value="dark">DARK</option>
+          <option value="neon">NEON</option>
+          <option value="paper">PAPER</option>
+        </select>
+      </label>
+      <label class="ctl ctl-toggle">
+        <input type="checkbox" id="matchTheme" checked>
+        <span class="ctl-box" aria-hidden="true"></span>
+        <span class="ctl-label">MATCH PROJECT</span>
+      </label>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="programs"></nav>
+
+  <main class="stage" id="stage"></main>
+
+  <footer class="foot">
+    <p>NEPTUNE PRODUCTIONS — est. 1987 (allegedly). every program is a different corner of the same hallway.</p>
+    <p class="foot-gh"><a href="https://github.com/notmicrosoft2000-cmd" target="_blank" rel="noopener">GITHUB ↗</a></p>
+  </footer>
+
+  <div class="swap" id="swap" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="swap-piece" id="swapPiece"></div>
+    <h2 class="swap-title" id="swapTitle"></h2>
+    <div class="swap-progress" id="swapProgress"><span></span></div>
+    <span class="swap-skip">ESC TO CANCEL</span>
+  </div>
+
+  <script src="js/hub.js"></script>
+</body>
+</html>

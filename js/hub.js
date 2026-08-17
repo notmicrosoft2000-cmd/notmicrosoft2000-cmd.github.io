@@ -597,6 +597,113 @@
     svg.innerHTML = svgContent;
   }
 
+  function renderHomeChart() {
+    var svg = $("#homeChart");
+    if (!svg) return;
+    var data = Market.getRange("1D");
+    var prices = data.prices;
+    if (!prices || prices.length < 2) return;
+    var n = prices.length;
+    var cs = getComputedStyle(root);
+    var cA = cs.getPropertyValue("--accent").trim() || "#8a2b2b";
+    var pts = [];
+    var mn = Math.min.apply(null, prices), mx = Math.max.apply(null, prices), rg = (mx - mn) || 1;
+    for (var i = 0; i < n; i++) {
+      var x = (i / (n - 1)) * 320;
+      var y = 4 + ((mx - prices[i]) / rg) * 72;
+      pts.push(x.toFixed(1) + "," + y.toFixed(1));
+    }
+    var areaPts = pts.concat(["320,80", "0,80"]);
+    var uid = "hc" + Date.now();
+    var last = prices[n - 1];
+    var svgContent =
+      '<defs><linearGradient id="' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0%" stop-color="' + cA + '" stop-opacity="0.3"/>' +
+        '<stop offset="100%" stop-color="' + cA + '" stop-opacity="0.02"/>' +
+      '</linearGradient></defs>' +
+      '<polygon points="' + areaPts.join(" ") + '" fill="url(#' + uid + ')"/>' +
+      '<polyline points="' + pts.join(" ") + '" fill="none" stroke="' + cA + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<circle cx="' + ((n - 1) / (n - 1) * 320).toFixed(1) + '" cy="' + (4 + ((mx - last) / rg) * 72).toFixed(1) + '" r="3" fill="' + cA + '"/>';
+    svg.innerHTML = svgContent;
+  }
+
+  function renderHomeTicker() {
+    var p = Market.price(), ch = Market.change();
+    var pe = $("#homePrice");
+    var ce = $("#homeChange");
+    if (pe) pe.textContent = "$" + Market.fmt(p);
+    if (ce) {
+      ce.textContent = (ch >= 0 ? "\u25b2 +" : "\u25bc ") + ch.toFixed(1) + "%";
+      ce.className = "home-ticker-chg " + (ch >= 0 ? "grn" : "red");
+    }
+    renderHomeChart();
+  }
+
+  function renderHomeUpdates() {
+    var el = $("#homeUpdates");
+    if (!el) return;
+    var updates = [];
+    Object.keys(PROJECTS).forEach(function (k) {
+      var p = PROJECTS[k];
+      var rel = localStorage.getItem("hub_repo_seen_" + p.repo);
+      var relText = rel ? "released " + rel : "active development";
+      updates.push({ key: k, name: p.name, text: relText, tag: p.tag });
+    });
+    el.innerHTML = '<div class="home-updates-title">RECENT ACTIVITY</div>' +
+      '<div class="home-updates-list">' + updates.slice(0, 4).map(function (u) {
+        return '<div class="home-update" data-go="' + u.key + '">' +
+          '<span class="home-update-icon">' + svgIcon(u.key, "") + '</span>' +
+          '<span class="home-update-info"><span class="home-update-name">' + esc(u.name) + '</span><span class="home-update-text">' + esc(u.text) + '</span></span>' +
+        '</div>';
+      }).join("") + '</div>';
+    $$(".home-update", el).forEach(function (u) {
+      u.addEventListener("click", function () {
+        var k = u.getAttribute("data-go");
+        setView(k);
+        SFX.select(k);
+      });
+    });
+  }
+
+  function initChartCrosshair() {
+    var wrap = $(".inv-chart-wrap");
+    if (!wrap) return;
+    var svg = $("#nepChart");
+    if (!svg) return;
+    var tip = document.createElement("div");
+    tip.className = "chart-tooltip";
+    wrap.style.position = "relative";
+    wrap.appendChild(tip);
+
+    svg.addEventListener("mousemove", function (e) {
+      var rect = svg.getBoundingClientRect();
+      var relX = e.clientX - rect.left;
+      var pct = relX / rect.width;
+      var range = chartRange;
+      var data = Market.getRange(range);
+      var prices = data.prices;
+      var volumes = data.volumes;
+      var labels = data.labels;
+      var n = prices.length;
+      var idx = Math.round(pct * (n - 1));
+      if (idx < 0) idx = 0;
+      if (idx >= n) idx = n - 1;
+      var price = prices[idx];
+      var vol = volumes[idx];
+      var lbl = labels[idx] || "";
+      tip.innerHTML = '<b>$' + Market.fmt(price) + '</b><span>' + lbl + ' \u2022 VOL ' + fmtNum(vol) + '</span>';
+      tip.classList.add("show");
+      var tipX = relX + 14;
+      if (tipX + 160 > rect.width) tipX = relX - 160;
+      tip.style.left = tipX + "px";
+      tip.style.top = "8px";
+    });
+
+    svg.addEventListener("mouseleave", function () {
+      tip.classList.remove("show");
+    });
+  }
+
   /* ---------------- views ---------------- */
 
   var stage = $("#stage");
@@ -610,7 +717,18 @@
       '<div class="hero">' +
         '<h2 class="hero-title">NEPTUNE<br>PRODUCTIONS</h2>' +
         '<p class="hero-sub">pick a program. the whole site becomes it.</p>' +
+        '<div class="home-search-wrap"><input class="home-search" id="homeSearch" type="text" placeholder="search programs..." autocomplete="off" spellcheck="false"/></div>' +
       '</div>' +
+      '<div class="home-ticker" id="homeTicker">' +
+        '<div class="home-ticker-head">' +
+          '<span class="home-ticker-label"><i class="stock-live"></i>NEPT</span>' +
+          '<span class="home-ticker-price" id="homePrice">\u2014</span>' +
+          '<span class="home-ticker-chg" id="homeChange">\u2014</span>' +
+          '<button class="home-ticker-go" type="button" data-go="investors">INVESTORS \u25b8</button>' +
+        '</div>' +
+        '<svg id="homeChart" class="home-chart" viewBox="0 0 320 80" preserveAspectRatio="none" aria-hidden="true"></svg>' +
+      '</div>' +
+      '<div class="home-updates" id="homeUpdates"></div>' +
       '<div class="webring" id="homeGrid"></div>' +
     '</section>';
 
@@ -704,6 +822,24 @@
     bindForum();
 
     renderMarket();
+    renderHomeTicker();
+    renderHomeUpdates();
+
+    var homeTickerBtn = $(".home-ticker-go");
+    if (homeTickerBtn) homeTickerBtn.addEventListener("click", function () { SFX.select("investors"); setView("investors"); });
+
+    var homeSearch = $("#homeSearch");
+    if (homeSearch) {
+      homeSearch.addEventListener("input", function () {
+        var q = homeSearch.value.toLowerCase().trim();
+        $$(".wcard", grid).forEach(function (c) {
+          var name = (c.getAttribute("data-go") || "").toLowerCase();
+          var p = PROJECTS[name];
+          var match = !q || (p && (p.name.toLowerCase().indexOf(q) !== -1 || p.tag.toLowerCase().indexOf(q) !== -1 || name.indexOf(q) !== -1));
+          c.classList.toggle("hide", !match);
+        });
+      });
+    }
   }
 
   function buildNewsView() {
@@ -1046,6 +1182,7 @@
     if (PROJECTS[k]) loadStats(k);
     applyTheme();
     if (k === "forum") forumConnect();
+    if (k === "investors") requestAnimationFrame(function () { renderChart(); });
     var v = views[k];
     if (v) {
       requestAnimationFrame(function () {
@@ -1553,6 +1690,8 @@
   applyTheme();
   renderMarket();
   setInterval(renderMarket, 5000);
+  setInterval(renderHomeTicker, 5000);
+  initChartCrosshair();
   maybeToast();
   maybeNotify();
 

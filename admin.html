@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>NEPT ADMIN \u2014 CONTROL PANEL</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; background: #0c0c14; color: #d4d4e0; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px; line-height: 1.65; padding: 0; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 24px 20px 60px; }
+    h1 { font-size: 28px; font-weight: 700; color: #7c8cf0; letter-spacing: .04em; margin-bottom: 4px; }
+    .sub { font-size: 11px; letter-spacing: .16em; color: #5a5a7a; margin-bottom: 32px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+    .card { background: #14141e; border: 1px solid #262638; border-radius: 10px; padding: 22px; }
+    .card h2 { font-size: 14px; font-weight: 700; color: #7c8cf0; letter-spacing: .1em; margin-bottom: 16px; border-bottom: 1px solid #262638; padding-bottom: 10px; }
+    label { display: block; font-size: 10px; letter-spacing: .16em; color: #5a5a7a; margin-bottom: 5px; margin-top: 14px; }
+    label:first-of-type { margin-top: 0; }
+    input, textarea, select { width: 100%; background: #0e0e18; border: 1px solid #2a2a3e; border-radius: 6px; padding: 10px 12px; color: #d4d4e0; font-family: inherit; font-size: 13px; outline: none; transition: border-color .2s; }
+    input:focus, textarea:focus, select:focus { border-color: #7c8cf0; }
+    textarea { min-height: 80px; resize: vertical; }
+    .row { display: flex; gap: 10px; }
+    .row > * { flex: 1; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; margin-top: 18px; padding: 10px 22px; background: #7c8cf0; color: #0c0c14; border: none; border-radius: 6px; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: .14em; cursor: pointer; transition: filter .2s, transform .15s; }
+    .btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn.red { background: #ff5c5c; }
+    .btn.green { background: #43d97a; }
+    .btn.full { width: 100%; }
+    .msg { margin-top: 14px; padding: 10px 14px; border-radius: 6px; font-size: 12px; display: none; }
+    .msg.ok { display: block; background: #122a18; border: 1px solid #2a5a34; color: #43d97a; }
+    .msg.err { display: block; background: #2a1214; border: 1px solid #5a2a2c; color: #ff5c5c; }
+    .preview { margin-top: 12px; padding: 10px; background: #0a0a12; border: 1px solid #1e1e2e; border-radius: 6px; font-size: 12px; color: #8a8ab0; }
+    .preview b { color: #7c8cf0; }
+    .news-list { max-height: 300px; overflow-y: auto; margin-top: 10px; }
+    .news-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px; border-bottom: 1px solid #1e1e2e; font-size: 12px; }
+    .news-item:last-child { border-bottom: 0; }
+    .news-item .ncat { flex: none; background: #7c8cf0; color: #0c0c14; font-size: 9px; font-weight: 700; letter-spacing: .12em; padding: 2px 6px; border-radius: 3px; }
+    .news-item .ntxt { flex: 1; }
+    .news-item .ntxt b { display: block; color: #d4d4e0; margin-bottom: 2px; }
+    .news-item .del { flex: none; background: none; border: none; color: #5a5a7a; cursor: pointer; font-size: 14px; }
+    .news-item .del:hover { color: #ff5c5c; }
+    .stock-live { padding: 16px; background: #0a0a12; border: 1px solid #1e1e2e; border-radius: 8px; margin-top: 12px; text-align: center; }
+    .stock-live .price { font-size: 36px; font-weight: 700; color: #43d97a; }
+    .stock-live .lbl { font-size: 10px; letter-spacing: .16em; color: #5a5a7a; margin-top: 4px; }
+    hr { border: none; border-top: 1px solid #262638; margin: 24px 0; }
+    .section-title { font-size: 16px; font-weight: 700; color: #d4d4e0; margin-bottom: 12px; }
+    a { color: #7c8cf0; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>NEPT ADMIN</h1>
+    <p class="sub">CONTROL PANEL \u2014 MODIFY STOCK, PUBLISH NEWS, MANAGE THE HALLWAY</p>
+
+    <div class="grid">
+      <div class="card">
+        <h2>STOCK OVERRIDE</h2>
+        <div class="stock-live">
+          <div class="lbl">CURRENT PRICE</div>
+          <div class="price" id="curPrice">auto</div>
+        </div>
+        <label>BASE PRICE (USD)</label>
+        <input type="number" id="admPrice" step="0.01" placeholder="leave empty for auto (seed-based)">
+        <div class="row">
+          <div>
+            <label>VOLUME OVERRIDE</label>
+            <input type="number" id="admVolume" step="1000" placeholder="leave empty for auto">
+          </div>
+          <div>
+            <label>VOLATILITY (0.01-0.1)</label>
+            <input type="number" id="admVolatility" step="0.001" min="0.005" max="0.15" placeholder="0.022">
+          </div>
+        </div>
+        <label>STOCK DIRECTION BIAS (-0.5 to 0.5)</label>
+        <input type="number" id="admBias" step="0.01" min="-0.5" max="0.5" placeholder="0 = neutral">
+        <div class="preview" id="stockPreview">preview: price will be auto-generated from date seed</div>
+        <button class="btn green" onclick="saveStock()">SAVE STOCK OVERRIDE</button>
+        <button class="btn red" onclick="clearStock()" style="margin-left:8px">CLEAR OVERRIDE</button>
+        <div class="msg" id="stockMsg"></div>
+      </div>
+
+      <div class="card">
+        <h2>PUBLISH NEWS</h2>
+        <label>CATEGORY</label>
+        <select id="newsCat">
+          <option>TOP</option>
+          <option>MARKETS</option>
+          <option>SCANDAL</option>
+          <option>TECH</option>
+          <option>LOCAL</option>
+          <option>TRAGEDY</option>
+        </select>
+        <label>TITLE</label>
+        <input type="text" id="newsTitle" maxlength="120" placeholder="headline goes here">
+        <label>BODY</label>
+        <textarea id="newsBody" maxlength="600" placeholder="the full story, allegedly"></textarea>
+        <button class="btn" onclick="publishNews()">PUBLISH</button>
+        <div class="msg" id="newsMsg"></div>
+        <hr>
+        <div class="section-title">PUBLISHED NEWS</div>
+        <div class="news-list" id="newsList"></div>
+        <button class="btn red full" onclick="clearNews()" style="margin-top:12px">CLEAR ALL CUSTOM NEWS</button>
+      </div>
+
+      <div class="card">
+        <h2>BREAKING BANNER</h2>
+        <label>CUSTOM BREAKING TEXT</label>
+        <textarea id="admBreaking" maxlength="200" placeholder="leave empty for auto (reacts to stock)"></textarea>
+        <button class="btn" onclick="saveBreaking()">SAVE</button>
+        <button class="btn red" onclick="clearBreaking()" style="margin-left:8px">CLEAR</button>
+        <div class="msg" id="breakingMsg"></div>
+      </div>
+
+      <div class="card">
+        <h2>STOCK TICKER OVERRIDE</h2>
+        <label>CUSTOM TICKER TEXT</label>
+        <input type="text" id="admTicker" maxlength="80" placeholder="leave empty for auto">
+        <button class="btn" onclick="saveTicker()">SAVE</button>
+        <button class="btn red" onclick="clearTicker()" style="margin-left:8px">CLEAR</button>
+        <div class="msg" id="tickerMsg"></div>
+      </div>
+
+      <div class="card">
+        <h2>SITE STATUS</h2>
+        <div class="preview">
+          <b>HUB:</b> <a href="https://notmicrosoft2000-cmd.github.io/" target="_blank">notmicrosoft2000-cmd.github.io</a><br>
+          <b>STOCK OVERRIDE:</b> <span id="statusStock">none</span><br>
+          <b>CUSTOM NEWS:</b> <span id="statusNews">0 items</span><br>
+          <b>BREAKING:</b> <span id="statusBreaking">auto</span><br>
+          <b>TICKER:</b> <span id="statusTicker">auto</span>
+        </div>
+        <button class="btn red full" onclick="clearAll()" style="margin-top:14px">CLEAR ALL OVERRIDES</button>
+      </div>
+
+      <div class="card">
+        <h2>QUICK ACTIONS</h2>
+        <button class="btn full" onclick="flashCrash()">FLASH CRASH (-40%)</button>
+        <button class="btn full green" onclick="moonShot()">MOON SHOT (+25%)</button>
+        <button class="btn full" onclick="sandwichScandal()" style="background:#ffb020;color:#0c0c14">SANDWICH SCANDAL</button>
+        <button class="btn full" onclick="orbEvent()" style="background:#4fa4ff;color:#0c0c14">ORB GLOW EVENT</button>
+        <button class="btn full red" onclick="pigeonStrike()" style="margin-top:4px">PIGEON STRIKE EMERGENCY</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function $(s) { return document.querySelector(s); }
+      function ls(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
+      function lsw(k, v) { try { localStorage.setItem(k, v); } catch(e) {} }
+
+      var stock = {};
+      try { stock = JSON.parse(ls("hub_adm_stock") || "{}"); } catch(e) {}
+      if (stock.price) $("#admPrice").value = stock.price;
+      if (stock.volume) $("#admVolume").value = stock.volume;
+      if (stock.volatility) $("#admVolatility").value = stock.volatility;
+      if (stock.bias) $("#admBias").value = stock.bias;
+
+      var breaking = ls("hub_adm_breaking") || "";
+      if (breaking) $("#admBreaking").value = breaking;
+      var ticker = ls("hub_adm_ticker") || "";
+      if (ticker) $("#admTicker").value = ticker;
+
+      updateStatus();
+
+      function show(el, type, msg) {
+        el.className = "msg " + type;
+        el.textContent = msg;
+        setTimeout(function () { el.className = "msg"; }, 3000);
+      }
+
+      window.saveStock = function () {
+        var p = $("#admPrice").value;
+        var v = $("#admVolume").value;
+        var vol = $("#admVolatility").value;
+        var b = $("#admBias").value;
+        var o = {};
+        if (p) o.price = parseFloat(p);
+        if (v) o.volume = parseInt(v, 10);
+        if (vol) o.volatility = parseFloat(vol);
+        if (b) o.bias = parseFloat(b);
+        if (Object.keys(o).length === 0) { show($("#stockMsg"), "err", "nothing to save"); return; }
+        lsw("hub_adm_stock", JSON.stringify(o));
+        lsw("hub_adm_stock_at", String(Date.now()));
+        show($("#stockMsg"), "ok", "stock override saved. hub will pick it up on next refresh.");
+        updateStatus();
+      };
+
+      window.clearStock = function () {
+        try { localStorage.removeItem("hub_adm_stock"); localStorage.removeItem("hub_adm_stock_at"); } catch(e) {}
+        $("#admPrice").value = "";
+        $("#admVolume").value = "";
+        $("#admVolatility").value = "";
+        $("#admBias").value = "";
+        show($("#stockMsg"), "ok", "stock override cleared.");
+        updateStatus();
+      };
+
+      window.publishNews = function () {
+        var cat = $("#newsCat").value;
+        var title = $("#newsTitle").value.trim();
+        var body = $("#newsBody").value.trim();
+        if (!title || !body) { show($("#newsMsg"), "err", "title and body required"); return; }
+        var items = [];
+        try { items = JSON.parse(ls("hub_adm_news") || "[]"); } catch(e) {}
+        items.unshift({ cat: cat, title: title, body: body, time: "just published" });
+        if (items.length > 20) items = items.slice(0, 20);
+        lsw("hub_adm_news", JSON.stringify(items));
+        $("#newsTitle").value = "";
+        $("#newsBody").value = "";
+        show($("#newsMsg"), "ok", "news published. " + items.length + " custom items total.");
+        renderNewsList();
+        updateStatus();
+      };
+
+      window.clearNews = function () {
+        try { localStorage.removeItem("hub_adm_news"); } catch(e) {}
+        show($("#newsMsg"), "ok", "all custom news cleared.");
+        renderNewsList();
+        updateStatus();
+      };
+
+      window.saveBreaking = function () {
+        var t = $("#admBreaking").value.trim();
+        if (t) { lsw("hub_adm_breaking", t); show($("#breakingMsg"), "ok", "breaking banner saved."); }
+        else { show($("#breakingMsg"), "err", "enter some text first"); }
+        updateStatus();
+      };
+      window.clearBreaking = function () {
+        try { localStorage.removeItem("hub_adm_breaking"); } catch(e) {}
+        $("#admBreaking").value = "";
+        show($("#breakingMsg"), "ok", "breaking override cleared.");
+        updateStatus();
+      };
+      window.saveTicker = function () {
+        var t = $("#admTicker").value.trim();
+        if (t) { lsw("hub_adm_ticker", t); show($("#tickerMsg"), "ok", "ticker override saved."); }
+        else { show($("#tickerMsg"), "err", "enter some text first"); }
+        updateStatus();
+      };
+      window.clearTicker = function () {
+        try { localStorage.removeItem("hub_adm_ticker"); } catch(e) {}
+        $("#admTicker").value = "";
+        show($("#tickerMsg"), "ok", "ticker override cleared.");
+        updateStatus();
+      };
+
+      window.clearAll = function () {
+        ["hub_adm_stock","hub_adm_stock_at","hub_adm_news","hub_adm_breaking","hub_adm_ticker"].forEach(function(k) {
+          try { localStorage.removeItem(k); } catch(e) {}
+        });
+        location.reload();
+      };
+
+      function renderNewsList() {
+        var items = [];
+        try { items = JSON.parse(ls("hub_adm_news") || "[]"); } catch(e) {}
+        var el = $("#newsList");
+        if (!items.length) { el.innerHTML = '<div style="padding:10px;color:#5a5a7a">no custom news published yet</div>'; return; }
+        el.innerHTML = items.map(function (n, i) {
+          return '<div class="news-item"><span class="ncat">' + n.cat + '</span><div class="ntxt"><b>' + n.title + '</b>' + n.body.slice(0, 100) + (n.body.length > 100 ? "..." : "") + '</div><button class="del" data-i="' + i + '">\u00d7</button></div>';
+        }).join("");
+        el.querySelectorAll(".del").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var idx = parseInt(btn.getAttribute("data-i"), 10);
+            items.splice(idx, 1);
+            lsw("hub_adm_news", JSON.stringify(items));
+            renderNewsList();
+            updateStatus();
+          });
+        });
+      }
+      renderNewsList();
+
+      function updateStatus() {
+        var s = {};
+        try { s = JSON.parse(ls("hub_adm_stock") || "{}"); } catch(e) {}
+        var sn = $("#statusStock");
+        if (s.price || s.volume || s.volatility || s.bias) {
+          var parts = [];
+          if (s.price) parts.push("$" + s.price);
+          if (s.volume) parts.push("vol:" + s.volume);
+          if (s.volatility) parts.push("volatility:" + s.volatility);
+          if (s.bias) parts.push("bias:" + s.bias);
+          sn.textContent = parts.join(", ");
+          sn.style.color = "#43d97a";
+        } else { sn.textContent = "none"; sn.style.color = "#5a5a7a"; }
+
+        var news = [];
+        try { news = JSON.parse(ls("hub_adm_news") || "[]"); } catch(e) {}
+        var nn = $("#statusNews");
+        nn.textContent = news.length + " items";
+        nn.style.color = news.length ? "#43d97a" : "#5a5a7a";
+
+        var brk = ls("hub_adm_breaking") || "";
+        var bn = $("#statusBreaking");
+        bn.textContent = brk ? "custom" : "auto";
+        bn.style.color = brk ? "#ffb020" : "#5a5a7a";
+
+        var tik = ls("hub_adm_ticker") || "";
+        var tn = $("#statusTicker");
+        tn.textContent = tik ? "custom" : "auto";
+        tn.style.color = tik ? "#ffb020" : "#5a5a7a";
+      }
+
+      window.flashCrash = function () {
+        lsw("hub_adm_stock", JSON.stringify({ price: 28.70, bias: -0.48, volatility: 0.09 }));
+        lsw("hub_adm_stock_at", String(Date.now()));
+        lsw("hub_adm_breaking", "FLASH CRASH \u2014 NEPT plummets 40% in 3 minutes. the toaster has left the building. the orb is flickering.");
+        lsw("hub_adm_ticker", "NEPT FLASH CRASH \u2022 circuit breakers engaged \u2022 the pigeon is airborne");
+        var items = [];
+        try { items = JSON.parse(ls("hub_adm_news") || "[]"); } catch(e) {}
+        items.unshift({ cat: "TOP", title: "FLASH CRASH: NEPT drops 40% in three minutes, nobody knows why, the toaster is missing", body: "Trading was halted after NEPT shares fell from $47 to $28 in under three minutes. The toaster, serving as interim CFO, was last seen leaving the building at high speed. The orb has begun flickering, which analysts describe as 'deeply concerning.' The pigeon has been deployed. The pigeon does not understand the situation.", time: "just now" });
+        lsw("hub_adm_news", JSON.stringify(items));
+        show($("#stockMsg"), "ok", "flash crash triggered. NEPT at $28.70.");
+        renderNewsList();
+        updateStatus();
+      };
+
+      window.moonShot = function () {
+        lsw("hub_adm_stock", JSON.stringify({ price: 59.79, bias: 0.45, volatility: 0.06 }));
+        lsw("hub_adm_stock_at", String(Date.now()));
+        lsw("hub_adm_breaking", "MOON SHOT \u2014 NEPT surges 25% after orb classified as infrastructure. analysts upgrade to 'hmm indeed.'");
+        lsw("hub_adm_ticker", "NEPT MOON \u2022 +25% \u2022 the orb has been declared critical infrastructure");
+        var items = [];
+        try { items = JSON.parse(ls("hub_adm_news") || "[]"); } catch(e) {}
+        items.unshift({ cat: "MARKETS", title: "NEPT surges 25% after government declares the orb 'critical national infrastructure'", body: "In a stunning turn of events, the orb's continuous glow has been reclassified from 'unexplained' to 'essential service.' Federal funding has been allocated. The stock is up 25%. The toaster has returned and is taking credit. The pigeon is confused but supportive.", time: "just now" });
+        lsw("hub_adm_news", JSON.stringify(items));
+        show($("#stockMsg"), "ok", "moon shot triggered. NEPT at $59.79.");
+        renderNewsList();
+        updateStatus();
+      };
+
+      window.sandwichScandal = function () {
+        lsw("hub_adm_breaking", "SCANDAL \u2014 the sandwich has been voted 'most valuable asset' for the 3rd consecutive quarter. shareholders are filing lawsuits in bread.");
+        var items = [];
+        try { items = JSON.parse(ls("hub_adm_news") || "[]"); } catch(e) {}
+        items.unshift({ cat: "SCANDAL", title: "Sandwich voted most valuable asset for third consecutive quarter; class action filed in rye", body: "Shareholders have filed a class-action lawsuit demanding the sandwich be liquidated and distributed as dividends. The toaster has objected, claiming the sandwich is 'in its custody.' The judge, who is also a hallway, has recused itself. The pigeon is delivering subpoenas at $0.03 per delivery.", time: "just now" });
+        lsw("hub_adm_news", JSON.stringify(items));
+        show($("#stockMsg"), "ok", "sandwich scandal published.");
+        renderNewsList();
+        updateStatus();
+      };
+
+      window.orbEvent = function () {
+        lsw("hub_adm_breaking", "ORB EVENT \u2014 the orb has achieved a new state of luminescence. engineers describe it as 'aggressively glowing.'");
+        var items = [];
+        try { items = JSON.parse(ls("hub_adm_news") || "[]"); } catch(e) {}
+        items.unshift({ cat: "TECH", title: "Orb achieves 'aggressive luminescence' \u2014 engineers file emotional support requests", body: "The NeptuneOS orb has entered a new phase of glow that physicists are calling 'unprecedented' and engineers are calling 'please make it stop.' Three engineers have filed emotional support requests. The orb responded by glowing brighter. The stock is unchanged because the orb is not a product, allegedly.", time: "just now" });
+        lsw("hub_adm_news", JSON.stringify(items));
+        show($("#stockMsg"), "ok", "orb event published.");
+        renderNewsList();
+        updateStatus();
+      };
+
+      window.pigeonStrike = function () {
+        lsw("hub_adm_breaking", "EMERGENCY \u2014 all carrier pigeons on strike. no deliveries, no filings, no bread. the hallway is silent.");
+        lsw("hub_adm_ticker", "NEPT EMERGENCY \u2022 pigeon union strike \u2022 no deliveries in 3-7 business days");
+        var items = [];
+        try { items = JSON.parse(ls("hub_adm_news") || "[]"); } catch(e) {}
+        items.unshift({ cat: "TRAGEDY", title: "Carrier pigeon union calls total strike; all deliveries suspended indefinitely", body: "The pigeon union has voted unanimously to strike after management failed to meet bread delivery quotas. All filings, earnings reports, and shareholder correspondence are now grounded. The hallway has been declared a no-fly zone. The toaster attempted to negotiate but was ignored. The stock ticker has been replaced with a single feather emoji.", time: "just now" });
+        lsw("hub_adm_news", JSON.stringify(items));
+        show($("#stockMsg"), "ok", "pigeon strike emergency declared.");
+        renderNewsList();
+        updateStatus();
+      };
+    })();
+  </script>
+</body>
+</html>

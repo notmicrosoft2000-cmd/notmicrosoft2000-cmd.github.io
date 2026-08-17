@@ -179,24 +179,24 @@
   ];
 
   var REVENUE = [
-    ["BEPS (beep earnings per share)", "$0.0003"],
-    ["SANDWICH OPERATIONS", "$4.2M"],
-    ["PIGEON LOGISTICS", "$1.1M"],
-    ["ORB LICENSING", "$890K"],
-    ["TOTEBAG MERCHANDISE", "$340K"],
-    ["HALLWAY RENT", "$0 (the hallway refuses to charge)"],
-    ["STATIC BROADCASTING", "$12"],
-    ["FILING FEE REIMBURSEMENT", "-$2,400"],
-    ["TOTAL REVENUE", "$5.6M (est.)"]
+    ["BEPS (beep earnings per share)", "$0.0003", "28%"],
+    ["SANDWICH OPERATIONS", "$4.2M", "22%"],
+    ["PIGEON LOGISTICS", "$1.1M", "18%"],
+    ["ORB LICENSING", "$890K", "14%"],
+    ["TOTEBAG MERCHANDISE", "$340K", "8%"],
+    ["HALLWAY RENT", "$0", "0%"],
+    ["STATIC BROADCASTING", "$12", "0%"],
+    ["FILING FEE REIMBURSEMENT", "-$2,400", "-10%"],
+    ["TOTAL REVENUE", "$5.6M (est.)", "100%"]
   ];
 
   var EARNINGS = [
-    ["Q4 2025", "$0.0003", "single beep, no questions taken", "-2.1%"],
-    ["Q3 2025", "$0.0002", "earnings call lasted 9 seconds, shorter than usual", "+0.4%"],
-    ["Q2 2025", "$0.0001", "toaster ate the press release", "-0.8%"],
-    ["Q1 2025", "$0.0004", "pigeon delivered results on time for the first time", "+1.2%"],
-    ["Q4 2024", "$0.0002", "orb glowed during call, analysts distracted", "-3.7%"],
-    ["Q3 2024", "$0.0003", "sandwich disclosed as primary asset", "+0.1%"]
+    ["Q4 2025", "$5.6M", "$0.0003", "beep, no questions taken"],
+    ["Q3 2025", "$5.2M", "$0.0002", "earnings call lasted 9 seconds"],
+    ["Q2 2025", "$5.0M", "$0.0001", "toaster ate the press release"],
+    ["Q1 2025", "$5.8M", "$0.0004", "pigeon delivered on time"],
+    ["Q4 2024", "$4.9M", "$0.0002", "orb glowed during call"],
+    ["Q3 2024", "$5.1M", "$0.0003", "sandwich disclosed as asset"]
   ];
 
   var GOVERNANCE = [
@@ -222,14 +222,14 @@
   ];
 
   var SHAREHOLDERS = [
-    ["THE ORB", "34.2%", "chairman, glow position. holds shares in a state of continuous luminescence."],
-    ["A TOASTER", "18.7%", "vice chair. holds shares in its crumb tray. also holds a sandwich."],
-    ["THE CEO", "12.1%", "[redacted]. holds shares in an undisclosed hallway."],
-    ["THE FLOPPY DISK", "8.4%", "laid off. still holds shares. they hum at night."],
-    ["THE PIGEON", "6.3%", "on strike. shares are being delivered at 3\u20137 business day intervals."],
-    ["THE HALLWAY", "5.8%", "non-voting. holds shares by proximity. the hallway forgets where it put them."],
-    ["THE ECHO", "4.2%", "heard the beep. bought immediately. has not stopped listening."],
-    ["FLOAT", "10.3%", "held by the public, allegedly. the public is a suggestion."]
+    ["THE ORB", "34.2%", "4,378K"],
+    ["A TOASTER", "18.7%", "2,394K"],
+    ["THE CEO", "12.1%", "1,549K"],
+    ["THE FLOPPY DISK", "8.4%", "1,075K"],
+    ["THE PIGEON", "6.3%", "806K"],
+    ["THE HALLWAY", "5.8%", "742K"],
+    ["THE ECHO", "4.2%", "538K"],
+    ["FLOAT", "10.3%", "1,318K"]
   ];
 
   var CAPITAL = [
@@ -399,23 +399,34 @@
   }
 
   var Market = (function () {
-    var series = [], open = 1, high = 1, low = 1, volume = 0, dayKey = "";
+    var series = [], volBar = [], open = 1, high = 1, low = 1, volume = 0, dayKey = "";
+    function ls(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
+    function lsJson(k) { try { return JSON.parse(ls(k) || "null"); } catch(e) { return null; } }
     function keyOf(d) { return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
     function build() {
       dayKey = keyOf(new Date());
+      var adm = lsJson("hub_adm_stock") || {};
       var rand = mulberry32(hashStr(dayKey));
-      var p = 47.83;
-      series = [];
-      for (var i = 0; i < 240; i++) { p = Math.max(5, p * (1 + (rand() - 0.48) * 0.022)); series.push(p); }
+      var baseP = adm.price || 47.83;
+      var bias = adm.bias || 0;
+      var vol = adm.volatility || 0.022;
+      series = []; volBar = [];
+      var p = baseP;
+      for (var i = 0; i < 240; i++) {
+        p = Math.max(5, p * (1 + (rand() - 0.48 + bias) * vol));
+        series.push(p);
+        volBar.push(Math.round(500 + rand() * (adm.volume || 4200)));
+      }
       open = series[0];
       high = Math.max.apply(null, series);
       low = Math.min.apply(null, series);
-      volume = Math.round(820 + rand() * 4200) * 1000;
+      volume = volBar.reduce(function (a, b) { return a + b; }, 0);
     }
     function ensure() { if (dayKey !== keyOf(new Date())) build(); }
     function idx() { ensure(); var d = new Date(); return Math.min(239, Math.floor((d.getHours() * 60 + d.getMinutes()) / 6)); }
     return {
       ensure: ensure,
+      build: build,
       price: function () { ensure(); return series[idx()]; },
       change: function () { ensure(); return (series[idx()] / open - 1) * 100; },
       open: function () { ensure(); return open; },
@@ -423,6 +434,11 @@
       low: function () { ensure(); return low; },
       volume: function () { ensure(); return volume; },
       last48: function () { ensure(); return series.slice(Math.max(0, idx() - 47), idx() + 1); },
+      allSeries: function () { ensure(); return series.slice(0, idx() + 1); },
+      allVol: function () { ensure(); return volBar.slice(0, idx() + 1); },
+      fullSeries: function () { ensure(); return series; },
+      fullVol: function () { ensure(); return volBar; },
+      idx: function () { return idx(); },
       fmt: function (v) { return v.toFixed(2); },
       shares: function () { ensure(); return Math.round(12800 + hashStr(dayKey) % 3200); },
       mcap: function () { ensure(); return (series[idx()] * (12800 + hashStr(dayKey) % 3200) / 1000).toFixed(0); },
@@ -446,7 +462,8 @@
     var set = function (id, v) { var e = $("#" + id); if (e) e.textContent = v; };
     set("nepHigh", Market.fmt(Market.high()));
     set("nepLow", Market.fmt(Market.low()));
-    set("nepVol", String(Market.volume()));
+    set("nepVol", fmtNum(Market.volume()));
+    set("nepOpen", Market.fmt(Market.open()));
     var spark = $("#nepSpark");
     if (spark) {
       var pts = Market.last48(), n = pts.length;
@@ -459,22 +476,99 @@
       var dot = $("#nepDot");
       if (dot) dot.setAttribute("cy", (52 - ((pts[n - 1] - mn) / rg) * 44).toFixed(1));
     }
+    renderChart();
     var t = $("#tickNep");
-    if (t) t.textContent = "NEPT " + Market.fmt(p) + " " + (ch >= 0 ? "\u25b2 +" : "\u25bc ") + ch.toFixed(1) + "%  \u2022  ";
+    if (t) {
+      var tOver = null;
+      try { tOver = localStorage.getItem("hub_adm_ticker"); } catch(e) {}
+      t.textContent = (tOver || ("NEPT " + Market.fmt(p) + " " + (ch >= 0 ? "\u25b2 +" : "\u25bc ") + ch.toFixed(1) + "%")) + "  \u2022  ";
+    }
     var si = function (id, v) { var e = $("#" + id); if (e) e.textContent = v; };
-    si("nepMcap", "$" + Market.mcap() + "M");
+    si("nepMcap", "$" + fmtNum(Market.mcap()) + "M");
     si("nepShares", fmtNum(Market.shares()) + "K");
     si("nepPE", Market.pe());
+    si("nepEPS", "$" + (Market.price() * 0.04 + 0.12).toFixed(3));
     si("nepWkHi", Market.fmt(Market.wk52hi()));
     si("nepWkLo", Market.fmt(Market.wk52lo()));
     si("nepDiv", Market.divYield() + "%");
+    si("nepBeta", "1.00");
     var brk = $("#newsBreaking");
     if (brk) {
-      var bv = ch >= 0
-        ? "BREAKING \u2014 NEPT holds above $" + Market.fmt(p) + " despite quarterly report being filed as a sandwich. the board (a toaster) confirms everything is fine. volume: " + fmtNum(Market.volume()) + " shares traded."
-        : "BREAKING \u2014 NEPT drops " + Math.abs(ch).toFixed(1) + "% after the pigeon delivered the earnings call to the wrong building. the beep was heard but not understood. volume: " + fmtNum(Market.volume()) + " shares traded.";
-      brk.textContent = bv;
+      var brkOver = null;
+      try { brkOver = localStorage.getItem("hub_adm_breaking"); } catch(e) {}
+      if (brkOver) { brk.textContent = brkOver; }
+      else {
+        var bv = ch >= 0
+          ? "BREAKING \u2014 NEPT holds above $" + Market.fmt(p) + " despite quarterly report being filed as a sandwich. the board (a toaster) confirms everything is fine. volume: " + fmtNum(Market.volume()) + " shares traded."
+          : "BREAKING \u2014 NEPT drops " + Math.abs(ch).toFixed(1) + "% after the pigeon delivered the earnings call to the wrong building. the beep was heard but not understood. volume: " + fmtNum(Market.volume()) + " shares traded.";
+        brk.textContent = bv;
+      }
     }
+  }
+
+  function renderChart() {
+    var svg = $("#nepChart");
+    if (!svg) return;
+    var all = Market.fullSeries();
+    var allV = Market.fullVol();
+    var cur = Market.idx();
+    if (all.length < 2) return;
+    var W = 800, H = 340, PAD = { t: 24, r: 14, b: 32, l: 62 }, VH = 80;
+    var cw = W - PAD.l - PAD.r, ch = H - PAD.t - PAD.b - VH - 8;
+    var mn = Infinity, mx = -Infinity, mxV = 0;
+    for (var i = 0; i <= cur; i++) { if (all[i] < mn) mn = all[i]; if (all[i] > mx) mx = all[i]; }
+    var pad = (mx - mn) * 0.08 || 0.5;
+    mn -= pad; mx += pad;
+    for (var i = 0; i <= cur; i++) { if (allV[i] > mxV) mxV = allV[i]; }
+    var isUp = all[cur] >= all[0];
+    var lineCol = isUp ? "#43d97a" : "#ff5c5c";
+    var fillId = "chartGrad";
+    var s = "";
+    s += '<defs><linearGradient id="' + fillId + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="' + lineCol + '" stop-opacity=".25"/>' +
+      '<stop offset="100%" stop-color="' + lineCol + '" stop-opacity=".02"/>' +
+      '</linearGradient></defs>';
+    var ySteps = [0, 0.25, 0.5, 0.75, 1];
+    for (var j = 0; j < ySteps.length; j++) {
+      var yy = PAD.t + (1 - ySteps[j]) * ch;
+      var val = mn + ySteps[j] * (mx - mn);
+      s += '<line x1="' + PAD.l + '" y1="' + yy + '" x2="' + (W - PAD.r) + '" y2="' + yy + '" stroke="var(--line)" stroke-width=".5" stroke-dasharray="3,3"/>';
+      s += '<text x="' + (PAD.l - 8) + '" y="' + (yy + 4) + '" text-anchor="end" fill="var(--muted)" font-size="10" font-family="var(--font-m)">$' + val.toFixed(2) + '</text>';
+    }
+    var tLabels = [[0,"9:30"],[30,"10:00"],[60,"10:30"],[90,"11:00"],[120,"11:30"],[150,"12:00"],[180,"12:30"],[210,"1:00"],[240,"1:30"]];
+    for (var j = 0; j < tLabels.length; j++) {
+      var tx = PAD.l + (tLabels[j][0] / 239) * cw;
+      if (tx <= PAD.l + cw + 5) {
+        s += '<line x1="' + tx + '" y1="' + PAD.t + '" x2="' + tx + '" y2="' + (PAD.t + ch) + '" stroke="var(--line)" stroke-width=".5" stroke-dasharray="3,3"/>';
+        s += '<text x="' + tx + '" y="' + (PAD.t + ch + 16) + '" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="var(--font-m)">' + tLabels[j][1] + '</text>';
+      }
+    }
+    s += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle" fill="var(--muted)" font-size="9" font-family="var(--font-m)" letter-spacing=".12em">MARKET HOURS (ALLEGED)</text>';
+    var linePath = "", areaPath = "";
+    for (var i = 0; i <= cur; i++) {
+      var x = PAD.l + (i / 239) * cw;
+      var yy = PAD.t + (1 - (all[i] - mn) / (mx - mn)) * ch;
+      linePath += (i === 0 ? "M" : "L") + x.toFixed(1) + "," + yy.toFixed(1);
+      areaPath += (i === 0 ? "M" : "L") + x.toFixed(1) + "," + yy.toFixed(1);
+    }
+    var axEnd = PAD.l + (cur / 239) * cw;
+    areaPath += "L" + axEnd.toFixed(1) + "," + (PAD.t + ch) + "L" + PAD.l + "," + (PAD.t + ch) + "Z";
+    s += '<path d="' + areaPath + '" fill="url(#' + fillId + ')"/>';
+    s += '<path d="' + linePath + '" fill="none" stroke="' + lineCol + '" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>';
+    var lx = PAD.l + (cur / 239) * cw;
+    var ly = PAD.t + (1 - (all[cur] - mn) / (mx - mn)) * ch;
+    s += '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="4" fill="' + lineCol + '"/>';
+    s += '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="8" fill="' + lineCol + '" opacity=".2"/>';
+    s += '<line x1="' + lx.toFixed(1) + '" y1="' + ly.toFixed(1) + '" x2="' + lx.toFixed(1) + '" y2="' + (PAD.t + ch) + '" stroke="' + lineCol + '" stroke-width=".8" stroke-dasharray="4,3"/>';
+    s += '<line x1="' + PAD.l + '" y1="' + ly.toFixed(1) + '" x2="' + lx.toFixed(1) + '" y2="' + ly.toFixed(1) + '" stroke="' + lineCol + '" stroke-width=".8" stroke-dasharray="4,3"/>';
+    var vTop = PAD.t + ch + 8;
+    for (var i = 0; i <= cur; i++) {
+      var bx = PAD.l + (i / 239) * cw;
+      var bh = mxV > 0 ? (allV[i] / mxV) * VH : 0;
+      var bcol = (i > 0 && all[i] >= all[i - 1]) ? "#43d97a" : "#ff5c5c";
+      s += '<rect x="' + (bx - 1).toFixed(1) + '" y="' + (vTop + VH - bh).toFixed(1) + '" width="2.2" height="' + bh.toFixed(1) + '" fill="' + bcol + '" opacity=".55"/>';
+    }
+    svg.innerHTML = s;
   }
 
   /* ---------------- views ---------------- */
@@ -488,10 +582,18 @@
 
     html += '<section class="view" data-view="home" role="tabpanel">' +
       '<div class="hero">' +
+        '<div class="hero-orb-wrap"><div class="hero-orb"></div></div>' +
         '<h2 class="hero-title">NEPTUNE<br>PRODUCTIONS</h2>' +
+        '<p class="hero-kicker">HALLWAY-ADJACENT SINCE 1987</p>' +
         '<p class="hero-sub">pick a program. the whole site becomes it.</p>' +
+        '<div class="hero-ticker" id="heroTicker"></div>' +
       '</div>' +
       '<div class="webring" id="homeGrid"></div>' +
+      '<div class="home-news" id="homeNews"></div>' +
+      '<div class="home-foot">' +
+        '<span class="home-foot-badge">NEPT \u00b7 $' + Market.fmt(Market.price()) + ' \u00b7 NASDAQ (ALLEGED)</span>' +
+        '<span class="home-foot-text">the toaster is not a licensed financial advisor. do not take investment advice from a hallway.</span>' +
+      '</div>' +
     '</section>';
 
     Object.keys(PROJECTS).forEach(function (k) {
@@ -560,6 +662,22 @@
       });
     });
 
+    var hTicker = $("#heroTicker");
+    if (hTicker) {
+      var htText = NEWS.slice(0, 3).map(function (n) { return n.cat + ": " + n.title; }).join("  \u2022  ");
+      hTicker.textContent = "\u25c9 " + htText + "  \u2022  ";
+    }
+
+    var hNews = $("#homeNews");
+    if (hNews) {
+      hNews.innerHTML = '<div class="home-news-head"><h3>LATEST FROM NEPT</h3><button class="home-news-go" data-go="news">VIEW ALL \u25b8</button></div>' +
+        NEWS.slice(0, 3).map(function (n) {
+          return '<div class="home-news-item"><span class="hncat">' + n.cat + '</span><span class="hntitle">' + n.title + '</span><span class="hntime">' + n.time + '</span></div>';
+        }).join("");
+      var goBtn = $(".home-news-go", hNews);
+      if (goBtn) goBtn.addEventListener("click", function () { setView("news"); });
+    }
+
     $$("[data-launch]", stage).forEach(function (b) {
       b.addEventListener("click", function () { launch(b.getAttribute("data-launch")); });
     });
@@ -587,7 +705,12 @@
   }
 
   function buildNewsView() {
-    var tickerText = NEWS.map(function (n) { return n.title; }).join("  \u2022  ") + "  \u2022  the hallway continues to hallway  \u2022  ";
+    var admNews = [];
+    try { admNews = JSON.parse(localStorage.getItem("hub_adm_news") || "[]"); } catch(e) {}
+    var allNews = admNews.concat(NEWS);
+    var tickerText = allNews.map(function (n) { return n.title; }).join("  \u2022  ") + "  \u2022  the hallway continues to hallway  \u2022  ";
+    var feat = allNews[0] || NEWS[0];
+    var rest = allNews.slice(1);
     var html = '<section class="view" data-view="news" role="tabpanel">' +
       '<div class="news-masthead">' +
         '<span class="news-logo">NEPTUNE <b>NEWS</b></span>' +
@@ -603,13 +726,13 @@
       '<div class="breaking" id="newsBreaking">BREAKING \u2014 NEPT holds above $47 despite quarterly report being filed as a sandwich. the board (a toaster) confirms everything is fine.</div>' +
       '<div class="news-feature">' +
         '<div class="nf-body">' +
-          '<span class="ncat">' + NEWS[0].cat + '</span>' +
-          '<h3>' + NEWS[0].title + '</h3>' +
-          '<p>' + NEWS[0].body + '</p>' +
-          '<span class="nmeta">by <b>TalkGPT</b> \u2022 ' + NEWS[0].time + '</span>' +
+          '<span class="ncat">' + feat.cat + '</span>' +
+          '<h3>' + feat.title + '</h3>' +
+          '<p>' + feat.body + '</p>' +
+          '<span class="nmeta">by <b>TalkGPT</b> \u2022 ' + feat.time + '</span>' +
         '</div>' +
       '</div>' +
-      '<div class="news-grid">' + NEWS.slice(1).map(function (n) {
+      '<div class="news-grid">' + rest.map(function (n) {
         return '<article class="ncard" data-cat="' + n.cat + '"><span class="ncat">' + n.cat + '</span>' +
           '<h3>' + n.title + '</h3>' +
           '<p>' + n.body + '</p>' +
@@ -624,89 +747,72 @@
     var html = '<section class="view" data-view="investors" role="tabpanel">' +
       '<div class="inv-head">' +
         '<h2>NEPTUNE PRODUCTIONS <b>INC.</b></h2>' +
-        '<p>THE HOLDINGS OF THE HALLWAY. SYMBOL: NEPT. FILED, SWALLOWED, AND FORGOTTEN.</p>' +
+        '<p>THE HOLDINGS OF THE HALLWAY. SYMBOL: NEPT. NASDAQ (ALLEGED).</p>' +
       '</div>' +
-      '<div class="inv-corp">' +
-        '<div class="inv-corp-item"><span>FOUNDED</span><b>1987</b></div>' +
-        '<div class="inv-corp-item"><span>SECTOR</span><b>HALLWAY OPERATIONS</b></div>' +
-        '<div class="inv-corp-item"><span>EMPLOYEES</span><b>ALLEGED</b></div>' +
-        '<div class="inv-corp-item"><span>HEADQUARTERS</span><b>THE HALLWAY</b></div>' +
-        '<div class="inv-corp-item"><span>EXCHANGE</span><b>NASDAQ (ALLEGED)</b></div>' +
-        '<div class="inv-corp-item"><span>CUSIP</span><b>640K 1987</b></div>' +
-      '</div>' +
-      win("nep", "NEPT \u2014 live market data", '<div class="stock">' +
-        '<div class="stock-price"><b id="nepPrice">\u2014</b><span><i class="stock-live"></i>NEPT \u00b7 NASDAQ</span></div>' +
-        '<div class="stock-change red" id="nepChange">\u2014</div>' +
-        '<div class="stock-facts">' +
-          '<span>VOLUME <b id="nepVol">\u2014</b></span>' +
-          '<span>HIGH <b id="nepHigh">\u2014</b></span>' +
-          '<span>LOW <b id="nepLow">\u2014</b></span>' +
-          '<span>OPEN <b id="nepOpen">\u2014</b></span>' +
+      '<div class="inv-hero">' +
+        '<div class="inv-hero-left">' +
+          '<div class="inv-hero-price"><span><i class="stock-live"></i>NEPT \u00b7 NASDAQ</span><b id="nepPrice">\u2014</b></div>' +
+          '<div class="stock-change red" id="nepChange">\u2014</div>' +
+          '<div class="inv-hero-meta">' +
+            '<span>OPEN <b id="nepOpen">\u2014</b></span>' +
+            '<span>HIGH <b id="nepHigh">\u2014</b></span>' +
+            '<span>LOW <b id="nepLow">\u2014</b></span>' +
+            '<span>VOL <b id="nepVol">\u2014</b></span>' +
+          '</div>' +
         '</div>' +
-        '<div class="spark"><svg viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true"><polyline id="nepSpark" points=""/><circle id="nepDot" class="spark-dot" cx="200" cy="30" r="3"/></svg></div>' +
-      '</div>') +
-      win("nep", "key statistics", '<div class="inv-grid">' +
-        '<div class="inv-stat"><span>MARKET CAP</span><b id="nepMcap">\u2014</b></div>' +
-        '<div class="inv-stat"><span>SHARES OUTSTANDING</span><b id="nepShares">\u2014</b></div>' +
-        '<div class="inv-stat"><span>P/E RATIO (TRAILING)</span><b id="nepPE">\u2014</b></div>' +
-        '<div class="inv-stat"><span>52-WEEK HIGH</span><b id="nepWkHi">\u2014</b></div>' +
-        '<div class="inv-stat"><span>52-WEEK LOW</span><b id="nepWkLo">\u2014</b></div>' +
-        '<div class="inv-stat"><span>DIVIDEND YIELD</span><b id="nepDiv">\u2014</b></div>' +
-        '<div class="inv-stat"><span>BETA</span><b>0.00</b></div>' +
-        '<div class="inv-stat"><span>EPS (TTM)</span><b>$0.0014</b></div>' +
-        '<div class="inv-stat"><span>BOOK VALUE</span><b>1 sandwich</b></div>' +
-      '</div>') +
-      win("nep", "analyst ratings", '<table class="inv-table">' +
-        '<thead><tr><th>ANALYST</th><th>RATING</th><th>NOTES</th></tr></thead><tbody>' +
-        ANALYSTS.map(function (a) {
-          var cls = a[1] === "BUY" || a[1] === "STRONG BUY" ? "grn" : a[1] === "SELL" ? "red" : "";
-          return '<tr><td>' + a[0] + '</td><td class="' + cls + '">' + a[1] + '</td><td>' + a[2] + '</td></tr>';
-        }).join("") +
-        '</tbody></table>' +
-        '<p class="inv-consensus">CONSENSUS: <b>HOLD (ALLEGEDLY)</b> \u2014 4 buy, 2 hold, 1 sell, 1 N/A. target price: 1 sandwich.') +
-      win("nep", "revenue breakdown (quarterly, unaudited)", '<table class="inv-table">' +
-        '<thead><tr><th>SEGMENT</th><th>AMOUNT</th></tr></thead><tbody>' +
-        REVENUE.map(function (r) {
-          return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>';
-        }).join("") +
-        '</tbody></table>') +
-      win("nep", "earnings history", '<table class="inv-table">' +
-        '<thead><tr><th>QUARTER</th><th>EPS</th><th>NOTES</th><th>CHG</th></tr></thead><tbody>' +
-        EARNINGS.map(function (e) {
-          var cls = e[3].charAt(0) === "+" ? "grn" : "red";
-          return '<tr><td>' + e[0] + '</td><td>' + e[1] + '</td><td>' + e[2] + '</td><td class="' + cls + '">' + e[3] + '</td></tr>';
-        }).join("") +
-        '</tbody></table>' +
-        '<p class="inv-footnote">all earnings reported in beeps. beep-to-USD conversion is pending regulatory approval. the regulatory body is a hallway.') +
-      win("nep", "shareholder structure", '<table class="inv-table">' +
-        '<thead><tr><th>SHAREHOLDER</th><th>STAKE</th><th>NOTES</th></tr></thead><tbody>' +
-        SHAREHOLDERS.map(function (s) {
-          return '<tr><td><b>' + s[0] + '</b></td><td>' + s[1] + '</td><td>' + s[2] + '</td></tr>';
-        }).join("") +
-        '</tbody></table>' +
-        '<p class="inv-footnote">share counts are estimated. the pigeon is responsible for the count. the pigeon is on strike.') +
-      win("nep", "capital structure", '<ul class="filing-list">' + CAPITAL.map(function (c) {
-        return '<li><b>' + c[0] + '</b><span>' + c[1] + '</span></li>';
-      }).join("") + '</ul>') +
-      win("nep", "latest filings (the paper bag)", '<ul class="filing-list">' + FILINGS.map(function (f) {
-        return '<li><b>' + f[0] + '</b><span>' + f[1] + '</span></li>';
-      }).join("") + '</ul>') +
-      win("nep", "board of directors", '<ul class="board-list">' + BOARD.map(function (b) {
-        return '<li><b>' + b[0] + '</b><span>' + b[1] + '</span></li>';
-      }).join("") + '</ul>') +
-      win("nep", "corporate governance", GOVERNANCE.map(function (g) {
-        return '<div class="disf-item"><span class="d-marker">\u25b8</span><span><b>' + g[0] + '</b> \u2014 ' + g[1] + '</span></div>';
-      }).join("")) +
-      win("nep", "risk factors", RISKS.map(function (r) {
-        return '<div class="disf-item"><span class="d-marker">\u26a0</span><span><b>' + r[0] + '</b> \u2014 ' + r[1] + '</span></div>';
-      }).join("")) +
-      win("nep", "corporate history", SCANDALS.map(function (s) {
-        return '<div class="tl-item"><span class="tl-yr">' + s[0] + '</span><span class="tl-txt">' + s[1] + '</span></div>';
-      }).join("")) +
-      win("nep", "disenfranchisement, in writing", DISENFRAN.map(function (d) {
-        return '<div class="disf-item"><span class="d-marker">\u25b8</span><span><b>' + d[0] + '</b> \u2014 ' + d[1] + '</span></div>';
-      }).join("")) +
-      '<p class="news-note">this section is a public service for shareholders. the public service has been discontinued, like the vote. not investment advice \u2014 the toaster is not a licensed advisor. dividend is paid in beeps. all financial data sourced from the hallway, the paper bag, and the echo. this document does not constitute an offering of securities. it constitutes an offering of sandwiches.</p>' +
+        '<div class="inv-hero-chart">' +
+          '<div class="inv-chart-ranges"><span class="inv-range on">1D</span><span class="inv-range">5D</span><span class="inv-range">1M</span><span class="inv-range">3M</span><span class="inv-range">1Y</span><span class="inv-range">ALL</span></div>' +
+          '<div class="inv-chart-wrap"><svg id="nepChart" viewBox="0 0 800 300" preserveAspectRatio="none" aria-hidden="true"></svg></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="inv-stats-row">' +
+        '<div class="inv-hstat"><span>MKT CAP</span><b id="nepMcap">\u2014</b></div>' +
+        '<div class="inv-hstat"><span>SHARES</span><b id="nepShares">\u2014</b></div>' +
+        '<div class="inv-hstat"><span>P/E (TTM)</span><b id="nepPE">\u2014</b></div>' +
+        '<div class="inv-hstat"><span>EPS (TTM)</span><b id="nepEPS">\u2014</b></div>' +
+        '<div class="inv-hstat"><span>52W HIGH</span><b id="nepWkHi">\u2014</b></div>' +
+        '<div class="inv-hstat"><span>52W LOW</span><b id="nepWkLo">\u2014</b></div>' +
+        '<div class="inv-hstat"><span>DIV YLD</span><b id="nepDiv">\u2014</b></div>' +
+        '<div class="inv-hstat"><span>BETA</span><b id="nepBeta">\u2014</b></div>' +
+      '</div>' +
+      '<div class="inv-about">' +
+        '<h3>About</h3>' +
+        '<p>Neptune Productions Inc. is a hallway-adjacent conglomerate engaged in the production, distribution, and alleged operation of software, toaster-based systems, and ambient orb technology. Founded in 1987, the company operates across multiple segments including digital beeps, carrier pigeon logistics, sandwich-backed derivatives, and experimental glow infrastructure. Neptune Productions is headquartered in The Hallway and employs an undisclosed number of hallway personnel. The company\'s common stock trades on the NASDAQ under the ticker NEPT, although this has not been confirmed by any regulatory body.</p>' +
+      '</div>' +
+      '<div class="inv-breakdown">' +
+        '<div class="inv-half">' +
+          win("nep", "revenue breakdown (quarterly, unaudited)", '<table class="inv-table">' +
+            '<thead><tr><th>SEGMENT</th><th>REVENUE</th><th>% OF TOTAL</th></tr></thead><tbody>' +
+            REVENUE.map(function (r) {
+              return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td></tr>';
+            }).join("") +
+            '</tbody></table>' +
+            '<p class="inv-footnote">segment data is unaudited. the toaster handles the audit. the toaster is not a CPA.') +
+          win("nep", "earnings history", '<table class="inv-table">' +
+            '<thead><tr><th>QUARTER</th><th>REVENUE</th><th>EPS</th><th>NOTES</th></tr></thead><tbody>' +
+            EARNINGS.map(function (e) {
+              return '<tr><td>' + e[0] + '</td><td>' + e[1] + '</td><td>' + e[2] + '</td><td>' + e[3] + '</td></tr>';
+            }).join("") +
+            '</tbody></table>' +
+            '<p class="inv-footnote">all earnings reported in beeps. beep-to-USD conversion pending. previous quarter restated because the toaster filed upside down.') +
+        '</div>' +
+        '<div class="inv-half">' +
+          win("nep", "shareholder structure", '<table class="inv-table">' +
+            '<thead><tr><th>SHAREHOLDER</th><th>STAKE</th><th>SHARES</th></tr></thead><tbody>' +
+            SHAREHOLDERS.map(function (s) {
+              return '<tr><td><b>' + s[0] + '</b></td><td>' + s[1] + '</td><td>' + s[2] + '</td></tr>';
+            }).join("") +
+            '</tbody></table>' +
+            '<p class="inv-footnote">share counts estimated. the pigeon is on strike. the toaster is filling in.') +
+          win("nep", "latest filings", '<ul class="filing-list">' + FILINGS.map(function (f) {
+            return '<li><b>' + f[0] + '</b><span>' + f[1] + '</span></li>';
+          }).join("") + '</ul>') +
+          win("nep", "board of directors", '<ul class="board-list">' + BOARD.map(function (b) {
+            return '<li><b>' + b[0] + '</b><span>' + b[1] + '</span></li>';
+          }).join("") + '</ul>') +
+        '</div>' +
+      '</div>' +
+      '<p class="news-note">this section is a public service for shareholders. the public service has been discontinued, like the vote. not investment advice \u2014 the toaster is not a licensed advisor. dividend is paid in beeps.</p>' +
     '</section>';
     return html;
   }

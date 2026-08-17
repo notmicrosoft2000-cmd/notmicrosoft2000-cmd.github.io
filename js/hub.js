@@ -497,13 +497,15 @@
       brk.textContent = bv;
     }
     renderChart();
+    if (state.view === "investors") renderPortfolio();
   }
 
   /* ---------------- detailed chart ---------------- */
 
   var chartRange = "1D";
+  var chartAnimDone = {};
 
-  function renderChart(range) {
+  function renderChart(range, animate) {
     range = range || chartRange;
     var svg = $("#nepChart");
     if (!svg) return;
@@ -518,83 +520,117 @@
     var cB = cs.getPropertyValue("--bg2").trim() || "#111";
     var cF = cs.getPropertyValue("--font-m").trim() || "monospace";
 
-    var W = 680, H = 260, PAD = { t: 20, r: 50, b: 36, l: 0 };
+    var W = 680, H = 280, PAD = { t: 16, r: 52, b: 32, l: 8 };
     var cw = W - PAD.l - PAD.r, ch = H - PAD.t - PAD.b;
+    var n = prices.length;
+
     var mn = Math.min.apply(null, prices), mx = Math.max.apply(null, prices);
     var rg = (mx - mn) || 1;
     var pad = rg * 0.08;
     mn -= pad; mx += pad; rg = mx - mn;
 
     var vMax = Math.max.apply(null, volumes) || 1;
-    var barH = ch * 0.18;
+    var volH = ch * 0.2;
     var volTop = H - PAD.b;
+    var chartBot = volTop - volH - 6;
+    var chartH = chartBot - PAD.t;
+    var yScale = chartH / rg;
 
-    var lines = "";
-    var gridLines = 6;
+    var green = "#43d97a", red = "#ff5252";
+    var animKey = range;
+    var doAnim = animate && !chartAnimDone[animKey];
+    if (doAnim) chartAnimDone[animKey] = 1;
+
+    var svgParts = "";
+
+    svgParts += '<defs>' +
+      '<linearGradient id="cgUp" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + green + '" stop-opacity=".35"/><stop offset="100%" stop-color="' + green + '" stop-opacity=".03"/></linearGradient>' +
+      '<linearGradient id="cgDn" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + red + '" stop-opacity=".35"/><stop offset="100%" stop-color="' + red + '" stop-opacity=".03"/></linearGradient>' +
+      '<clipPath id="chartClip"><rect id="chartClipRect" x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath>' +
+    '</defs>';
+
+    var gridLines = 5;
     for (var g = 0; g <= gridLines; g++) {
-      var gy = PAD.t + (g / gridLines) * ch;
+      var gy = PAD.t + (g / gridLines) * chartH;
       var gv = mx - (g / gridLines) * rg;
-      lines += '<line x1="' + PAD.l + '" y1="' + gy.toFixed(1) + '" x2="' + (W - PAD.r) + '" y2="' + gy.toFixed(1) + '" stroke="' + cL + '" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.5"/>';
-      lines += '<text x="' + (W - PAD.r + 6) + '" y="' + (gy + 4).toFixed(1) + '" fill="' + cM + '" font-size="9" font-family="' + cF + '" letter-spacing="0.06em">' + gv.toFixed(2) + '</text>';
+      svgParts += '<line x1="' + PAD.l + '" y1="' + gy.toFixed(1) + '" x2="' + (W - PAD.r) + '" y2="' + gy.toFixed(1) + '" stroke="' + cL + '" stroke-width="0.5" opacity="0.35"/>';
+      svgParts += '<text x="' + (W - PAD.r + 6) + '" y="' + (gy + 3.5).toFixed(1) + '" fill="' + cM + '" font-size="9" font-family="' + cF + '">' + gv.toFixed(2) + '</text>';
     }
 
-    var volBars = "";
-    var n = prices.length;
-    var bw = Math.max(1, (cw / n) * 0.7);
+    var barGap = n > 60 ? 1 : 2;
+    var candleW = Math.max(1, Math.min(12, (cw / n) - barGap));
+    var bodyW = Math.max(1, candleW * 0.7);
+
+    var open = prices[0];
+    var prevClose = open;
+
     for (var i = 0; i < n; i++) {
-      var bx = PAD.l + (i / (n - 1)) * cw;
-      var bh = (volumes[i] / vMax) * barH;
-      volBars += '<rect x="' + (bx - bw / 2).toFixed(1) + '" y="' + (volTop - bh).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + bh.toFixed(1) + '" fill="' + cA + '" opacity="0.12" rx="1"/>';
-    }
+      var price = prices[i];
+      var vol = volumes[i];
+      var isUp = price >= prevClose;
+      var col = isUp ? green : red;
+      var cx = PAD.l + (i / Math.max(n - 1, 1)) * cw;
 
-    var pts = [];
-    for (var i = 0; i < n; i++) {
-      var x = PAD.l + (i / (n - 1)) * cw;
-      var y = PAD.t + ((mx - prices[i]) / rg) * ch;
-      pts.push(x.toFixed(1) + "," + y.toFixed(1));
-    }
+      var dayHigh = price * (1 + Math.abs(Math.sin(i * 7.3)) * 0.008);
+      var dayLow = price * (1 - Math.abs(Math.cos(i * 5.1)) * 0.008);
+      if (i > 0) {
+        dayHigh = Math.max(dayHigh, price, prevClose);
+        dayLow = Math.min(dayLow, price, prevClose);
+      }
 
-    var areaPts = pts.concat([
-      (PAD.l + cw).toFixed(1) + "," + (PAD.t + ch).toFixed(1),
-      PAD.l + "," + (PAD.t + ch)
-    ]);
+      var openY = PAD.t + (mx - Math.min(price, prevClose)) * yScale;
+      var closeY = PAD.t + (mx - Math.max(price, prevClose)) * yScale;
+      var highY = PAD.t + (mx - dayHigh) * yScale;
+      var lowY = PAD.t + (mx - dayLow) * yScale;
+      var bodyH = Math.max(1, closeY - openY);
+
+      svgParts += '<line x1="' + cx.toFixed(1) + '" y1="' + highY.toFixed(1) + '" x2="' + cx.toFixed(1) + '" y2="' + lowY.toFixed(1) + '" stroke="' + col + '" stroke-width="1" opacity="0.7"/>';
+      svgParts += '<rect x="' + (cx - bodyW / 2).toFixed(1) + '" y="' + openY.toFixed(1) + '" width="' + bodyW.toFixed(1) + '" height="' + bodyH.toFixed(1) + '" fill="' + col + '" rx="0.5" opacity="0.9"/>';
+
+      var bh = (vol / vMax) * volH;
+      svgParts += '<rect x="' + (cx - candleW / 2).toFixed(1) + '" y="' + (volTop - bh).toFixed(1) + '" width="' + candleW.toFixed(1) + '" height="' + bh.toFixed(1) + '" fill="' + col + '" opacity="0.2" rx="0.5"/>';
+
+      prevClose = price;
+    }
 
     var last = prices[n - 1];
+    var lastUp = last >= (prices.length > 1 ? prices[n - 2] : open);
+    var lastCol = lastUp ? green : red;
     var lx = PAD.l + cw;
-    var ly = PAD.t + ((mx - last) / rg) * ch;
+    var ly = PAD.t + (mx - last) * yScale;
 
-    var tickLabels = "";
-    var maxTicks = Math.min(8, n);
+    svgParts += '<line x1="' + lx.toFixed(1) + '" y1="' + ly.toFixed(1) + '" x2="' + (W - PAD.r) + '" y2="' + ly.toFixed(1) + '" stroke="' + lastCol + '" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.6"/>';
+    svgParts += '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="4" fill="' + lastCol + '" stroke="' + cB + '" stroke-width="2"/>';
+    svgParts += '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="8" fill="none" stroke="' + lastCol + '" stroke-width="1" opacity="0.3">' +
+      '<animate attributeName="r" from="4" to="12" dur="1.5s" repeatCount="indefinite"/>' +
+      '<animate attributeName="opacity" from="0.4" to="0" dur="1.5s" repeatCount="indefinite"/>' +
+    '</circle>';
+
+    svgParts += '<line x1="' + PAD.l + '" y1="' + volTop.toFixed(1) + '" x2="' + (W - PAD.r) + '" y2="' + volTop.toFixed(1) + '" stroke="' + cL + '" stroke-width="0.5" opacity="0.25"/>';
+
+    var maxTicks = Math.min(7, n);
     var step = Math.max(1, Math.floor(n / maxTicks));
     for (var i = 0; i < n; i += step) {
-      var x = PAD.l + (i / (n - 1)) * cw;
-      tickLabels += '<text x="' + x.toFixed(1) + '" y="' + (H - 4) + '" fill="' + cM + '" font-size="8" font-family="' + cF + '" text-anchor="middle" letter-spacing="0.04em">' + (labels[i] || "") + '</text>';
+      var x = PAD.l + (i / Math.max(n - 1, 1)) * cw;
+      svgParts += '<text x="' + x.toFixed(1) + '" y="' + (H - 6) + '" fill="' + cM + '" font-size="8" font-family="' + cF + '" text-anchor="middle">' + (labels[i] || "") + '</text>';
     }
-    tickLabels += '<text x="' + lx.toFixed(1) + '" y="' + (H - 4) + '" fill="' + cM + '" font-size="8" font-family="' + cF + '" text-anchor="middle" letter-spacing="0.04em">' + (labels[n - 1] || "") + '</text>';
+    if (n > 1) svgParts += '<text x="' + lx.toFixed(1) + '" y="' + (H - 6) + '" fill="' + cM + '" font-size="8" font-family="' + cF + '" text-anchor="middle">' + (labels[n - 1] || "") + '</text>';
 
-    var uid = "c" + Date.now();
-    var svgContent =
-      '<defs>' +
-        '<linearGradient id="' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
-          '<stop offset="0%" stop-color="' + cA + '" stop-opacity="0.25"/>' +
-          '<stop offset="100%" stop-color="' + cA + '" stop-opacity="0.02"/>' +
-        '</linearGradient>' +
-        '<filter id="' + uid + 'g"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
-      '</defs>' +
-      lines +
-      volBars +
-      '<polygon points="' + areaPts.join(" ") + '" fill="url(#' + uid + ')"/>' +
-      '<polyline points="' + pts.join(" ") + '" fill="none" stroke="' + cA + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#' + uid + 'g)"/>' +
-      '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="4" fill="' + cA + '" stroke="' + cB + '" stroke-width="2"/>' +
-      '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="8" fill="none" stroke="' + cA + '" stroke-width="1" opacity="0.3">' +
-        '<animate attributeName="r" from="4" to="12" dur="1.5s" repeatCount="indefinite"/>' +
-        '<animate attributeName="opacity" from="0.4" to="0" dur="1.5s" repeatCount="indefinite"/>' +
-      '</circle>' +
-      '<line x1="' + lx.toFixed(1) + '" y1="' + ly.toFixed(1) + '" x2="' + (W - PAD.r) + '" y2="' + ly.toFixed(1) + '" stroke="' + cA + '" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.5"/>' +
-      tickLabels;
+    svgParts += '<text x="' + PAD.l + '" y="' + (volTop - volH - 2) + '" fill="' + cM + '" font-size="7" font-family="' + cF + '" opacity="0.5">VOL</text>';
 
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
-    svg.innerHTML = svgContent;
+    svg.innerHTML = svgParts;
+
+    if (doAnim) {
+      var clipR = svg.querySelector("#chartClipRect");
+      if (clipR) {
+        clipR.setAttribute("width", "0");
+        clipR.style.transition = "none";
+        void clipR.offsetWidth;
+        clipR.style.transition = "width 0.8s cubic-bezier(.22,1,.36,1)";
+        clipR.setAttribute("width", String(W));
+      }
+    }
   }
 
   function renderHomeChart() {
@@ -702,6 +738,123 @@
     svg.addEventListener("mouseleave", function () {
       tip.classList.remove("show");
     });
+  }
+
+  /* ---------------- stock market game ---------------- */
+
+  var Portfolio = (function () {
+    var KEY = "hub_portfolio";
+    var data;
+    function load() {
+      try { data = JSON.parse(localStorage.getItem(KEY)); } catch (e) { data = null; }
+      if (!data || typeof data.cash !== "number") {
+        data = { cash: 100, shares: 0, avgCost: 0, trades: [] };
+      }
+    }
+    function save() { localStorage.setItem(KEY, JSON.stringify(data)); }
+    load();
+
+    return {
+      cash: function () { return data.cash; },
+      shares: function () { return data.shares; },
+      avgCost: function () { return data.avgCost; },
+      trades: function () { return data.trades; },
+      value: function () { return data.shares * Market.price(); },
+      totalValue: function () { return data.cash + data.shares * Market.price(); },
+      pnl: function () { return data.shares > 0 ? (Market.price() - data.avgCost) * data.shares : 0; },
+      pnlPct: function () { return data.shares > 0 && data.avgCost > 0 ? ((Market.price() / data.avgCost) - 1) * 100 : 0; },
+      buy: function (qty) {
+        var p = Market.price();
+        var cost = p * qty;
+        if (cost > data.cash) return { ok: false, msg: "insufficient funds. you have $" + data.cash.toFixed(2) + " but need $" + cost.toFixed(2) };
+        if (qty <= 0) return { ok: false, msg: "quantity must be positive" };
+        var newTotal = data.shares * data.avgCost + cost;
+        data.shares += qty;
+        data.avgCost = newTotal / data.shares;
+        data.cash -= cost;
+        data.cash = Math.round(data.cash * 100) / 100;
+        data.trades.unshift({ type: "BUY", qty: qty, price: p, total: cost, time: new Date().toLocaleTimeString(), date: new Date().toLocaleDateString() });
+        if (data.trades.length > 50) data.trades.length = 50;
+        save();
+        return { ok: true, msg: "bought " + qty + " NEPT at $" + p.toFixed(2) + " = $" + cost.toFixed(2) };
+      },
+      sell: function (qty) {
+        var p = Market.price();
+        var proceeds = p * qty;
+        if (qty > data.shares) return { ok: false, msg: "you only hold " + data.shares + " shares" };
+        if (qty <= 0) return { ok: false, msg: "quantity must be positive" };
+        data.shares -= qty;
+        data.cash += proceeds;
+        data.cash = Math.round(data.cash * 100) / 100;
+        if (data.shares === 0) data.avgCost = 0;
+        data.trades.unshift({ type: "SELL", qty: qty, price: p, total: proceeds, time: new Date().toLocaleTimeString(), date: new Date().toLocaleDateString() });
+        if (data.trades.length > 50) data.trades.length = 50;
+        save();
+        return { ok: true, msg: "sold " + qty + " NEPT at $" + p.toFixed(2) + " = $" + proceeds.toFixed(2) };
+      },
+      maxBuy: function () { return Math.floor(data.cash / Market.price()); },
+      reset: function () { data = { cash: 100, shares: 0, avgCost: 0, trades: [] }; save(); }
+    };
+  })();
+
+  function renderPortfolio() {
+    var pe = $("#pfCash");
+    var se = $("#pfShares");
+    var ve = $("#pfValue");
+    var ple = $("#pfPnl");
+    var te = $("#pfTotal");
+    var ae = $("#pfAvg");
+    var be = $("#pfBuyMax");
+    var le = $("#pfLog");
+    if (pe) pe.textContent = "$" + Portfolio.cash().toFixed(2);
+    if (se) se.textContent = Portfolio.shares();
+    if (ve) ve.textContent = "$" + Portfolio.value().toFixed(2);
+    if (ae) ae.textContent = Portfolio.shares() > 0 ? "$" + Portfolio.avgCost().toFixed(2) : "\u2014";
+    if (be) be.textContent = Portfolio.maxBuy() + " shares max";
+    if (te) {
+      var tv = Portfolio.totalValue();
+      te.textContent = "$" + tv.toFixed(2);
+    }
+    if (ple) {
+      var pnl = Portfolio.pnl();
+      var pct = Portfolio.pnlPct();
+      var cls = pnl >= 0 ? "grn" : "red";
+      ple.textContent = (pnl >= 0 ? "+" : "") + "$" + pnl.toFixed(2) + " (" + (pnl >= 0 ? "+" : "") + pct.toFixed(1) + "%)";
+      ple.className = "pf-val " + cls;
+    }
+    if (le) {
+      var trades = Portfolio.trades();
+      if (trades.length === 0) {
+        le.innerHTML = '<div class="pf-empty">no trades yet. you start with $100.00 and 0 shares of NEPT.</div>';
+      } else {
+        le.innerHTML = trades.slice(0, 15).map(function (t) {
+          var tc = t.type === "BUY" ? "grn" : "red";
+          return '<div class="pf-trade">' +
+            '<span class="pf-trade-type ' + tc + '">' + t.type + '</span>' +
+            '<span class="pf-trade-qty">' + t.qty + ' shares</span>' +
+            '<span class="pf-trade-price">@ $' + t.price.toFixed(2) + '</span>' +
+            '<span class="pf-trade-total">$' + t.total.toFixed(2) + '</span>' +
+            '<span class="pf-trade-time">' + t.time + '</span>' +
+          '</div>';
+        }).join("");
+      }
+    }
+  }
+
+  function handleTrade(type) {
+    var input = $("#tradeQty");
+    if (!input) return;
+    var qty = parseInt(input.value, 10);
+    if (isNaN(qty) || qty <= 0) return;
+    var result = type === "buy" ? Portfolio.buy(qty) : Portfolio.sell(qty);
+    var msg = $("#tradeMsg");
+    if (msg) {
+      msg.textContent = result.msg;
+      msg.className = "pf-msg " + (result.ok ? "grn" : "red");
+      setTimeout(function () { msg.textContent = ""; msg.className = "pf-msg"; }, 3000);
+    }
+    input.value = "";
+    renderPortfolio();
   }
 
   /* ---------------- views ---------------- */
@@ -828,6 +981,11 @@
     var homeTickerBtn = $(".home-ticker-go");
     if (homeTickerBtn) homeTickerBtn.addEventListener("click", function () { SFX.select("investors"); setView("investors"); });
 
+    var buyBtn = $("#buyBtn");
+    var sellBtn = $("#sellBtn");
+    if (buyBtn) buyBtn.addEventListener("click", function () { handleTrade("buy"); });
+    if (sellBtn) sellBtn.addEventListener("click", function () { handleTrade("sell"); });
+
     var homeSearch = $("#homeSearch");
     if (homeSearch) {
       homeSearch.addEventListener("input", function () {
@@ -908,8 +1066,39 @@
             '<button class="inv-range" type="button">1Y</button>' +
             '<button class="inv-range" type="button">ALL</button>' +
           '</div>' +
-          '<svg id="nepChart" class="nep-chart" viewBox="0 0 680 260" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>' +
+          '<svg id="nepChart" class="nep-chart" viewBox="0 0 680 280" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>' +
         '</div>' +
+      '</div>') +
+      win("nep", "trade NEPT", '<div class="pf-trade-panel">' +
+        '<div class="pf-trade-row">' +
+          '<span class="pf-label">YOUR CASH</span><span class="pf-val" id="pfCash">$100.00</span>' +
+        '</div>' +
+        '<div class="pf-trade-row">' +
+          '<span class="pf-label">SHARES HELD</span><span class="pf-val" id="pfShares">0</span>' +
+        '</div>' +
+        '<div class="pf-trade-row">' +
+          '<span class="pf-label">AVG COST</span><span class="pf-val" id="pfAvg">\u2014</span>' +
+        '</div>' +
+        '<div class="pf-trade-row">' +
+          '<span class="pf-label">POSITION VALUE</span><span class="pf-val" id="pfValue">$0.00</span>' +
+        '</div>' +
+        '<div class="pf-trade-row pf-total">' +
+          '<span class="pf-label">TOTAL VALUE</span><span class="pf-val" id="pfTotal">$100.00</span>' +
+        '</div>' +
+        '<div class="pf-trade-row pf-pnl">' +
+          '<span class="pf-label">P&L</span><span class="pf-val" id="pfPnl">+$0.00 (0.0%)</span>' +
+        '</div>' +
+        '<div class="pf-trade-actions">' +
+          '<div class="pf-input-wrap"><input class="pf-input" id="tradeQty" type="number" min="1" placeholder="qty" autocomplete="off"/><span class="pf-buy-max" id="pfBuyMax">0 shares max</span></div>' +
+          '<div class="pf-btn-row">' +
+            '<button class="pf-btn buy" type="button" id="buyBtn">BUY</button>' +
+            '<button class="pf-btn sell" type="button" id="sellBtn">SELL</button>' +
+          '</div>' +
+          '<div class="pf-msg" id="tradeMsg"></div>' +
+        '</div>' +
+      '</div>') +
+      win("nep", "trade history", '<div class="pf-log" id="pfLog">' +
+        '<div class="pf-empty">no trades yet. you start with $100.00 and 0 shares of NEPT.</div>' +
       '</div>') +
       win("nep", "key statistics", '<div class="inv-grid">' +
         '<div class="inv-stat"><span>MARKET CAP</span><b id="nepMcap">\u2014</b></div>' +
@@ -1182,7 +1371,7 @@
     if (PROJECTS[k]) loadStats(k);
     applyTheme();
     if (k === "forum") forumConnect();
-    if (k === "investors") requestAnimationFrame(function () { renderChart(); });
+    if (k === "investors") requestAnimationFrame(function () { renderChart(chartRange, true); renderPortfolio(); });
     var v = views[k];
     if (v) {
       requestAnimationFrame(function () {
@@ -1703,7 +1892,7 @@
     if (ranges.indexOf(range) === -1) return;
     $$(".inv-range").forEach(function (el) { el.classList.toggle("on", el === r); });
     chartRange = range;
-    renderChart(range);
+    renderChart(range, true);
   });
 
   /* repo update checker */

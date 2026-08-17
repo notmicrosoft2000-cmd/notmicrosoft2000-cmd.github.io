@@ -1717,6 +1717,44 @@ html.rm .bgfx { animation: none; }
 .board-list li b { color: var(--accent); font-weight: 500; flex: none; }
 .board-list li span { color: var(--muted); text-align: right; font-family: var(--font-m); font-size: 11px; }
 
+.pf-trade-panel { display: flex; flex-direction: column; gap: 0; }
+.pf-trade-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); font-family: var(--font-m); font-size: 12px; letter-spacing: .03em; }
+.pf-trade-row:last-child { border-bottom: none; }
+.pf-label { color: var(--muted); font-size: 10px; letter-spacing: .08em; font-weight: 700; }
+.pf-val { font-weight: 700; color: var(--fg); letter-spacing: .02em; }
+.pf-val.grn { color: #43d97a; }
+.pf-val.red { color: #ff5252; }
+.pf-total { border-top: 2px solid var(--accent); border-bottom: none; padding-top: 10px; margin-top: 4px; }
+.pf-total .pf-label { color: var(--fg); font-size: 11px; }
+.pf-total .pf-val { font-size: 16px; color: var(--fg); }
+.pf-pnl .pf-val { font-size: 13px; }
+.pf-trade-actions { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.pf-input-wrap { position: relative; }
+.pf-input { width: 100%; box-sizing: border-box; font-family: var(--font-m); font-size: 14px; font-weight: 700; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); outline: none; letter-spacing: .04em; transition: border-color .2s; }
+.pf-input:focus { border-color: var(--accent); }
+.pf-input::placeholder { color: var(--muted); opacity: .5; font-weight: 400; }
+.pf-buy-max { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-family: var(--font-m); font-size: 9px; color: var(--muted); letter-spacing: .05em; pointer-events: none; }
+.pf-btn-row { display: flex; gap: 8px; }
+.pf-btn { flex: 1; font-family: var(--font-m); font-size: 13px; font-weight: 700; letter-spacing: .08em; padding: 10px 0; border-radius: 8px; border: none; cursor: pointer; transition: filter .15s, transform .1s; }
+.pf-btn:active { transform: scale(.97); }
+.pf-btn.buy { background: #43d97a; color: #000; }
+.pf-btn.sell { background: #ff5252; color: #fff; }
+.pf-btn:hover { filter: brightness(1.15); }
+.pf-msg { font-family: var(--font-m); font-size: 11px; min-height: 16px; letter-spacing: .03em; }
+.pf-msg.grn { color: #43d97a; }
+.pf-msg.red { color: #ff5252; }
+.pf-log { max-height: 300px; overflow-y: auto; }
+.pf-empty { font-family: var(--font-m); font-size: 11px; color: var(--muted); padding: 8px 0; letter-spacing: .03em; }
+.pf-trade { display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); font-family: var(--font-m); font-size: 11px; align-items: center; }
+.pf-trade:last-child { border-bottom: none; }
+.pf-trade-type { font-weight: 700; font-size: 10px; letter-spacing: .06em; width: 32px; flex-shrink: 0; }
+.pf-trade-type.grn { color: #43d97a; }
+.pf-trade-type.red { color: #ff5252; }
+.pf-trade-qty { color: var(--fg); flex: 1; }
+.pf-trade-price { color: var(--muted); }
+.pf-trade-total { color: var(--fg); font-weight: 600; }
+.pf-trade-time { color: var(--muted); font-size: 9px; opacity: .6; }
+
 .tl-item { display: flex; gap: 14px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
 .tl-item:last-child { border-bottom: 0; }
 .tl-item .tl-yr { flex: none; width: 64px; font-family: var(--font-m); font-size: 12px; letter-spacing: .1em; color: var(--accent); }

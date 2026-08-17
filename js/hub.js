@@ -511,6 +511,13 @@
     var prices = data.prices, volumes = data.volumes, labels = data.labels;
     if (!prices || prices.length < 2) return;
 
+    var cs = getComputedStyle(root);
+    var cA = cs.getPropertyValue("--accent").trim() || "#8a2b2b";
+    var cL = cs.getPropertyValue("--line").trim() || "#333";
+    var cM = cs.getPropertyValue("--muted").trim() || "#777";
+    var cB = cs.getPropertyValue("--bg2").trim() || "#111";
+    var cF = cs.getPropertyValue("--font-m").trim() || "monospace";
+
     var W = 680, H = 260, PAD = { t: 20, r: 50, b: 36, l: 0 };
     var cw = W - PAD.l - PAD.r, ch = H - PAD.t - PAD.b;
     var mn = Math.min.apply(null, prices), mx = Math.max.apply(null, prices);
@@ -522,13 +529,13 @@
     var barH = ch * 0.18;
     var volTop = H - PAD.b;
 
-    var lines = [];
+    var lines = "";
     var gridLines = 6;
     for (var g = 0; g <= gridLines; g++) {
       var gy = PAD.t + (g / gridLines) * ch;
       var gv = mx - (g / gridLines) * rg;
-      lines.push('<line x1="' + PAD.l + '" y1="' + gy.toFixed(1) + '" x2="' + (W - PAD.r) + '" y2="' + gy.toFixed(1) + '" stroke="var(--line)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.5"/>');
-      lines.push('<text x="' + (W - PAD.r + 6) + '" y="' + (gy + 4).toFixed(1) + '" fill="var(--muted)" font-size="9" font-family="var(--font-m)" letter-spacing="0.06em">' + gv.toFixed(2) + '</text>');
+      lines += '<line x1="' + PAD.l + '" y1="' + gy.toFixed(1) + '" x2="' + (W - PAD.r) + '" y2="' + gy.toFixed(1) + '" stroke="' + cL + '" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.5"/>';
+      lines += '<text x="' + (W - PAD.r + 6) + '" y="' + (gy + 4).toFixed(1) + '" fill="' + cM + '" font-size="9" font-family="' + cF + '" letter-spacing="0.06em">' + gv.toFixed(2) + '</text>';
     }
 
     var volBars = "";
@@ -537,7 +544,7 @@
     for (var i = 0; i < n; i++) {
       var bx = PAD.l + (i / (n - 1)) * cw;
       var bh = (volumes[i] / vMax) * barH;
-      volBars += '<rect x="' + (bx - bw / 2).toFixed(1) + '" y="' + (volTop - bh).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + bh.toFixed(1) + '" fill="var(--accent)" opacity="0.12" rx="1"/>';
+      volBars += '<rect x="' + (bx - bw / 2).toFixed(1) + '" y="' + (volTop - bh).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + bh.toFixed(1) + '" fill="' + cA + '" opacity="0.12" rx="1"/>';
     }
 
     var pts = [];
@@ -561,32 +568,29 @@
     var step = Math.max(1, Math.floor(n / maxTicks));
     for (var i = 0; i < n; i += step) {
       var x = PAD.l + (i / (n - 1)) * cw;
-      tickLabels += '<text x="' + x.toFixed(1) + '" y="' + (H - 4) + '" fill="var(--muted)" font-size="8" font-family="var(--font-m)" text-anchor="middle" letter-spacing="0.04em">' + (labels[i] || "") + '</text>';
+      tickLabels += '<text x="' + x.toFixed(1) + '" y="' + (H - 4) + '" fill="' + cM + '" font-size="8" font-family="' + cF + '" text-anchor="middle" letter-spacing="0.04em">' + (labels[i] || "") + '</text>';
     }
-    tickLabels += '<text x="' + lx.toFixed(1) + '" y="' + (H - 4) + '" fill="var(--muted)" font-size="8" font-family="var(--font-m)" text-anchor="middle" letter-spacing="0.04em">' + (labels[n - 1] || "") + '</text>';
+    tickLabels += '<text x="' + lx.toFixed(1) + '" y="' + (H - 4) + '" fill="' + cM + '" font-size="8" font-family="' + cF + '" text-anchor="middle" letter-spacing="0.04em">' + (labels[n - 1] || "") + '</text>';
 
+    var uid = "c" + Date.now();
     var svgContent =
       '<defs>' +
-        '<linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">' +
-          '<stop offset="0%" stop-color="var(--accent)" stop-opacity="0.25"/>' +
-          '<stop offset="100%" stop-color="var(--accent)" stop-opacity="0.02"/>' +
+        '<linearGradient id="' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0%" stop-color="' + cA + '" stop-opacity="0.25"/>' +
+          '<stop offset="100%" stop-color="' + cA + '" stop-opacity="0.02"/>' +
         '</linearGradient>' +
-        '<linearGradient id="volFill" x1="0" y1="0" x2="0" y2="1">' +
-          '<stop offset="0%" stop-color="var(--accent)" stop-opacity="0.2"/>' +
-          '<stop offset="100%" stop-color="var(--accent)" stop-opacity="0.05"/>' +
-        '</linearGradient>' +
-        '<filter id="glowLine"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+        '<filter id="' + uid + 'g"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
       '</defs>' +
-      lines.join("") +
+      lines +
       volBars +
-      '<polygon points="' + areaPts.join(" ") + '" fill="url(#chartFill)"/>' +
-      '<polyline points="' + pts.join(" ") + '" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#glowLine)"/>' +
-      '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="4" fill="var(--accent)" stroke="var(--bg2)" stroke-width="2"/>' +
-      '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="8" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.3">' +
+      '<polygon points="' + areaPts.join(" ") + '" fill="url(#' + uid + ')"/>' +
+      '<polyline points="' + pts.join(" ") + '" fill="none" stroke="' + cA + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#' + uid + 'g)"/>' +
+      '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="4" fill="' + cA + '" stroke="' + cB + '" stroke-width="2"/>' +
+      '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="8" fill="none" stroke="' + cA + '" stroke-width="1" opacity="0.3">' +
         '<animate attributeName="r" from="4" to="12" dur="1.5s" repeatCount="indefinite"/>' +
         '<animate attributeName="opacity" from="0.4" to="0" dur="1.5s" repeatCount="indefinite"/>' +
       '</circle>' +
-      '<line x1="' + lx.toFixed(1) + '" y1="' + ly.toFixed(1) + '" x2="' + (W - PAD.r) + '" y2="' + ly.toFixed(1) + '" stroke="var(--accent)" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.5"/>' +
+      '<line x1="' + lx.toFixed(1) + '" y1="' + ly.toFixed(1) + '" x2="' + (W - PAD.r) + '" y2="' + ly.toFixed(1) + '" stroke="' + cA + '" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.5"/>' +
       tickLabels;
 
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
@@ -1562,6 +1566,59 @@
     chartRange = range;
     renderChart(range);
   });
+
+  /* repo update checker */
+  (function () {
+    var repos = {};
+    Object.keys(PROJECTS).forEach(function (k) { repos[PROJECTS[k].repo] = { key: k, name: PROJECTS[k].name }; });
+    var seen = {};
+    try { seen = JSON.parse(localStorage.getItem("hub_repo_seen") || "{}"); } catch (e) {}
+
+    var notifContainer = document.createElement("div");
+    notifContainer.className = "notif-stack";
+    document.body.appendChild(notifContainer);
+
+    function showNotif(title, body, repo) {
+      var el = document.createElement("div");
+      el.className = "notif";
+      el.innerHTML = '<div class="notif-head"><span class="notif-icon">' + svgIcon(repos[repo] ? repos[repo].key : "home", "") + '</span><b class="notif-title">' + esc(title) + '</b><button class="notif-x" type="button">&times;</button></div><p class="notif-body">' + esc(body) + '</p>';
+      notifContainer.appendChild(el);
+      el.querySelector(".notif-x").addEventListener("click", function () {
+        el.classList.add("notif-out");
+        setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 400);
+      });
+      setTimeout(function () {
+        el.classList.add("notif-out");
+        setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 400);
+      }, 12000);
+    }
+
+    function checkRepos() {
+      Object.keys(repos).forEach(function (repoName) {
+        var info = repos[repoName];
+        var ghUrl = "https://api.github.com/repos/notmicrosoft2000-cmd/" + repoName;
+        var relUrl = ghUrl + "/releases/latest";
+        var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+        var opts = controller ? { signal: controller.signal } : {};
+        if (controller) setTimeout(function () { controller.abort(); }, 5000);
+
+        fetch(relUrl, opts).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
+          if (!data || !data.tag_name) return;
+          var tag = data.tag_name;
+          var lastSeen = seen[repoName] || "";
+          if (lastSeen && lastSeen !== tag) {
+            var relName = data.name || tag;
+            showNotif(info.name + " released " + relName, data.body ? data.body.substring(0, 180) : "new release: " + tag, repoName);
+          }
+          seen[repoName] = tag;
+          localStorage.setItem("hub_repo_seen", JSON.stringify(seen));
+        })["catch"](function () {});
+      });
+    }
+
+    checkRepos();
+    setInterval(checkRepos, 300000);
+  })();
 
   var idleTimer = null;
   function armIdle() {

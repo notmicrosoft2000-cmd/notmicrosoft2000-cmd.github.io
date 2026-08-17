@@ -120,19 +120,15 @@
 
   var PREMADE = ["webring", "dark", "neon", "paper"];
 
-  var NEWS_NAV = ["TOP", "MARKETS", "SCANDAL", "TECH", "LOCAL", "TRAGEDY", "WEATHER", "SPORT"];
+  var NEWS_NAV = ["TOP", "MARKETS", "SCANDAL", "TECH", "LOCAL", "TRAGEDY"];
 
   var NEWS = [
-    { cat: "TOP", time: "just now", title: "NEPT stock tumbles 400% after annual report turns out to be a sandwich", body: "Investors who arrived for the annual report found, in a paper bag, one sandwich. Analysts rate the sandwich 'better than the fundamentals'. The exchange, upon reviewing the filing, made a single beep. Shares of NEPT are now priced in sandwiches. The company says the report was 'filed, swallowed, and forgotten, in that order'." },
-    { cat: "MARKETS", time: "2 min ago", title: "Analysts upgrade Neptune Productions from 'what' to 'hmm', citing the orb", body: "In a rare double upgrade, the firm's analysts — who have never seen a product — now rate NEPT 'hold indefinitely, or until the glow stops'. The orb remains in a glow position. Trading halts have been scheduled for whenever the glow gets too into it." },
-    { cat: "SCANDAL", time: "4 min ago", title: "Floppy disk laid off for 'not being a person', says company", body: "The Simpler Times' 1.44MB diskette has been terminated for failing to meet the definition of 'person'. It was reportedly the only employee doing anything. Severance was one amber hum. The diskette has since begun a music career, humming the old songs at 3am, apparently by choice this time." },
-    { cat: "SCANDAL", time: "7 min ago", title: "Shareholders demand a vote; board provides tote bags instead", body: "Shareholders who requested a board vote were issued tote bags and the reassurance that their vote had been 'read aloud, then considered'. The board then confirmed a quorum of one, which was the toaster. Voting rights have been reclassified as suggestions, allegedly." },
-    { cat: "MARKETS", time: "11 min ago", title: "Quarterly earnings call lasts 11 seconds, comprises one beep", body: "The Neptune-DOS earnings call was 11 seconds long and consisted of a single beep. Analysts were invited to 'do with that what you will'. Several have filed it under 'forward-looking statements'. The beep did not take questions." },
-    { cat: "TECH", time: "16 min ago", title: "NeptuneOS 2.0 delayed after orb refuses to stop glowing", body: "Sources say the orb has entered a state of continuous glow and will not power down for the release build. Engineers are asking the orb nicely. The orb responded by glowing with more conviction. The release is now scheduled for whenever the orb says so." },
-    { cat: "LOCAL", time: "21 min ago", title: "Carrier pigeon union rejects same-day delivery, demands bread", body: "Talks broke down this morning over working conditions. The pigeon, a veteran of the webring's most urgent messages, said it would only carry correspondence 'at least three business days old'. Bread was offered. The pigeon accepted the bread but will still be late." },
-    { cat: "TRAGEDY", time: "26 min ago", title: "640K deemed 'not enough' for the fifth time this week", body: "NeptuneDOS has again been told that its base memory fails to satisfy modern requirements. It has responded by beeping. Analysts believe it is handling the news as well as can be expected of a box with the emotional range of a beep." },
-    { cat: "WEATHER", time: "33 min ago", title: "Mostly retro. Chance of static. 87.7 FM with breaks of cold start.", body: "A warm front of nostalgia is moving in from the floppy era, followed by scattered noise after midnight. Cold starts will be chilly at first but reliable once they warm up. The static is thematic. The markets weather is worse." },
-    { cat: "SPORT", time: "41 min ago", title: "Bakugo's target observed moving at walking pace", body: "Analysts following the target describe its trajectory as 'deliberate but deeply suspicious'. Redacted coordinates showed no change for forty minutes, then a single deliberate step. Cameras remain rolling. The target knows." }
+    { cat: "TOP", time: "just now", title: "NEPT stock holds above $47 despite annual report being a sandwich", body: "Analysts remain baffled that a company whose primary filing is a sandwich maintains a market cap larger than most nations\u2019 GDP. The toaster, serving as interim CFO, issued a statement consisting entirely of a warm hum. Shares are up. Nobody knows why. The board is a quorum of one." },
+    { cat: "MARKETS", time: "3 min ago", title: "Trading volume surges past 4 million as investors confuse NEPT with a real company", body: "Unprecedented interest in NEPT shares has been attributed to a typo in a financial blog that listed Neptune Productions under \u2018companies that definitely exist.\u2019 The exchange has suspended inquiry. Volume is now described as \u2018surprisingly corporate.\u2019" },
+    { cat: "SCANDAL", time: "8 min ago", title: "Board emergency session held; the toaster ate the agenda", body: "An emergency board meeting was called to address the sandwich-shaped 10-K. By the time the pigeon arrived with the agenda, the toaster had consumed it. Minutes were recorded as a single beep. The motion carried unanimously, which means the toaster voted yes." },
+    { cat: "TECH", time: "14 min ago", title: "Orb continues to glow; engineers now describe it as \u2018committed\u2019", body: "The NeptuneOS orb, which has been glowing since 2019, has entered what engineers call \u2018a state of permanent conviction.\u2019 Attempts to reboot resulted in the orb glowing harder. A formal complaint was filed. The complaint also began glowing." },
+    { cat: "LOCAL", time: "22 min ago", title: "Carrier pigeon union ratifies bread-based compensation package", body: "After three weeks of negotiations, the pigeon union accepted a deal comprising 40% rye, 30% sourdough, and 30% \u2018whatever is in the hallway.\u2019 Same-day delivery remains unavailable. The pigeon will arrive when it arrives." },
+    { cat: "TRAGEDY", time: "31 min ago", title: "640K memory declared \u2018enough for anyone with a reasonable life\u2019 for the 847th time", body: "NeptuneDOS has reiterated its position that 640K of base memory is sufficient for all human endeavor. Critics note that the machine has never successfully run a spreadsheet. NeptuneDOS responded with a beep it described as \u2018diplomatic.\u2019" }
   ];
 
   var FILINGS = [
@@ -332,13 +328,13 @@
     function build() {
       dayKey = keyOf(new Date());
       var rand = mulberry32(hashStr(dayKey));
-      var p = 1.0;
+      var p = 47.83;
       series = [];
-      for (var i = 0; i < 240; i++) { p = Math.max(0.01, p * (1 + (rand() - 0.485) * 0.03)); series.push(p); }
+      for (var i = 0; i < 240; i++) { p = Math.max(5, p * (1 + (rand() - 0.48) * 0.022)); series.push(p); }
       open = series[0];
       high = Math.max.apply(null, series);
       low = Math.min.apply(null, series);
-      volume = Math.round(40 + rand() * 960) * 1000;
+      volume = Math.round(820 + rand() * 4200) * 1000;
     }
     function ensure() { if (dayKey !== keyOf(new Date())) build(); }
     function idx() { ensure(); var d = new Date(); return Math.min(239, Math.floor((d.getHours() * 60 + d.getMinutes()) / 6)); }
@@ -351,7 +347,13 @@
       low: function () { ensure(); return low; },
       volume: function () { ensure(); return volume; },
       last48: function () { ensure(); return series.slice(Math.max(0, idx() - 47), idx() + 1); },
-      fmt: function (v) { return v.toFixed(2); }
+      fmt: function (v) { return v.toFixed(2); },
+      shares: function () { ensure(); return Math.round(12800 + hashStr(dayKey) % 3200); },
+      mcap: function () { ensure(); return (series[idx()] * (12800 + hashStr(dayKey) % 3200) / 1000).toFixed(0); },
+      pe: function () { ensure(); return (series[idx()] / (open * 0.04 + 0.12)).toFixed(1); },
+      wk52hi: function () { ensure(); return (high * 1.18).toFixed(2); },
+      wk52lo: function () { ensure(); return (low * 0.62).toFixed(2); },
+      divYield: function () { ensure(); return (2.3 + (hashStr(dayKey) % 17) / 10).toFixed(1); }
     };
   })();
 
@@ -383,6 +385,20 @@
     }
     var t = $("#tickNep");
     if (t) t.textContent = "NEPT " + Market.fmt(p) + " " + (ch >= 0 ? "\u25b2 +" : "\u25bc ") + ch.toFixed(1) + "%  \u2022  ";
+    var si = function (id, v) { var e = $("#" + id); if (e) e.textContent = v; };
+    si("nepMcap", "$" + Market.mcap() + "M");
+    si("nepShares", fmtNum(Market.shares()) + "K");
+    si("nepPE", Market.pe());
+    si("nepWkHi", Market.fmt(Market.wk52hi()));
+    si("nepWkLo", Market.fmt(Market.wk52lo()));
+    si("nepDiv", Market.divYield() + "%");
+    var brk = $("#newsBreaking");
+    if (brk) {
+      var bv = ch >= 0
+        ? "BREAKING \u2014 NEPT holds above $" + Market.fmt(p) + " despite quarterly report being filed as a sandwich. the board (a toaster) confirms everything is fine. volume: " + fmtNum(Market.volume()) + " shares traded."
+        : "BREAKING \u2014 NEPT drops " + Math.abs(ch).toFixed(1) + "% after the pigeon delivered the earnings call to the wrong building. the beep was heard but not understood. volume: " + fmtNum(Market.volume()) + " shares traded.";
+      brk.textContent = bv;
+    }
   }
 
   /* ---------------- views ---------------- */
@@ -413,11 +429,13 @@
           '</div>' +
           '<button class="pv-launch" type="button" data-launch="' + k + '">LAUNCH \u25b8</button>' +
         '</div>' +
-        win(k, "about.txt", '<div class="pv-desc">' + p.about + '</div><p class="ai-note">' + AI_NOTE + '</p>') +
+        win(k, "about.txt", '<details class="about-collapse"><summary class="about-summary">ABOUT \u25b8</summary><div class="pv-desc">' + p.about + '</div><p class="ai-note">' + AI_NOTE + '</p></details>') +
         win(k, "features.list", '<ul class="pv-chips">' + p.features.map(function (f) { return '<li class="chip">' + f + '</li>'; }).join("") + '</ul>') +
-        win(k, "repo.json", '<div class="pv-grid" id="facts-' + k + '">' +
-          factCell("LANGUAGE", "\u2014") + factCell("LICENSE", "\u2014") + factCell("STARS", "\u2014") +
-          factCell("FORKS", "\u2014") + factCell("OPEN ISSUES", "\u2014") + factCell("UPDATED", "\u2014") +
+        win(k, "repo.json", '<div class="pv-github" id="github-' + k + '" style="display:none"><p class="pv-gh-desc" id="ghdesc-' + k + '"></p></div>' +
+          '<div class="pv-grid" id="facts-' + k + '">' +
+          factCell("LANGUAGE", "\u2014") + factCell("STARS", "\u2014") +
+          factCell("FORKS", "\u2014") + factCell("WATCHERS", "\u2014") +
+          factCell("OPEN ISSUES", "\u2014") + factCell("UPDATED", "\u2014") +
         '</div>') +
         win(k, "release.log", '<div class="pv-release" id="rel-' + k + '">' +
           '<div><span class="rl-title">LATEST RELEASE</span><br><b>\u2026</b></div>' +
@@ -506,7 +524,7 @@
         '<span class="tick-live"><i class="live-dot"></i>LIVE</span>' +
         '<div class="tick-track"><span class="tt"><span class="tick-nep" id="tickNep"></span>' + tickerText + '</span></div>' +
       '</div>' +
-      '<div class="breaking">BREAKING \u2014 the annual report is a sandwich and NEPT is down. more at eleven, or whenever the beep says so.</div>' +
+      '<div class="breaking" id="newsBreaking">BREAKING \u2014 NEPT holds above $47 despite quarterly report being filed as a sandwich. the board (a toaster) confirms everything is fine.</div>' +
       '<div class="news-feature">' +
         '<div class="nf-body">' +
           '<span class="ncat">' + NEWS[0].cat + '</span>' +
@@ -530,10 +548,16 @@
     var html = '<section class="view" data-view="investors" role="tabpanel">' +
       '<div class="inv-head">' +
         '<h2>NEPTUNE PRODUCTIONS <b>INC.</b></h2>' +
-        '<p>THE HOLDINGS OF THE HALLWAY. SYMBOL: NEPT. NOTHING IS CONFIRMED. EVERYTHING IS FILED.</p>' +
+        '<p>THE HOLDINGS OF THE HALLWAY. SYMBOL: NEPT. FILED, SWALLOWED, AND FORGOTTEN.</p>' +
       '</div>' +
-      win("nep", "NEPT \u2014 daily", '<div class="stock">' +
-        '<div class="stock-price"><b id="nepPrice">\u2014</b><span><i class="stock-live"></i>NEPT</span></div>' +
+      '<div class="inv-corp">' +
+        '<div class="inv-corp-item"><span>FOUNDED</span><b>1987</b></div>' +
+        '<div class="inv-corp-item"><span>SECTOR</span><b>HALLWAY OPERATIONS</b></div>' +
+        '<div class="inv-corp-item"><span>EMPLOYEES</span><b>ALLEGED</b></div>' +
+        '<div class="inv-corp-item"><span>HEADQUARTERS</span><b>THE HALLWAY</b></div>' +
+      '</div>' +
+      win("nep", "NEPT \u2014 live market data", '<div class="stock">' +
+        '<div class="stock-price"><b id="nepPrice">\u2014</b><span><i class="stock-live"></i>NEPT \u00b7 NASDAQ</span></div>' +
         '<div class="stock-change red" id="nepChange">\u2014</div>' +
         '<div class="stock-facts">' +
           '<span>VOLUME <b id="nepVol">\u2014</b></span>' +
@@ -543,19 +567,27 @@
         '</div>' +
         '<div class="spark"><svg viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true"><polyline id="nepSpark" points=""/><circle id="nepDot" class="spark-dot" cx="200" cy="30" r="3"/></svg></div>' +
       '</div>') +
+      win("nep", "key statistics", '<div class="inv-grid">' +
+        '<div class="inv-stat"><span>MARKET CAP</span><b id="nepMcap">\u2014</b></div>' +
+        '<div class="inv-stat"><span>SHARES OUTSTANDING</span><b id="nepShares">\u2014</b></div>' +
+        '<div class="inv-stat"><span>P/E RATIO</span><b id="nepPE">\u2014</b></div>' +
+        '<div class="inv-stat"><span>52-WEEK HIGH</span><b id="nepWkHi">\u2014</b></div>' +
+        '<div class="inv-stat"><span>52-WEEK LOW</span><b id="nepWkLo">\u2014</b></div>' +
+        '<div class="inv-stat"><span>DIVIDEND YIELD</span><b id="nepDiv">\u2014</b></div>' +
+      '</div>') +
       win("nep", "latest filings (the paper bag)", '<ul class="filing-list">' + FILINGS.map(function (f) {
         return '<li><b>' + f[0] + '</b><span>' + f[1] + '</span></li>';
       }).join("") + '</ul>') +
       win("nep", "board of directors", '<ul class="board-list">' + BOARD.map(function (b) {
         return '<li><b>' + b[0] + '</b><span>' + b[1] + '</span></li>';
       }).join("") + '</ul>') +
-      win("nep", "scandal timeline", SCANDALS.map(function (s) {
+      win("nep", "corporate history", SCANDALS.map(function (s) {
         return '<div class="tl-item"><span class="tl-yr">' + s[0] + '</span><span class="tl-txt">' + s[1] + '</span></div>';
       }).join("")) +
       win("nep", "disenfranchisement, in writing", DISENFRAN.map(function (d) {
         return '<div class="disf-item"><span class="d-marker">\u25b8</span><span><b>' + d[0] + '</b> \u2014 ' + d[1] + '</span></div>';
       }).join("")) +
-      '<p class="news-note">this section is a public service for shareholders. the public service has been discontinued, like the vote. not investment advice \u2014 the toaster is not a licensed advisor.</p>' +
+      '<p class="news-note">this section is a public service for shareholders. the public service has been discontinued, like the vote. not investment advice \u2014 the toaster is not a licensed advisor. dividend is paid in beeps.</p>' +
     '</section>';
     return html;
   }
@@ -782,9 +814,7 @@
 
   function buildRail() {
     var simple = state.simple;
-    var html = '<button class="r-item" type="button" data-action="settings">' + svgIcon("gear", "") + '<b>SETTINGS</b></button>' +
-      '<span class="r-sep"></span>' +
-      '<button class="r-item" type="button" data-view="home">' + svgIcon("home", "") + '<b>HOME</b></button>';
+    var html = '<button class="r-item" type="button" data-view="home">' + svgIcon("home", "") + '<b>HOME</b></button>';
     if (!simple) {
       html += '<span class="r-sep"></span>' +
         '<button class="r-item" type="button" data-view="news">' + svgIcon("news", "") + '<b>NEWS</b></button>' +
@@ -824,11 +854,6 @@
   railList.addEventListener("click", function (e) {
     var it = e.target.closest(".r-item");
     if (!it) return;
-    if (it.getAttribute("data-action") === "settings") {
-      closeRail();
-      openSettings();
-      return;
-    }
     var k = it.getAttribute("data-view");
     if (!k) return;
     closeRail();
@@ -845,7 +870,7 @@
     SFX.click();
   });
 
-  $("#railWrap").addEventListener("mouseenter", function () { dismissToast(); });
+  $("#railWrap").addEventListener("mouseenter", function () { dismissToast(); dismissNotify(); });
 
   var railCollapseBtn = $("#railCollapse");
   function setCollapseLabel() {
@@ -1004,18 +1029,45 @@
     setView("home");
   }
 
-  /* ---------------- onboarding toast ---------------- */
+  /* ---------------- onboarding toast + notification ---------------- */
 
   var toast = $("#toast");
   var toastBody = $("#toastBody");
+  var notifyOverlay = $("#notifyOverlay");
+  var notifyDismiss = $("#notifyDismiss");
+
+  function dismissNotify() {
+    if (!notifyOverlay) return;
+    notifyOverlay.classList.remove("open");
+    notifyOverlay.setAttribute("aria-hidden", "true");
+    try { localStorage.setItem("hub_notify_v1", "1"); } catch (e) {}
+  }
+
+  if (notifyDismiss) notifyDismiss.addEventListener("click", function () { SFX.click(); dismissNotify(); });
+  if (notifyOverlay) {
+    notifyOverlay.addEventListener("click", function (e) {
+      if (e.target === notifyOverlay) { SFX.click(); dismissNotify(); }
+    });
+  }
+
+  function maybeNotify() {
+    if (touchDevice) return;
+    var done = false;
+    try { done = localStorage.getItem("hub_notify_v1") === "1"; } catch (e) {}
+    if (done) return;
+    setTimeout(function () {
+      notifyOverlay.classList.add("open");
+      notifyOverlay.setAttribute("aria-hidden", "false");
+    }, 1200);
+  }
 
   function maybeToast() {
     var done = false;
     try { done = localStorage.getItem("hub_intro_v2") === "1"; } catch (e) {}
     if (done) return;
     toastBody.innerHTML = touchDevice
-      ? 'This is the webring. Tap the <b>dots on the left edge</b> to navigate between programs \u2014 the top-right nav has been disenfranchised like the rest of the shareholders. Click the <b>logo</b>, top-left, for quick settings.'
-      : 'This is the webring. Move your cursor to the <b>left edge</b> to navigate between programs \u2014 the top-right nav has been disenfranchised like the rest of the shareholders. Click the <b>logo</b>, top-left, for quick settings.';
+      ? 'This is the webring. Tap the <b>dots on the left edge</b> to navigate between programs. Click the <b>logo</b>, top-left, for quick settings.'
+      : 'This is the webring. Move your cursor to the <b>left edge</b> to navigate between programs. Click the <b>logo</b>, top-left, for quick settings.';
     setTimeout(function () { toast.classList.add("open"); toast.setAttribute("aria-hidden", "false"); }, 900);
     setTimeout(dismissToast, 10000);
   }
@@ -1081,11 +1133,17 @@
     var r = data.repo || {};
     facts.innerHTML =
       factCell("LANGUAGE", r.language || "\u2014") +
-      factCell("LICENSE", r.license && r.license.spdx_id ? r.license.spdx_id : "\u2014") +
       factCell("STARS", fmtNum(r.stargazers_count)) +
       factCell("FORKS", fmtNum(r.forks_count)) +
+      factCell("WATCHERS", fmtNum(r.subscribers_count)) +
       factCell("OPEN ISSUES", fmtNum(r.open_issues_count)) +
       factCell("UPDATED", fmtDate(r.updated_at));
+    var ghEl = $("#github-" + k);
+    var descEl = $("#ghdesc-" + k);
+    if (ghEl && r.description) {
+      ghEl.style.display = "";
+      descEl.textContent = r.description;
+    }
 
     var rel = $("#rel-" + k);
     if (rel) {
@@ -1237,6 +1295,7 @@
     if (e.key !== "Escape") return;
     if (swap.classList.contains("open")) { swapClose(); return; }
     if (settingsOverlay.classList.contains("open")) { closeSettings(); }
+    if (notifyOverlay && notifyOverlay.classList.contains("open")) { dismissNotify(); }
   });
 
   buildViews();
@@ -1246,6 +1305,7 @@
   renderMarket();
   setInterval(renderMarket, 5000);
   maybeToast();
+  maybeNotify();
 
   var idleTimer = null;
   function armIdle() {

@@ -167,6 +167,82 @@
     ["CEO ANSWERS", "in the next earnings call, which was a single beep."]
   ];
 
+  var ANALYSTS = [
+    ["THE ORB", "BUY", "the orb has never been wrong. it glows with conviction."],
+    ["A TOASTER", "HOLD", "waiting for the next snack cycle. quorum pending."],
+    ["THE PIGEON", "SELL", "on strike. downgrade pending. requires bread."],
+    ["A HALLWAY", "STRONG BUY", "the hallway has seen things. it recommends everything."],
+    ["THE FLOPPY", "N/A", "laid off. no longer covering the stock. still humming."],
+    ["87.7 FM", "BUY", "the static between ratings is thematic."],
+    ["THE FILING CABINET", "HOLD", "all filings confirmed as sandwiches. maintaining position."],
+    ["THE ECHO", "BUY", "heard the beep from the earnings call. was convinced."]
+  ];
+
+  var REVENUE = [
+    ["BEPS (beep earnings per share)", "$0.0003"],
+    ["SANDWICH OPERATIONS", "$4.2M"],
+    ["PIGEON LOGISTICS", "$1.1M"],
+    ["ORB LICENSING", "$890K"],
+    ["TOTEBAG MERCHANDISE", "$340K"],
+    ["HALLWAY RENT", "$0 (the hallway refuses to charge)"],
+    ["STATIC BROADCASTING", "$12"],
+    ["FILING FEE REIMBURSEMENT", "-$2,400"],
+    ["TOTAL REVENUE", "$5.6M (est.)"]
+  ];
+
+  var EARNINGS = [
+    ["Q4 2025", "$0.0003", "single beep, no questions taken", "-2.1%"],
+    ["Q3 2025", "$0.0002", "earnings call lasted 9 seconds, shorter than usual", "+0.4%"],
+    ["Q2 2025", "$0.0001", "toaster ate the press release", "-0.8%"],
+    ["Q1 2025", "$0.0004", "pigeon delivered results on time for the first time", "+1.2%"],
+    ["Q4 2024", "$0.0002", "orb glowed during call, analysts distracted", "-3.7%"],
+    ["Q3 2024", "$0.0003", "sandwich disclosed as primary asset", "+0.1%"]
+  ];
+
+  var GOVERNANCE = [
+    ["CHARTER", "the bylaws are written on a napkin. the napkin is framed."],
+    ["AUDIT", "audited annually by the hallway. the hallway found nothing, which is either good or the hallway was not looking."],
+    ["NOMINATING", "the board nominates whoever is in the hallway. the hallway does not always consent."],
+    ["COMPENSATION", "paid in beeps, tote bags, and the occasional sandwich. the CEO's salary is classified as 'alleged.'"],
+    ["ETHICS", "the company has a strict no-ethics policy. this has been in place since 1987 and has never been challenged."],
+    ["WHISTLEBLOWER", "reports go to the pigeon. the pigeon is on strike. reports accumulate on the roof."],
+    ["INSIDER TRADING", "the orb knows things. the orb is not trading. the orb is glowing."],
+    ["RELATED PARTY", "the toaster and the hallway are related by proximity. this constitutes a conflict of interest, allegedly."]
+  ];
+
+  var RISKS = [
+    ["ORRISK 1", "the orb may continue to glow indefinitely, consuming resources and confusing analysts."],
+    ["ORRISK 2", "the pigeon union may escalate beyond bread to demands for dental."],
+    ["ORRISK 3", "640K of memory may prove insufficient for an operating system that insists it is enough."],
+    ["ORRISK 4", "the floppy disk's music career may overshadow the company's actual revenue."],
+    ["ORRISK 5", "the annual report may continue to be a sandwich, undermining investor confidence."],
+    ["ORRISK 6", "the hallway may develop opinions about zoning."],
+    ["ORRISK 7", "87.7 FM may be claimed by a real radio station, eliminating our broadcast revenue of $12."],
+    ["ORRISK 8", "the toaster may run for office. the toaster is ineligible. the toaster does not know this."]
+  ];
+
+  var SHAREHOLDERS = [
+    ["THE ORB", "34.2%", "chairman, glow position. holds shares in a state of continuous luminescence."],
+    ["A TOASTER", "18.7%", "vice chair. holds shares in its crumb tray. also holds a sandwich."],
+    ["THE CEO", "12.1%", "[redacted]. holds shares in an undisclosed hallway."],
+    ["THE FLOPPY DISK", "8.4%", "laid off. still holds shares. they hum at night."],
+    ["THE PIGEON", "6.3%", "on strike. shares are being delivered at 3\u20137 business day intervals."],
+    ["THE HALLWAY", "5.8%", "non-voting. holds shares by proximity. the hallway forgets where it put them."],
+    ["THE ECHO", "4.2%", "heard the beep. bought immediately. has not stopped listening."],
+    ["FLOAT", "10.3%", "held by the public, allegedly. the public is a suggestion."]
+  ];
+
+  var CAPITAL = [
+    ["COMMON SHARES", "12,800K \u2013 16,000K outstanding (varies with the pigeon)"],
+    ["PREFERRED SHARES", "none issued. the toaster proposed one but ate the proposal."],
+    ["WARRANTS", "outstanding warrants to purchase 1 sandwich at market price."],
+    ["OPTIONS", "the CEO has an option to answer a question. this option has never been exercised."],
+    ["CONVERTIBLE NOTES", "one note, written on a napkin, convertible to a sandwich upon request."],
+    ["DIVIDEND POLICY", "dividends paid in beeps quarterly. the beep is non-cumulative."],
+    ["BUYBACK PROGRAM", "authorized to buy back up to 1 sandwich. has not been invoked."],
+    ["DEBT RATIO", "the company owes the hallway an apology. this is not financial debt."]
+  ];
+
   var CONTACTS = [
     { label: "EMAIL", value: "productions@neptune.test", note: "checked hourly, answered rarely, read always.", href: "mailto:productions@neptune.test" },
     { label: "GITHUB", value: "notmicrosoft2000-cmd", note: "the whole source, the whole weirdness.", href: "https://github.com/notmicrosoft2000-cmd" },
@@ -555,6 +631,8 @@
         '<div class="inv-corp-item"><span>SECTOR</span><b>HALLWAY OPERATIONS</b></div>' +
         '<div class="inv-corp-item"><span>EMPLOYEES</span><b>ALLEGED</b></div>' +
         '<div class="inv-corp-item"><span>HEADQUARTERS</span><b>THE HALLWAY</b></div>' +
+        '<div class="inv-corp-item"><span>EXCHANGE</span><b>NASDAQ (ALLEGED)</b></div>' +
+        '<div class="inv-corp-item"><span>CUSIP</span><b>640K 1987</b></div>' +
       '</div>' +
       win("nep", "NEPT \u2014 live market data", '<div class="stock">' +
         '<div class="stock-price"><b id="nepPrice">\u2014</b><span><i class="stock-live"></i>NEPT \u00b7 NASDAQ</span></div>' +
@@ -570,24 +648,65 @@
       win("nep", "key statistics", '<div class="inv-grid">' +
         '<div class="inv-stat"><span>MARKET CAP</span><b id="nepMcap">\u2014</b></div>' +
         '<div class="inv-stat"><span>SHARES OUTSTANDING</span><b id="nepShares">\u2014</b></div>' +
-        '<div class="inv-stat"><span>P/E RATIO</span><b id="nepPE">\u2014</b></div>' +
+        '<div class="inv-stat"><span>P/E RATIO (TRAILING)</span><b id="nepPE">\u2014</b></div>' +
         '<div class="inv-stat"><span>52-WEEK HIGH</span><b id="nepWkHi">\u2014</b></div>' +
         '<div class="inv-stat"><span>52-WEEK LOW</span><b id="nepWkLo">\u2014</b></div>' +
         '<div class="inv-stat"><span>DIVIDEND YIELD</span><b id="nepDiv">\u2014</b></div>' +
+        '<div class="inv-stat"><span>BETA</span><b>0.00</b></div>' +
+        '<div class="inv-stat"><span>EPS (TTM)</span><b>$0.0014</b></div>' +
+        '<div class="inv-stat"><span>BOOK VALUE</span><b>1 sandwich</b></div>' +
       '</div>') +
+      win("nep", "analyst ratings", '<table class="inv-table">' +
+        '<thead><tr><th>ANALYST</th><th>RATING</th><th>NOTES</th></tr></thead><tbody>' +
+        ANALYSTS.map(function (a) {
+          var cls = a[1] === "BUY" || a[1] === "STRONG BUY" ? "grn" : a[1] === "SELL" ? "red" : "";
+          return '<tr><td>' + a[0] + '</td><td class="' + cls + '">' + a[1] + '</td><td>' + a[2] + '</td></tr>';
+        }).join("") +
+        '</tbody></table>' +
+        '<p class="inv-consensus">CONSENSUS: <b>HOLD (ALLEGEDLY)</b> \u2014 4 buy, 2 hold, 1 sell, 1 N/A. target price: 1 sandwich.') +
+      win("nep", "revenue breakdown (quarterly, unaudited)", '<table class="inv-table">' +
+        '<thead><tr><th>SEGMENT</th><th>AMOUNT</th></tr></thead><tbody>' +
+        REVENUE.map(function (r) {
+          return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>';
+        }).join("") +
+        '</tbody></table>') +
+      win("nep", "earnings history", '<table class="inv-table">' +
+        '<thead><tr><th>QUARTER</th><th>EPS</th><th>NOTES</th><th>CHG</th></tr></thead><tbody>' +
+        EARNINGS.map(function (e) {
+          var cls = e[3].charAt(0) === "+" ? "grn" : "red";
+          return '<tr><td>' + e[0] + '</td><td>' + e[1] + '</td><td>' + e[2] + '</td><td class="' + cls + '">' + e[3] + '</td></tr>';
+        }).join("") +
+        '</tbody></table>' +
+        '<p class="inv-footnote">all earnings reported in beeps. beep-to-USD conversion is pending regulatory approval. the regulatory body is a hallway.') +
+      win("nep", "shareholder structure", '<table class="inv-table">' +
+        '<thead><tr><th>SHAREHOLDER</th><th>STAKE</th><th>NOTES</th></tr></thead><tbody>' +
+        SHAREHOLDERS.map(function (s) {
+          return '<tr><td><b>' + s[0] + '</b></td><td>' + s[1] + '</td><td>' + s[2] + '</td></tr>';
+        }).join("") +
+        '</tbody></table>' +
+        '<p class="inv-footnote">share counts are estimated. the pigeon is responsible for the count. the pigeon is on strike.') +
+      win("nep", "capital structure", '<ul class="filing-list">' + CAPITAL.map(function (c) {
+        return '<li><b>' + c[0] + '</b><span>' + c[1] + '</span></li>';
+      }).join("") + '</ul>') +
       win("nep", "latest filings (the paper bag)", '<ul class="filing-list">' + FILINGS.map(function (f) {
         return '<li><b>' + f[0] + '</b><span>' + f[1] + '</span></li>';
       }).join("") + '</ul>') +
       win("nep", "board of directors", '<ul class="board-list">' + BOARD.map(function (b) {
         return '<li><b>' + b[0] + '</b><span>' + b[1] + '</span></li>';
       }).join("") + '</ul>') +
+      win("nep", "corporate governance", GOVERNANCE.map(function (g) {
+        return '<div class="disf-item"><span class="d-marker">\u25b8</span><span><b>' + g[0] + '</b> \u2014 ' + g[1] + '</span></div>';
+      }).join("")) +
+      win("nep", "risk factors", RISKS.map(function (r) {
+        return '<div class="disf-item"><span class="d-marker">\u26a0</span><span><b>' + r[0] + '</b> \u2014 ' + r[1] + '</span></div>';
+      }).join("")) +
       win("nep", "corporate history", SCANDALS.map(function (s) {
         return '<div class="tl-item"><span class="tl-yr">' + s[0] + '</span><span class="tl-txt">' + s[1] + '</span></div>';
       }).join("")) +
       win("nep", "disenfranchisement, in writing", DISENFRAN.map(function (d) {
         return '<div class="disf-item"><span class="d-marker">\u25b8</span><span><b>' + d[0] + '</b> \u2014 ' + d[1] + '</span></div>';
       }).join("")) +
-      '<p class="news-note">this section is a public service for shareholders. the public service has been discontinued, like the vote. not investment advice \u2014 the toaster is not a licensed advisor. dividend is paid in beeps.</p>' +
+      '<p class="news-note">this section is a public service for shareholders. the public service has been discontinued, like the vote. not investment advice \u2014 the toaster is not a licensed advisor. dividend is paid in beeps. all financial data sourced from the hallway, the paper bag, and the echo. this document does not constitute an offering of securities. it constitutes an offering of sandwiches.</p>' +
     '</section>';
     return html;
   }

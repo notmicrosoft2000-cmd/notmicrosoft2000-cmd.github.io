@@ -592,7 +592,12 @@
           '</div>' +
           '<button class="pv-launch" type="button" data-launch="' + k + '">LAUNCH \u25b8</button>' +
         '</div>' +
-        win(k, "about.txt", '<details class="about-collapse"><summary class="about-summary">ABOUT \u25b8</summary><div class="pv-desc">' + p.about + '</div><p class="ai-note">' + AI_NOTE + '</p></details>') +
+        '<div class="pv-preview" id="pvpreview-' + k + '">' +
+          '<div class="pv-preview-bar"><span class="url">' + p.url.replace("https://", "") + '</span><button class="open-external" type="button" onclick="window.open(\'' + p.url + '\',\'_blank\')">OPEN \u2197</button></div>' +
+          '<div class="pv-preview-overlay" id="pvload-' + k + '"><span>LOADING PREVIEW</span></div>' +
+          '<iframe data-src="' + p.url + '" loading="lazy" sandbox="allow-scripts allow-same-origin" title="' + p.name + ' preview"></iframe>' +
+        '</div>' +
+        win(k, "about.txt", '<details class="about-collapse" open><summary class="about-summary">ABOUT \u25b8</summary><div class="pv-desc">' + p.about + '</div><p class="ai-note">' + AI_NOTE + '</p></details>') +
         win(k, "features.list", '<ul class="pv-chips">' + p.features.map(function (f) { return '<li class="chip">' + f + '</li>'; }).join("") + '</ul>') +
         win(k, "repo.json", '<div class="pv-github" id="github-' + k + '" style="display:none"><p class="pv-gh-desc" id="ghdesc-' + k + '"></p></div>' +
           '<div class="pv-grid" id="facts-' + k + '">' +
@@ -1517,6 +1522,25 @@
   setInterval(renderMarket, 5000);
   maybeToast();
   maybeNotify();
+
+  var iframes = document.querySelectorAll(".pv-preview iframe[data-src]");
+  if (iframes.length) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          var f = e.target;
+          f.src = f.getAttribute("data-src");
+          f.removeAttribute("data-src");
+          var loadEl = f.previousElementSibling;
+          if (loadEl && loadEl.classList.contains("pv-preview-overlay")) {
+            f.onload = function () { loadEl.classList.add("loaded"); };
+          }
+          io.unobserve(f);
+        }
+      });
+    }, { rootMargin: "200px" });
+    iframes.forEach(function (f) { io.observe(f); });
+  }
 
   var chartRange = "1D";
   var chartRanges = { "1D": 240, "5D": 240, "1M": 240, "3M": 240, "1Y": 240, "ALL": 240 };

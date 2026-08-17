@@ -396,23 +396,10 @@
 
     html += '<section class="view" data-view="home" role="tabpanel">' +
       '<div class="hero">' +
-        '<span class="hero-kicker">THE WEBRING</span>' +
         '<h2 class="hero-title">NEPTUNE<br>PRODUCTIONS</h2>' +
-        (simple
-          ? '<p class="hero-sub">Pick a program. The whole site becomes it. Nothing else here, allegedly.</p>'
-          : '<p class="hero-sub">A publicly traded company, allegedly — symbol NEPT, board of directors: a toaster, disenfranchisement: ongoing. Every corner of this hallway is a different website wearing different clothes. Hover the left edge (or tap the dots) to navigate, and click the logo, top-left, for quick settings. Or just pick a program below and let the whole site become it.</p>') +
+        '<p class="hero-sub">pick a program. the whole site becomes it.</p>' +
       '</div>' +
-      '<h3 class="section-title">THE PROGRAMS</h3>' +
-      '<p class="section-tag">each one is a different aesthetic, a different room, a different promise — and, allegedly, a product line.</p>' +
       '<div class="webring" id="homeGrid"></div>' +
-      '<h3 class="section-title">' + (simple ? "UPDATES" : "NEWS FROM THE HALLWAY") + '</h3>' +
-      '<p class="section-tag">' + (simple ? "the essentials, briefly." : "short dispatches, plus a full broadcast in the newsroom. the markets are not doing well.") + '</p>' +
-      '<div class="news">' +
-        HOME_NEWS.map(function (n) {
-          return '<div class="nitem"><b>' + n[0] + '</b><p>' + n[1] + '</p></div>';
-        }).join("") +
-      '</div>' +
-      (simple ? "" : '<button class="pv-launch news-go" id="newsGo" type="button">OPEN THE NEWSROOM \u25b8</button>') +
     '</section>';
 
     Object.keys(PROJECTS).forEach(function (k) {
@@ -975,15 +962,6 @@
       applyTheme();
       markActivePreviews();
       SFX.theme();
-      return;
-    }
-    var row = e.target.closest(".set-row");
-    if (row && !e.target.closest("input")) {
-      var inp = row.querySelector("input");
-      if (inp) {
-        inp.checked = !inp.checked;
-        inp.dispatchEvent(new Event("change", { bubbles: true }));
-      }
     }
   });
 

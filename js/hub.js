@@ -497,7 +497,6 @@
       brk.textContent = bv;
     }
     renderChart();
-    if (state.view === "investors") renderPortfolio();
   }
 
   /* ---------------- detailed chart ---------------- */
@@ -631,6 +630,8 @@
         clipR.setAttribute("width", String(W));
       }
     }
+
+    requestAnimationFrame(initChartCrosshair);
   }
 
   function renderHomeChart() {
@@ -704,12 +705,20 @@
   function initChartCrosshair() {
     var wrap = $(".inv-chart-wrap");
     if (!wrap) return;
+    var existingTip = wrap.querySelector(".chart-tooltip");
+    if (existingTip) existingTip.parentNode.removeChild(existingTip);
+    var existingLine = wrap.querySelector(".chart-crosshair-v");
+    if (existingLine) existingLine.parentNode.removeChild(existingLine);
     var svg = $("#nepChart");
     if (!svg) return;
     var tip = document.createElement("div");
     tip.className = "chart-tooltip";
     wrap.style.position = "relative";
     wrap.appendChild(tip);
+
+    var vLine = document.createElement("div");
+    vLine.className = "chart-crosshair-v";
+    wrap.appendChild(vLine);
 
     svg.addEventListener("mousemove", function (e) {
       var rect = svg.getBoundingClientRect();
@@ -721,140 +730,36 @@
       var volumes = data.volumes;
       var labels = data.labels;
       var n = prices.length;
+      if (n < 2) return;
       var idx = Math.round(pct * (n - 1));
       if (idx < 0) idx = 0;
       if (idx >= n) idx = n - 1;
       var price = prices[idx];
       var vol = volumes[idx];
       var lbl = labels[idx] || "";
-      tip.innerHTML = '<b>$' + Market.fmt(price) + '</b><span>' + lbl + ' \u2022 VOL ' + fmtNum(vol) + '</span>';
+      var prev = idx > 0 ? prices[idx - 1] : price;
+      var chg = price - prev;
+      var chgPct = prev !== 0 ? ((price / prev) - 1) * 100 : 0;
+      var chgCol = chg >= 0 ? "#43d97a" : "#ff5252";
+      var chgSign = chg >= 0 ? "+" : "";
+      tip.innerHTML = '<div class="tt-row"><span class="tt-lbl">DATE</span><b>' + lbl + '</b></div>' +
+        '<div class="tt-row"><span class="tt-lbl">CLOSE</span><b style="color:' + chgCol + '">$' + price.toFixed(2) + '</b></div>' +
+        '<div class="tt-row"><span class="tt-lbl">CHG</span><span style="color:' + chgCol + '">' + chgSign + chg.toFixed(2) + ' (' + chgSign + chgPct.toFixed(2) + '%)</span></div>' +
+        '<div class="tt-row"><span class="tt-lbl">VOL</span><span>' + fmtNum(vol) + '</span></div>';
       tip.classList.add("show");
-      var tipX = relX + 14;
-      if (tipX + 160 > rect.width) tipX = relX - 160;
+      var tipX = relX + 16;
+      if (tipX + 180 > rect.width) tipX = relX - 184;
       tip.style.left = tipX + "px";
-      tip.style.top = "8px";
+      tip.style.top = "4px";
+
+      vLine.style.left = relX + "px";
+      vLine.style.display = "block";
     });
 
     svg.addEventListener("mouseleave", function () {
       tip.classList.remove("show");
+      vLine.style.display = "none";
     });
-  }
-
-  /* ---------------- stock market game ---------------- */
-
-  var Portfolio = (function () {
-    var KEY = "hub_portfolio";
-    var data;
-    function load() {
-      try { data = JSON.parse(localStorage.getItem(KEY)); } catch (e) { data = null; }
-      if (!data || typeof data.cash !== "number") {
-        data = { cash: 100, shares: 0, avgCost: 0, trades: [] };
-      }
-    }
-    function save() { localStorage.setItem(KEY, JSON.stringify(data)); }
-    load();
-
-    return {
-      cash: function () { return data.cash; },
-      shares: function () { return data.shares; },
-      avgCost: function () { return data.avgCost; },
-      trades: function () { return data.trades; },
-      value: function () { return data.shares * Market.price(); },
-      totalValue: function () { return data.cash + data.shares * Market.price(); },
-      pnl: function () { return data.shares > 0 ? (Market.price() - data.avgCost) * data.shares : 0; },
-      pnlPct: function () { return data.shares > 0 && data.avgCost > 0 ? ((Market.price() / data.avgCost) - 1) * 100 : 0; },
-      buy: function (qty) {
-        var p = Market.price();
-        var cost = p * qty;
-        if (cost > data.cash) return { ok: false, msg: "insufficient funds. you have $" + data.cash.toFixed(2) + " but need $" + cost.toFixed(2) };
-        if (qty <= 0) return { ok: false, msg: "quantity must be positive" };
-        var newTotal = data.shares * data.avgCost + cost;
-        data.shares += qty;
-        data.avgCost = newTotal / data.shares;
-        data.cash -= cost;
-        data.cash = Math.round(data.cash * 100) / 100;
-        data.trades.unshift({ type: "BUY", qty: qty, price: p, total: cost, time: new Date().toLocaleTimeString(), date: new Date().toLocaleDateString() });
-        if (data.trades.length > 50) data.trades.length = 50;
-        save();
-        return { ok: true, msg: "bought " + qty + " NEPT at $" + p.toFixed(2) + " = $" + cost.toFixed(2) };
-      },
-      sell: function (qty) {
-        var p = Market.price();
-        var proceeds = p * qty;
-        if (qty > data.shares) return { ok: false, msg: "you only hold " + data.shares + " shares" };
-        if (qty <= 0) return { ok: false, msg: "quantity must be positive" };
-        data.shares -= qty;
-        data.cash += proceeds;
-        data.cash = Math.round(data.cash * 100) / 100;
-        if (data.shares === 0) data.avgCost = 0;
-        data.trades.unshift({ type: "SELL", qty: qty, price: p, total: proceeds, time: new Date().toLocaleTimeString(), date: new Date().toLocaleDateString() });
-        if (data.trades.length > 50) data.trades.length = 50;
-        save();
-        return { ok: true, msg: "sold " + qty + " NEPT at $" + p.toFixed(2) + " = $" + proceeds.toFixed(2) };
-      },
-      maxBuy: function () { return Math.floor(data.cash / Market.price()); },
-      reset: function () { data = { cash: 100, shares: 0, avgCost: 0, trades: [] }; save(); }
-    };
-  })();
-
-  function renderPortfolio() {
-    var pe = $("#pfCash");
-    var se = $("#pfShares");
-    var ve = $("#pfValue");
-    var ple = $("#pfPnl");
-    var te = $("#pfTotal");
-    var ae = $("#pfAvg");
-    var be = $("#pfBuyMax");
-    var le = $("#pfLog");
-    if (pe) pe.textContent = "$" + Portfolio.cash().toFixed(2);
-    if (se) se.textContent = Portfolio.shares();
-    if (ve) ve.textContent = "$" + Portfolio.value().toFixed(2);
-    if (ae) ae.textContent = Portfolio.shares() > 0 ? "$" + Portfolio.avgCost().toFixed(2) : "\u2014";
-    if (be) be.textContent = Portfolio.maxBuy() + " shares max";
-    if (te) {
-      var tv = Portfolio.totalValue();
-      te.textContent = "$" + tv.toFixed(2);
-    }
-    if (ple) {
-      var pnl = Portfolio.pnl();
-      var pct = Portfolio.pnlPct();
-      var cls = pnl >= 0 ? "grn" : "red";
-      ple.textContent = (pnl >= 0 ? "+" : "") + "$" + pnl.toFixed(2) + " (" + (pnl >= 0 ? "+" : "") + pct.toFixed(1) + "%)";
-      ple.className = "pf-val " + cls;
-    }
-    if (le) {
-      var trades = Portfolio.trades();
-      if (trades.length === 0) {
-        le.innerHTML = '<div class="pf-empty">no trades yet. you start with $100.00 and 0 shares of NEPT.</div>';
-      } else {
-        le.innerHTML = trades.slice(0, 15).map(function (t) {
-          var tc = t.type === "BUY" ? "grn" : "red";
-          return '<div class="pf-trade">' +
-            '<span class="pf-trade-type ' + tc + '">' + t.type + '</span>' +
-            '<span class="pf-trade-qty">' + t.qty + ' shares</span>' +
-            '<span class="pf-trade-price">@ $' + t.price.toFixed(2) + '</span>' +
-            '<span class="pf-trade-total">$' + t.total.toFixed(2) + '</span>' +
-            '<span class="pf-trade-time">' + t.time + '</span>' +
-          '</div>';
-        }).join("");
-      }
-    }
-  }
-
-  function handleTrade(type) {
-    var input = $("#tradeQty");
-    if (!input) return;
-    var qty = parseInt(input.value, 10);
-    if (isNaN(qty) || qty <= 0) return;
-    var result = type === "buy" ? Portfolio.buy(qty) : Portfolio.sell(qty);
-    var msg = $("#tradeMsg");
-    if (msg) {
-      msg.textContent = result.msg;
-      msg.className = "pf-msg " + (result.ok ? "grn" : "red");
-      setTimeout(function () { msg.textContent = ""; msg.className = "pf-msg"; }, 3000);
-    }
-    input.value = "";
-    renderPortfolio();
   }
 
   /* ---------------- views ---------------- */
@@ -870,7 +775,6 @@
       '<div class="hero">' +
         '<h2 class="hero-title">NEPTUNE<br>PRODUCTIONS</h2>' +
         '<p class="hero-sub">pick a program. the whole site becomes it.</p>' +
-        '<div class="home-search-wrap"><input class="home-search" id="homeSearch" type="text" placeholder="search programs..." autocomplete="off" spellcheck="false"/></div>' +
       '</div>' +
       '<div class="home-ticker" id="homeTicker">' +
         '<div class="home-ticker-head">' +
@@ -938,7 +842,8 @@
       var p = PROJECTS[k];
       return '<button class="wcard" type="button" data-go="' + k + '">' +
         '<span class="wcard-ico">' + svgIcon(k, "") + '</span>' +
-        '<span><span class="wcard-name">' + p.name + '</span><br><span class="wcard-tag">' + p.tag + '</span></span>' +
+        '<span class="wcard-body"><span class="wcard-name">' + p.name + '</span><br><span class="wcard-tag">' + p.tag + '</span></span>' +
+        '<a class="wcard-launch" href="' + p.url + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">LAUNCH \u2197</a>' +
       '</button>';
     }).join("");
 
@@ -980,24 +885,6 @@
 
     var homeTickerBtn = $(".home-ticker-go");
     if (homeTickerBtn) homeTickerBtn.addEventListener("click", function () { SFX.select("investors"); setView("investors"); });
-
-    var buyBtn = $("#buyBtn");
-    var sellBtn = $("#sellBtn");
-    if (buyBtn) buyBtn.addEventListener("click", function () { handleTrade("buy"); });
-    if (sellBtn) sellBtn.addEventListener("click", function () { handleTrade("sell"); });
-
-    var homeSearch = $("#homeSearch");
-    if (homeSearch) {
-      homeSearch.addEventListener("input", function () {
-        var q = homeSearch.value.toLowerCase().trim();
-        $$(".wcard", grid).forEach(function (c) {
-          var name = (c.getAttribute("data-go") || "").toLowerCase();
-          var p = PROJECTS[name];
-          var match = !q || (p && (p.name.toLowerCase().indexOf(q) !== -1 || p.tag.toLowerCase().indexOf(q) !== -1 || name.indexOf(q) !== -1));
-          c.classList.toggle("hide", !match);
-        });
-      });
-    }
   }
 
   function buildNewsView() {
@@ -1068,37 +955,6 @@
           '</div>' +
           '<svg id="nepChart" class="nep-chart" viewBox="0 0 680 280" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>' +
         '</div>' +
-      '</div>') +
-      win("nep", "trade NEPT", '<div class="pf-trade-panel">' +
-        '<div class="pf-trade-row">' +
-          '<span class="pf-label">YOUR CASH</span><span class="pf-val" id="pfCash">$100.00</span>' +
-        '</div>' +
-        '<div class="pf-trade-row">' +
-          '<span class="pf-label">SHARES HELD</span><span class="pf-val" id="pfShares">0</span>' +
-        '</div>' +
-        '<div class="pf-trade-row">' +
-          '<span class="pf-label">AVG COST</span><span class="pf-val" id="pfAvg">\u2014</span>' +
-        '</div>' +
-        '<div class="pf-trade-row">' +
-          '<span class="pf-label">POSITION VALUE</span><span class="pf-val" id="pfValue">$0.00</span>' +
-        '</div>' +
-        '<div class="pf-trade-row pf-total">' +
-          '<span class="pf-label">TOTAL VALUE</span><span class="pf-val" id="pfTotal">$100.00</span>' +
-        '</div>' +
-        '<div class="pf-trade-row pf-pnl">' +
-          '<span class="pf-label">P&L</span><span class="pf-val" id="pfPnl">+$0.00 (0.0%)</span>' +
-        '</div>' +
-        '<div class="pf-trade-actions">' +
-          '<div class="pf-input-wrap"><input class="pf-input" id="tradeQty" type="number" min="1" placeholder="qty" autocomplete="off"/><span class="pf-buy-max" id="pfBuyMax">0 shares max</span></div>' +
-          '<div class="pf-btn-row">' +
-            '<button class="pf-btn buy" type="button" id="buyBtn">BUY</button>' +
-            '<button class="pf-btn sell" type="button" id="sellBtn">SELL</button>' +
-          '</div>' +
-          '<div class="pf-msg" id="tradeMsg"></div>' +
-        '</div>' +
-      '</div>') +
-      win("nep", "trade history", '<div class="pf-log" id="pfLog">' +
-        '<div class="pf-empty">no trades yet. you start with $100.00 and 0 shares of NEPT.</div>' +
       '</div>') +
       win("nep", "key statistics", '<div class="inv-grid">' +
         '<div class="inv-stat"><span>MARKET CAP</span><b id="nepMcap">\u2014</b></div>' +
@@ -1371,7 +1227,7 @@
     if (PROJECTS[k]) loadStats(k);
     applyTheme();
     if (k === "forum") forumConnect();
-    if (k === "investors") requestAnimationFrame(function () { renderChart(chartRange, true); renderPortfolio(); });
+    if (k === "investors") requestAnimationFrame(function () { renderChart(chartRange, true); });
     var v = views[k];
     if (v) {
       requestAnimationFrame(function () {

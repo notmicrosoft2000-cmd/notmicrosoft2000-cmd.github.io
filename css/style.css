@@ -1964,3 +1964,73 @@ html.rm .bgfx { animation: none; }
 .home-update-text { font-family: var(--font-m); font-size: 10px; color: var(--muted); letter-spacing: .03em; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .home-update-time { font-family: var(--font-m); font-size: 9px; color: var(--muted); letter-spacing: .04em; flex-shrink: 0; opacity: .7; }
 @media (max-width: 600px) { .home-ticker { margin: 0 12px 16px; } .home-updates { margin: 0 12px 16px; } }
+
+/* ---------- portrait / narrow screens ---------- */
+
+@media (orientation: portrait), (max-width: 600px) {
+  .stage { padding: 18px 12px 40px; max-width: 100%; }
+  .hero { padding: 14px 0 8px; }
+  .hero-title { font-size: clamp(28px, 8vw, 44px); }
+  .hero-sub { font-size: 11px; letter-spacing: .1em; }
+  .webring { grid-template-columns: 1fr; gap: 10px; }
+  .wcard { padding: 14px 14px; }
+  .wcard-ico { width: 36px; height: 36px; }
+  .wcard-name { font-size: 13px; }
+  .wcard-tag { font-size: 11px; }
+  .wcard-launch { font-size: 9px; padding: 5px 10px; }
+  .home-ticker { margin: 0 0 16px; padding: 12px 14px; }
+  .home-ticker-head { gap: 8px; }
+  .home-ticker-price { font-size: 18px; }
+  .home-ticker-chg { font-size: 12px; }
+  .home-ticker-go { font-size: 10px; padding: 4px 10px; }
+  .home-chart { height: 50px; }
+  .home-updates { margin: 0 0 16px; }
+  .home-update { padding: 8px 10px; gap: 8px; }
+  .home-update-icon { width: 24px; height: 24px; }
+  .home-update-name { font-size: 11px; }
+  .home-update-text { font-size: 9px; }
+  .pv-head { padding: 10px 0 8px; }
+  .pv-head h2 { font-size: clamp(22px, 6vw, 32px); }
+  .pv-head p { font-size: 11px; }
+  .pv-card { margin-top: 12px; }
+  .win-bar { height: 30px; padding: 0 10px; font-size: 11px; }
+  .pv-body { padding: 12px 14px; font-size: 12.5px; line-height: 1.65; }
+  .pv-chips { gap: 6px; }
+  .chip { font-size: 10px; padding: 4px 10px; }
+  .pv-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .pv-launch { width: 100%; text-align: center; }
+  .stock-price b { font-size: clamp(28px, 8vw, 40px); }
+  .stock-facts { gap: 6px 14px; font-size: 10px; }
+  .inv-corp { gap: 6px 14px; padding: 12px 14px; }
+  .inv-corp-item b { font-size: 14px; }
+  .inv-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .inv-stat { padding: 10px 12px; }
+  .inv-stat span { font-size: 9px; }
+  .inv-stat b { font-size: 15px; }
+  .inv-table { font-size: 11px; }
+  .inv-table th { font-size: 9px; padding: 6px 8px; }
+  .inv-table td { font-size: 11px; padding: 7px 8px; }
+  .inv-chart-wrap { padding: 8px 8px 4px; }
+  .inv-range { font-size: 10px; padding: 4px 10px; }
+  .news-masthead { padding: 12px 0 6px; }
+  .news-logo { font-size: clamp(20px, 6vw, 30px); }
+  .news-nav { gap: 4px; flex-wrap: wrap; }
+  .news-nav span { font-size: 10px; padding: 4px 8px; }
+  .breaking { font-size: 11px; padding: 8px 12px; }
+  .nf-body { padding: 12px; }
+  .nf-body h3 { font-size: 16px; }
+  .news-grid { grid-template-columns: 1fr; gap: 10px; }
+  .ncard { padding: 12px; }
+  .ncard h3 { font-size: 14px; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .forum-head h2 { font-size: clamp(24px, 6vw, 36px); }
+  .forum-name, .forum-send { flex-direction: column; }
+  .forum-name input, .forum-send input { width: 100%; }
+  .rail { width: 100%; max-width: 260px; }
+  .inv-corp { flex-direction: column; gap: 8px; }
+  .inv-corp-item { text-align: left; display: flex; gap: 8px; align-items: baseline; }
+  .inv-corp-item b { margin-top: 0; }
+  .tt-row { gap: 10px; }
+  .chart-tooltip { font-size: 10px; padding: 8px 10px; max-width: 160px; }
+  .tt-lbl { font-size: 8px; min-width: 28px; }
+}

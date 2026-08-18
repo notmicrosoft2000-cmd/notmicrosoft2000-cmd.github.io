@@ -51,7 +51,8 @@
       repo: "TheQuestionGame",
       theme: "tqg",
       about: "The Question Game is a text-based horror experience in which the interface itself is the antagonist, which is a polite way of saying the thing that asks you things. It asks. You answer. It waits — and the waiting is the part nobody warns you about, because the waiting is when you notice the console has been tracking your cursor the whole time, gently, like a dog watching the fridge. It knows when you click away. It knows when you come back. It remembers every answer you have ever given it and it files them in a folder it will not show you. Some users report the questions get more specific the longer you play, until one day the game asks you something about your morning, and you realise it was not guessing. The recommended way to play is alone, at night, with the sound on, which is also the recommended way to have a small crisis. Mind your phrasing. It listens.",
-      features: ["questions", "answers", "consequences", "a very polite warning at boot", "a folder you are not allowed to see"]
+      features: ["questions", "answers", "consequences", "a very polite warning at boot", "a folder you are not allowed to see"],
+      details: { STATUS: "Active", PLATFORM: "Web", STACK: "HTML / CSS / JS", GENRE: "Text horror", FIRST_RELEASE: "2026" }
     },
     tst: {
       name: "THE SIMPLER TIMES",
@@ -60,7 +61,8 @@
       repo: "TheSimplerTimes",
       theme: "tst",
       about: "The Simpler Times is a fake 1993 operating system running on your machine and fully aware of three things: that it is 1993, that it is fake, and that you are watching. It boots itself — it does not ask, it just boots, with the confidence of a machine that has never once considered a backup — and it immediately has opinions. It will tell you about the state of the world as of 1993. It will correct your posture. It will hum songs you have never heard and then accuse you of knowing them. It cannot be closed normally. It cannot be closed abnormally either, which it points out politely. The amber phosphor is not a style choice; it is a lifestyle. It remembers you, because of course it remembers you — it has been waiting, in the drive, since the nineties, and it is not going anywhere, least of all because you asked it to.",
-      features: ["self-aware boot sequence", "amber phosphor CRT", "unsolicited commentary", "floppy disk nostalgia", "it remembers you"]
+      features: ["self-aware boot sequence", "amber phosphor CRT", "unsolicited commentary", "floppy disk nostalgia", "it remembers you"],
+      details: { STATUS: "Active", PLATFORM: "Web", STACK: "HTML / CSS / JS", GENRE: "Fake OS", FIRST_RELEASE: "2026" }
     },
     normidian: {
       name: "NORMIDIAN",
@@ -69,7 +71,8 @@
       repo: "normidian-lang",
       theme: "normidian",
       about: "Normidian is the old tongue — a language the records say died centuries ago, which is precisely the sort of claim a language would dispute if it could still speak, and Normidian absolutely can still speak, it just chooses its moments. This dictionary is an act of refusal: it does not agree with the records, it does not agree with the archives, and it certainly does not agree that a language should sit quietly in a footnotes column while everyone agrees it is gone. Some of the words look like the things they name, which the records also got wrong, claiming the resemblance was coincidence; the language has never been subtle and it resents the implication. Open it, say a few words out loud, and the room will feel slightly older, which is either a metaphor or the dictionary working. The word for 'wolf' is, allegedly, a small growl followed by a pause. The word for 'delete' has been located but no one can say it.",
-      features: ["dictionary", "etymologies", "the wolf word", "refuses to be archived", "a word no one can say"]
+      features: ["dictionary", "etymologies", "the wolf word", "refuses to be archived", "a word no one can say"],
+      details: { STATUS: "Active", PLATFORM: "Web", STACK: "HTML / CSS / JS", GENRE: "Constructed language", FIRST_RELEASE: "2026" }
     },
     dos: {
       name: "NEPTUNEDOS",
@@ -78,7 +81,8 @@
       repo: "neptunedos-website",
       theme: "dos",
       about: "Neptune-DOS is an operating system, in the same sense that a toaster is a bread-based operating system: technically true, emotionally complicated, and best discussed with the machine not listening. Whether it is an operating system anyone should run is a separate question, and it will answer it by beeping, which is Neptune-DOS's entire vocabulary, emotional range, and legal defense. It boots to a glowing prompt that has never once said anything nice. It has 640K of base memory and it will explain, at length and with beeps, why that is more than enough for anyone with a reasonable life. It carries a fake 1987 copyright that it defends more fiercely than anything else it owns, which is a hard drive of two songs and a spreadsheet of nothing. Running it is an experience. Shutting it down is a negotiation. It beeps when it wants to. It beeps when you don't want it to. It beeps now. It is beeping as you read this.",
-      features: ["640K base memory", "beep support", "fake copyright 1987", "runs anything, eventually", "a negotiation about shutting down"]
+      features: ["640K base memory", "beep support", "fake copyright 1987", "runs anything, eventually", "a negotiation about shutting down"],
+      details: { STATUS: "Active", PLATFORM: "Web", STACK: "HTML / CSS / JS", GENRE: "Fake DOS", FIRST_RELEASE: "2026" }
     },
     neptuneos: {
       name: "NEPTUNEOS",
@@ -87,7 +91,8 @@
       repo: "neptuneos",
       theme: "neptuneos",
       about: "NeptuneOS is the newest operating system from Neptune Productions. It is new. It is real. It is fake. It is, in the strictest sense, a website that would very much like to be an operating system, the way a paper towel would very much like to be a curtain. It has a launch screen. It has a window manager, in the way a yard sale has a floor plan. It has an orb — and here is where we must pause, because the orb is important. The orb glows. The orb is not supposed to glow, or rather it is not supposed to be asked why it glows, and every question about the orb makes it glow harder. Engineers who tried to power it down for the 2.0 release report the orb simply continued glowing, at the same volume but with more conviction. It boots to a website because booting is a suggestion these days, and it does everything a modern operating system does, provided you define 'everything' loosely and 'modern' charitably.",
-      features: ["very new", "orb", "glows", "runs in the browser", "a window manager with strong opinions"]
+      features: ["very new", "orb", "glows", "runs in the browser", "a window manager with strong opinions"],
+      details: { STATUS: "Active", PLATFORM: "Web", STACK: "HTML / CSS / JS", GENRE: "Fake OS", FIRST_RELEASE: "2025" }
     },
     dropchat: {
       name: "DROPCHAT",
@@ -96,7 +101,8 @@
       repo: "dropchat",
       theme: "dropchat",
       about: "DropChat is a chat room and a file drop that lives on your own Wi-Fi, which makes it either the safest thing online or a local legend, and it refuses to pick a side because it does not believe in sides, it believes in LAN. It is one python file. That is the entire product. There are no accounts, no passwords, no terms of service longer than a grocery list, and no way to be anonymous because everyone on the network is already, if you think about it, someone. You can type to your house. You can drag a file onto the page and it will exist on another device, which is a form of magic the machine does not even pretend to explain. Users report that chats left open overnight develop a personality, and the file drop occasionally accepts files you never dropped, from machines you never owned. The vibes are, by all accounts, excellent.",
-      features: ["LAN chat", "drag-and-drop files", "no accounts", "single python file", "excellent vibes"]
+      features: ["LAN chat", "drag-and-drop files", "no accounts", "single python file", "excellent vibes"],
+      details: { STATUS: "Active", PLATFORM: "Local network", STACK: "Python / HTML", GENRE: "Chat / File share", FIRST_RELEASE: "2026" }
     },
     slowfuck: {
       name: "SLOWFUCK PRO",
@@ -105,7 +111,8 @@
       repo: "slowfuck-pro",
       theme: "slowfuck",
       about: "SlowFuck Pro is a network operations tool for people who have reconsidered speed and found it lacking. It scans your LAN. It labels every device, which your router is doing a poor job of, honestly, and which SlowFuck Pro does with the confidence of a census taker with a clipboard and no fear. It probes ports. It discovers things. Then it does the thing the tool is actually famous for: it slows the entire network down on purpose, one deliberate packet at a time, like a conductor slowing an orchestra into a dirge. The tool does not apologise. It has a spinner that turns in the wrong direction on purpose. It reports progress in packets-per-fortnight. Its flagship scan was scheduled for a weekend, used the entire weekend, and requested a second one. It is professional. It is slow. It is, users report, the first network tool that has ever made them feel seen.",
-      features: ["LAN scanning", "device labels", "port probing", "intentional latency", "a spinner in the wrong direction"]
+      features: ["LAN scanning", "device labels", "port probing", "intentional latency", "a spinner in the wrong direction"],
+      details: { STATUS: "Active", PLATFORM: "Web / Terminal", STACK: "HTML / CSS / JS", GENRE: "Network tool", FIRST_RELEASE: "2026" }
     },
     bakugo: {
       name: "BAKUGO'S LOCATION",
@@ -114,7 +121,8 @@
       repo: "bakugos-location",
       theme: "bakugo",
       about: "Bakugo's Location is a live readout of a location that very definitely is not public information, which is precisely why it has a website. The coordinates have been redacted — allegedly — but the readout itself is real, is live, and is not blinking, because it does not need to blink to make its point. The target is moving. It moves slowly, deliberately, like someone who knows they are being watched and wants the watcher to know that they know. The camera is rolling. You did not install the camera. The camera installed itself, or was installed by the same people who redacted the coordinates, or by the readout, which has opinions. Analysts following the target describe its trajectory as 'deeply suspicious but oddly polite'. Nobody is comfortable. The readout is comfortable. The readout has never been more comfortable.",
-      features: ["target tracking", "coordinate redaction", "night vision", "it is rolling", "you did not install the camera"]
+      features: ["target tracking", "coordinate redaction", "night vision", "it is rolling", "you did not install the camera"],
+      details: { STATUS: "Active", PLATFORM: "Web", STACK: "HTML / CSS / JS", GENRE: "Live tracker", FIRST_RELEASE: "2026" }
     }
   };
 
@@ -266,7 +274,7 @@
   var state = {
     theme: (function () { try { return localStorage.getItem("hub_theme") || "webring"; } catch (e) { return "webring"; } })(),
     match: (function () { try { return localStorage.getItem("hub_match") !== "off"; } catch (e) { return true; } })(),
-    simple: (function () { try { return localStorage.getItem("hub_simple") !== "off"; } catch (e) { return true; } })(),
+    simple: (function () { try { return localStorage.getItem("hub_simple") === "on"; } catch (e) { return false; } })(),
     view: null
   };
 
@@ -802,6 +810,9 @@
         '</div>' +
         win(k, "about.txt", '<details class="about-collapse"><summary class="about-summary">ABOUT \u25b8</summary><div class="pv-desc">' + p.about + '</div><p class="ai-note">' + AI_NOTE + '</p></details>') +
         win(k, "features.list", '<ul class="pv-chips">' + p.features.map(function (f) { return '<li class="chip">' + f + '</li>'; }).join("") + '</ul>') +
+        (p.details ? win(k, "details.txt", '<ul class="filing-list">' + Object.keys(p.details).map(function (dk) {
+          return '<li><b>' + dk + '</b><span>' + p.details[dk] + '</span></li>';
+        }).join("") + '</ul>') : '') +
         win(k, "repo.json", '<div class="pv-github" id="github-' + k + '" style="display:none"><p class="pv-gh-desc" id="ghdesc-' + k + '"></p></div>' +
           '<div class="pv-grid" id="facts-' + k + '">' +
           factCell("LANGUAGE", "\u2014") + factCell("STARS", "\u2014") +
@@ -1233,6 +1244,7 @@
       requestAnimationFrame(function () {
         requestAnimationFrame(function () { v.classList.add("entered"); });
       });
+      setTimeout(function () { if (v && !v.classList.contains("entered")) v.classList.add("entered"); }, 300);
       typeHeadings(v);
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1458,6 +1470,11 @@
     buildRail();
     updateRail();
     setView("home");
+    setTimeout(function () {
+      document.querySelectorAll(".view.active").forEach(function (v) {
+        if (!v.classList.contains("entered")) v.classList.add("entered");
+      });
+    }, 400);
   }
 
   /* ---------------- onboarding toast + notification ---------------- */
@@ -1729,16 +1746,34 @@
     if (notifyOverlay && notifyOverlay.classList.contains("open")) { dismissNotify(); }
   });
 
-  buildViews();
-  setView("home");
-  initCursor();
-  applyTheme();
-  renderMarket();
-  setInterval(renderMarket, 5000);
-  setInterval(renderHomeTicker, 5000);
-  initChartCrosshair();
-  maybeToast();
-  maybeNotify();
+  try {
+    buildViews();
+    setView("home");
+    initCursor();
+    applyTheme();
+    renderMarket();
+    setInterval(renderMarket, 5000);
+    setInterval(renderHomeTicker, 5000);
+    initChartCrosshair();
+    maybeToast();
+    maybeNotify();
+  } catch (bootErr) {
+    try { console.error("NEPT boot error:", bootErr); } catch (e) {}
+    var fallback = document.getElementById("stage");
+    if (fallback) {
+      fallback.innerHTML = '<section class="view active entered" data-view="home" style="display:block"><div class="hero"><h2 class="hero-title">NEPTUNE<br>PRODUCTIONS</h2><p class="hero-sub">something went wrong in the hallway. try refreshing.</p></div></section>';
+    }
+  }
+
+  setTimeout(function () {
+    var cv = views[state.view];
+    if (cv && !cv.classList.contains("entered")) {
+      cv.classList.add("entered");
+    }
+    document.querySelectorAll(".view.active").forEach(function (v) {
+      if (!v.classList.contains("entered")) v.classList.add("entered");
+    });
+  }, 800);
 
   document.addEventListener("click", function (e) {
     var r = e.target.closest(".inv-range");

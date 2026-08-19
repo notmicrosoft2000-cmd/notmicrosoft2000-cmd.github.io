@@ -1507,12 +1507,150 @@
     SFX.close();
   }
 
-  $("#brandBtn").addEventListener("click", function () { SFX.click(); openSettings(); });
+  /* brand button: single click = settings, triple click = intel easter egg */
+  (function () {
+    var clicks = 0;
+    var timer = null;
+    $("#brandBtn").addEventListener("click", function (e) {
+      clicks++;
+      if (clicks === 1) {
+        timer = setTimeout(function () { clicks = 0; SFX.click(); openSettings(); }, 350);
+      } else if (clicks === 3) {
+        clearTimeout(timer); clicks = 0;
+        SFX.select("tqg");
+        openIntel();
+      }
+    });
+  })();
   $("#settingsClose").addEventListener("click", function () { closeSettings(); SFX.click(); });
 
   settingsOverlay.addEventListener("click", function (e) {
     if (e.target === settingsOverlay) closeSettings();
   });
+
+  /* intel easter egg */
+  var intelOverlay = $("#intelOverlay");
+  function openIntel() {
+    var body = $("#intelBody");
+    if (!body) return;
+    var sections = [];
+
+    /* system */
+    var sysRows = [];
+    sysRows.push(["USER AGENT", navigator.userAgent]);
+    sysRows.push(["PLATFORM", navigator.platform || "\u2014"]);
+    sysRows.push(["LANGUAGE", navigator.language]);
+    sysRows.push(["LANGUAGES", (navigator.languages || []).join(", ") || "\u2014"]);
+    sysRows.push(["COOKIES", navigator.cookieEnabled ? "ENABLED" : "DISABLED"]);
+    sysRows.push(["ONLINE", navigator.onLine ? "YES" : "NO"]);
+    sysRows.push(["TIMEZONE", Intl.DateTimeFormat().resolvedOptions().timeZone || "\u2014"]);
+    sysRows.push(["TIMEZONE OFFSET", "UTC" + (-(new Date().getTimezoneOffset() / 60))]);
+    sysRows.push(["SCREEN", screen.width + "x" + screen.height]);
+    sysRows.push(["PIXEL RATIO", window.devicePixelRatio || 1]);
+    sysRows.push(["COLOR DEPTH", screen.colorDepth + "bit"]);
+    sysRows.push(["VIEWPORT", window.innerWidth + "x" + window.innerHeight]);
+    sections.push({ title: "SYSTEM", rows: sysRows });
+
+    /* hardware */
+    var hwRows = [];
+    hwRows.push(["CPU CORES", navigator.hardwareConcurrency || "\u2014"]);
+    hwRows.push(["DEVICE MEMORY", navigator.deviceMemory ? navigator.deviceMemory + " GB" : "\u2014"]);
+    try {
+      var c = document.createElement("canvas");
+      var gl = c.getContext("webgl") || c.getContext("experimental-webgl");
+      if (gl) {
+        var dbg = gl.getExtension("WEBGL_debug_renderer_info");
+        if (dbg) {
+          hwRows.push(["GPU VENDOR", gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL) || "\u2014"]);
+          hwRows.push(["GPU RENDERER", gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || "\u2014"]);
+        }
+      } else { hwRows.push(["WEBGL", "NOT SUPPORTED"]); }
+    } catch (e) { hwRows.push(["WEBGL", "ERROR"]); }
+    hwRows.push(["LITE MODE", root.classList.contains("lite") ? "ACTIVE (weak hardware detected)" : "INACTIVE"]);
+    sections.push({ title: "HARDWARE", rows: hwRows });
+
+    /* storage */
+    var stRows = [];
+    var storageKeys = ["hub_theme", "hub_simple", "hub_rm", "hub_sound", "hub_match", "hub_name", "hub_recent", "hub_repo_seen", "hub_update_tags", "hub_repo_seen_", "hub_intro_v2", "hub_notify_v1", "hub_ghcache"];
+    storageKeys.forEach(function (k) {
+      if (k === "hub_repo_seen_") {
+        var repoKeys = Object.keys(localStorage).filter(function (lk) { return lk.indexOf("hub_repo_seen_") === 0; });
+        repoKeys.forEach(function (rk) {
+          var v = localStorage.getItem(rk);
+          stRows.push([rk, v ? v.substring(0, 60) : "\u2014"]);
+        });
+      } else {
+        var v = localStorage.getItem(k);
+        stRows.push([k, v ? (v.length > 80 ? v.substring(0, 80) + "..." : v) : "\u2014"]);
+      }
+    });
+    try {
+      var used = JSON.stringify(localStorage).length;
+      stRows.push(["STORAGE USED", (used / 1024).toFixed(1) + " KB"]);
+    } catch (e) {}
+    sections.push({ title: "LOCAL STORAGE", rows: stRows });
+
+    /* site state */
+    var st2Rows = [];
+    st2Rows.push(["CURRENT VIEW", state.view || "\u2014"]);
+    st2Rows.push(["THEME", state.theme]);
+    st2Rows.push(["SIMPLE MODE", state.simple ? "ON" : "OFF"]);
+    st2Rows.push(["MATCH PROJECT", state.match ? "ON" : "OFF"]);
+    st2Rows.push(["REDUCED MOTION", root.classList.contains("rm") ? "ON" : "OFF"]);
+    st2Rows.push(["CHART RANGE", typeof chartRange !== "undefined" ? chartRange : "\u2014"]);
+    st2Rows.push(["RECENTLY VISITED", recentVisits.join(", ") || "\u2014"]);
+    st2Rows.push(["FORUM NAME", forumState.name || "(none)"]);
+    st2Rows.push(["FORUM CONNECTED", forumState.ready ? "YES" : "NO"]);
+    st2Rows.push(["FORUM MESSAGES", forumState.msgs.length]);
+    st2Rows.push(["TOUCH DEVICE", typeof touchDevice !== "undefined" && touchDevice ? "YES" : "NO"]);
+    st2Rows.push(["HASH", location.hash || "(none)"]);
+    st2Rows.push(["URL", location.href]);
+    st2Rows.push(["DATE", new Date().toISOString()]);
+    sections.push({ title: "SITE STATE", rows: st2Rows });
+
+    /* render */
+    var html = "";
+    sections.forEach(function (s) {
+      html += '<div class="intel-section"><div class="intel-section-title">[ ' + s.title + ' ]</div>';
+      s.rows.forEach(function (r) {
+        var cls = "intel-val";
+        if (r[1] === "DISABLED" || r[1] === "NOT SUPPORTED" || r[1] === "ERROR") cls += " warn";
+        if (r[1] === "\u2014") cls += " accent";
+        html += '<div class="intel-row"><span class="intel-key">' + r[0] + '</span><span class="' + cls + '">' + esc(String(r[1])) + '</span></div>';
+      });
+      html += '</div>';
+    });
+    body.innerHTML = html;
+    intelOverlay.classList.add("open");
+    intelOverlay.setAttribute("aria-hidden", "false");
+  }
+  function closeIntel() {
+    intelOverlay.classList.remove("open");
+    intelOverlay.setAttribute("aria-hidden", "true");
+    SFX.close();
+  }
+  $("#intelClose").addEventListener("click", function () { closeIntel(); SFX.click(); });
+  intelOverlay.addEventListener("click", function (e) { if (e.target === intelOverlay) closeIntel(); });
+
+  /* legal overlays */
+  function openLegal(id) {
+    var el = document.getElementById(id);
+    if (el) { el.classList.add("open"); el.setAttribute("aria-hidden", "false"); SFX.click(); }
+  }
+  function closeLegal(el) {
+    el.classList.remove("open");
+    el.setAttribute("aria-hidden", "true");
+    SFX.close();
+  }
+  $$(".legalClose").forEach(function (btn) {
+    btn.addEventListener("click", function () { closeLegal(btn.closest(".legal-overlay")); SFX.click(); });
+  });
+  $$(".legal-overlay").forEach(function (ov) {
+    ov.addEventListener("click", function (e) { if (e.target === ov) closeLegal(ov); });
+  });
+  var fp = $("#footPrivacy"); if (fp) fp.addEventListener("click", function () { openLegal("privacyOverlay"); });
+  var ft = $("#footTos"); if (ft) ft.addEventListener("click", function () { openLegal("tosOverlay"); });
+  var fl = $("#footLicenses"); if (fl) fl.addEventListener("click", function () { openLegal("licensesOverlay"); });
 
   function rebuildViews() {
     state.view = null;

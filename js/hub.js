@@ -4,6 +4,63 @@
 
   var root = document.documentElement;
 
+  /* legal consent gate */
+  function hasConsent() {
+    try { return localStorage.getItem("hub_legal_agreed") === "1"; } catch (e) { return false; }
+  }
+  function setConsent() {
+    try { localStorage.setItem("hub_legal_agreed", "1"); } catch (e) {}
+  }
+  function showConsentError() {
+    var ov = $("#consentOverlay");
+    var er = $("#consentError");
+    if (ov) ov.classList.remove("open");
+    if (er) { er.classList.add("open"); er.setAttribute("aria-hidden", "false"); }
+  }
+  function openConsentOverlay() {
+    var ov = $("#consentOverlay");
+    var cb = $("#consentAgree");
+    var btnA = $("#consentBtnAgree");
+    var btnD = $("#consentBtnDisagree");
+    if (!ov) return;
+    ov.classList.add("open");
+    ov.setAttribute("aria-hidden", "false");
+    if (cb) cb.checked = false;
+    if (btnA) btnA.disabled = true;
+    if (cb && btnA) {
+      cb.addEventListener("change", function () { btnA.disabled = !cb.checked; });
+    }
+    if (btnA) {
+      btnA.addEventListener("click", function () {
+        setConsent();
+        ov.classList.remove("open");
+        ov.setAttribute("aria-hidden", "true");
+        bootSite();
+      });
+    }
+    if (btnD) {
+      btnD.addEventListener("click", function () {
+        showConsentError();
+      });
+    }
+    /* legal doc links inside consent popup */
+    var cp = $("#consentPrivacy"); if (cp) cp.addEventListener("click", function () { var el = $("#privacyOverlay"); if (el) { el.classList.add("open"); el.setAttribute("aria-hidden", "false"); } });
+    var ct = $("#consentTos"); if (ct) ct.addEventListener("click", function () { var el = $("#tosOverlay"); if (el) { el.classList.add("open"); el.setAttribute("aria-hidden", "false"); } });
+    var cl = $("#consentLicenses"); if (cl) cl.addEventListener("click", function () { var el = $("#licensesOverlay"); if (el) { el.classList.add("open"); el.setAttribute("aria-hidden", "false"); } });
+    /* error screen buttons */
+    var retry = $("#consentRetry");
+    var closeTab = $("#consentCloseTab");
+    if (retry) retry.addEventListener("click", function () {
+      var er = $("#consentError");
+      if (er) { er.classList.remove("open"); er.setAttribute("aria-hidden", "true"); }
+      openConsentOverlay();
+    });
+    if (closeTab) closeTab.addEventListener("click", function () {
+      window.location.href = "about:blank";
+    });
+  }
+  function bootSite() {
+
   /* lite mode: detect weak hardware */
   (function () {
     var weak = false;
@@ -109,7 +166,7 @@
       url: "https://notmicrosoft2000-cmd.github.io/neptuneos/",
       repo: "neptuneos",
       theme: "neptuneos",
-      about: "NeptuneOS is the newest operating system from Neptune Productions. It is new. It is real. It is fake. It is, in the strictest sense, a website that would very much like to be an operating system, the way a paper towel would very much like to be a curtain. It has a launch screen. It has a window manager, in the way a yard sale has a floor plan. It has an orb — and here is where we must pause, because the orb is important. The orb glows. The orb is not supposed to glow, or rather it is not supposed to be asked why it glows, and every question about the orb makes it glow harder. Engineers who tried to power it down for the 2.0 release report the orb simply continued glowing, at the same volume but with more conviction. It boots to a website because booting is a suggestion these days, and it does everything a modern operating system does, provided you define 'everything' loosely and 'modern' charitably.",
+      about: "NeptuneOS is the newest operating system from Neptune Inc. It is new. It is real. It is fake. It is, in the strictest sense, a website that would very much like to be an operating system, the way a paper towel would very much like to be a curtain. It has a launch screen. It has a window manager, in the way a yard sale has a floor plan. It has an orb — and here is where we must pause, because the orb is important. The orb glows. The orb is not supposed to glow, or rather it is not supposed to be asked why it glows, and every question about the orb makes it glow harder. Engineers who tried to power it down for the 2.0 release report the orb simply continued glowing, at the same volume but with more conviction. It boots to a website because booting is a suggestion these days, and it does everything a modern operating system does, provided you define 'everything' loosely and 'modern' charitably.",
       features: ["very new", "orb", "glows", "runs in the browser", "a window manager with strong opinions"],
       details: { STATUS: "Active", PLATFORM: "Web", STACK: "HTML / CSS / JS", GENRE: "Fake OS", FIRST_RELEASE: "2025" }
     },
@@ -151,7 +208,7 @@
 
   var NEWS = [
     { cat: "TOP", time: "just now", title: "NEPT stock holds above $47 despite annual report being a sandwich", body: "Analysts remain baffled that a company whose primary filing is a sandwich maintains a market cap larger than most nations\u2019 GDP. The toaster, serving as interim CFO, issued a statement consisting entirely of a warm hum. Shares are up. Nobody knows why. The board is a quorum of one." },
-    { cat: "MARKETS", time: "3 min ago", title: "Trading volume surges past 4 million as investors confuse NEPT with a real company", body: "Unprecedented interest in NEPT shares has been attributed to a typo in a financial blog that listed Neptune Productions under \u2018companies that definitely exist.\u2019 The exchange has suspended inquiry. Volume is now described as \u2018surprisingly corporate.\u2019" },
+    { cat: "MARKETS", time: "3 min ago", title: "Trading volume surges past 4 million as investors confuse NEPT with a real company", body: "Unprecedented interest in NEPT shares has been attributed to a typo in a financial blog that listed Neptune Inc under \u2018companies that definitely exist.\u2019 The exchange has suspended inquiry. Volume is now described as \u2018surprisingly corporate.\u2019" },
     { cat: "SCANDAL", time: "8 min ago", title: "Board emergency session held; the toaster ate the agenda", body: "An emergency board meeting was called to address the sandwich-shaped 10-K. By the time the pigeon arrived with the agenda, the toaster had consumed it. Minutes were recorded as a single beep. The motion carried unanimously, which means the toaster voted yes." },
     { cat: "TECH", time: "14 min ago", title: "Orb continues to glow; engineers now describe it as \u2018committed\u2019", body: "The NeptuneOS orb, which has been glowing since 2019, has entered what engineers call \u2018a state of permanent conviction.\u2019 Attempts to reboot resulted in the orb glowing harder. A formal complaint was filed. The complaint also began glowing." },
     { cat: "LOCAL", time: "22 min ago", title: "Carrier pigeon union ratifies bread-based compensation package", body: "After three weeks of negotiations, the pigeon union accepted a deal comprising 40% rye, 30% sourdough, and 30% \u2018whatever is in the hallway.\u2019 Same-day delivery remains unavailable. The pigeon will arrive when it arrives." },
@@ -829,7 +886,7 @@
 
     html += '<section class="view" data-view="home" role="tabpanel">' +
       '<div class="hero">' +
-        '<h2 class="hero-title">NEPTUNE<br>PRODUCTIONS</h2>' +
+        '<h2 class="hero-title">NEPTUNE<br>INC</h2>' +
         '<p class="hero-sub">pick a program. the whole site becomes it.</p>' +
       '</div>' +
       '<div class="home-ticker" id="homeTicker">' +
@@ -986,7 +1043,7 @@
   function buildInvestView() {
     var html = '<section class="view" data-view="investors" role="tabpanel">' +
       '<div class="inv-head">' +
-        '<h2>NEPTUNE PRODUCTIONS <b>INC.</b></h2>' +
+        '<h2>NEPTUNE INC<b>.</b></h2>' +
         '<p>THE HOLDINGS OF THE HALLWAY. SYMBOL: NEPT. FILED, SWALLOWED, AND FORGOTTEN.</p>' +
       '</div>' +
       '<div class="inv-corp">' +
@@ -1967,7 +2024,7 @@
     try { console.error("NEPT boot error:", bootErr); } catch (e) {}
     var fallback = document.getElementById("stage");
     if (fallback) {
-      fallback.innerHTML = '<section class="view active entered" data-view="home" style="display:block"><div class="hero"><h2 class="hero-title">NEPTUNE<br>PRODUCTIONS</h2><p class="hero-sub">something went wrong in the hallway. try refreshing.</p></div></section>';
+      fallback.innerHTML = '<section class="view active entered" data-view="home" style="display:block"><div class="hero"><h2 class="hero-title">NEPTUNE<br>INC</h2><p class="hero-sub">something went wrong in the hallway. try refreshing.</p></div></section>';
     }
   }
 
@@ -2324,6 +2381,14 @@
       setInterval(tick, 1000);
     })();
 
+  }
+
+  } /* end bootSite */
+
+  if (hasConsent()) {
+    bootSite();
+  } else {
+    openConsentOverlay();
   }
 
 })();

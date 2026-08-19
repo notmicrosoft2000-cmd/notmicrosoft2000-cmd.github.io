@@ -4,6 +4,25 @@
 
   var root = document.documentElement;
 
+  /* lite mode: detect weak hardware */
+  (function () {
+    var weak = false;
+    try { if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) weak = true; } catch (e) {}
+    try { if (navigator.deviceMemory && navigator.deviceMemory < 4) weak = true; } catch (e) {}
+    try {
+      var c = document.createElement("canvas");
+      var gl = c.getContext("webgl") || c.getContext("experimental-webgl");
+      if (gl) {
+        var dbg = gl.getExtension("WEBGL_debug_renderer_info");
+        if (dbg) {
+          var renderer = gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || "";
+          if (/swiftshader|llvmpipe|soft|mesa|software|virtual|basic/i.test(renderer)) weak = true;
+        }
+      }
+    } catch (e) {}
+    if (weak) root.classList.add("lite");
+  })();
+
   var ICONS = {
     tqg: '<path d="M32 10 L58 52 L6 52 Z"/><path d="M32 27 c0-7-13-8-13 1 0 5 6 7 9 10 v5"/><circle cx="32" cy="50" r="2.6"/>',
     tst: '<rect x="14" y="10" width="36" height="44" rx="3"/><rect x="26" y="12" width="12" height="11"/><path d="M20 36 h24"/><path d="M20 44 h12"/>',
@@ -277,6 +296,17 @@
     simple: (function () { try { return localStorage.getItem("hub_simple") === "on"; } catch (e) { return false; } })(),
     view: null
   };
+
+  /* recently visited */
+  var recentVisits = [];
+  try { recentVisits = JSON.parse(localStorage.getItem("hub_recent") || "[]"); } catch (e) {}
+  function trackVisit(k) {
+    if (!PROJECTS[k]) return;
+    recentVisits = recentVisits.filter(function (r) { return r !== k; });
+    recentVisits.unshift(k);
+    if (recentVisits.length > 4) recentVisits.length = 4;
+    try { localStorage.setItem("hub_recent", JSON.stringify(recentVisits)); } catch (e) {}
+  }
 
   root.classList.toggle("simple", state.simple);
 
@@ -710,6 +740,24 @@
     });
   }
 
+  function renderHomeRecent() {
+    var el = $("#homeRecent");
+    if (!el || !recentVisits.length) return;
+    var html = '<div class="home-recent-title">RECENTLY VISITED</div><div class="home-recent-list">';
+    recentVisits.forEach(function (k) {
+      if (!PROJECTS[k]) return;
+      html += '<button class="home-recent-chip" type="button" data-go="' + k + '">' + svgIcon(k, "") + PROJECTS[k].name + '</button>';
+    });
+    el.innerHTML = html + '</div>';
+    $$(".home-recent-chip", el).forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var k = btn.getAttribute("data-go");
+        setView(k);
+        SFX.select(k);
+      });
+    });
+  }
+
   function initChartCrosshair() {
     var wrap = $(".inv-chart-wrap");
     if (!wrap) return;
@@ -794,6 +842,7 @@
         '<svg id="homeChart" class="home-chart" viewBox="0 0 320 80" preserveAspectRatio="none" aria-hidden="true"></svg>' +
       '</div>' +
       '<div class="home-updates" id="homeUpdates"></div>' +
+      '<div class="home-recent" id="homeRecent"></div>' +
       '<div class="webring" id="homeGrid"></div>' +
     '</section>';
 
@@ -823,6 +872,7 @@
           '<div><span class="rl-title">LATEST RELEASE</span><br><b>\u2026</b></div>' +
           '<a href="https://github.com/notmicrosoft2000-cmd/' + p.repo + '/releases" target="_blank" rel="noopener">RELEASES \u2197</a>' +
         '</div>') +
+        win(k, "changelog.md", '<div class="pv-changelog" id="cl-' + k + '"></div>') +
         win(k, "open these", '<div class="pv-links">' +
           '<a class="plink" href="' + p.url + '" target="_blank" rel="noopener">WEBSITE \u2197</a>' +
           '<a class="plink" href="https://github.com/notmicrosoft2000-cmd/' + p.repo + '" target="_blank" rel="noopener">REPOSITORY \u2197</a>' +
@@ -893,6 +943,7 @@
     renderMarket();
     renderHomeTicker();
     renderHomeUpdates();
+    renderHomeRecent();
 
     var homeTickerBtn = $(".home-ticker-go");
     if (homeTickerBtn) homeTickerBtn.addEventListener("click", function () { SFX.select("investors"); setView("investors"); });
@@ -1232,6 +1283,7 @@
     if (state.view === k) return;
     var old = state.view;
     state.view = k;
+    trackVisit(k);
     if (old && views[old]) views[old].classList.remove("entered");
     Object.keys(views).forEach(function (v) { views[v].classList.toggle("active", v === k); });
     updateRail();
@@ -1602,6 +1654,22 @@
         rel.querySelector("b").textContent = "NONE YET";
       }
     }
+
+    var cl = $("#cl-" + k);
+    if (cl) {
+      var rl2 = data.release;
+      if (rl2 && rl2.tag_name) {
+        var clBody = rl2.body || "";
+        clBody = clBody.replace(/</g, "&lt;").replace(/\n/g, "<br>");
+        cl.innerHTML = '<div class="pv-changelog-title">RELEASE NOTES \u2014 ' + esc(rl2.tag_name) + '</div>' +
+          '<div class="pv-changelog-entry">' +
+            '<span class="cl-date">' + fmtDate(rl2.published_at) + '</span>' +
+            (clBody ? '<div class="cl-body">' + clBody + '</div>' : '<div class="cl-body">no release notes provided.</div>') +
+          '</div>';
+      } else {
+        cl.innerHTML = '<div class="pv-changelog-title">RELEASE NOTES</div><div class="pv-changelog-entry"><div class="cl-body">no releases yet. the hallway is still drafting.</div></div>';
+      }
+    }
   }
 
   /* ---------------- swap transitions ---------------- */
@@ -1855,4 +1923,95 @@
   if (brandNameEl && !root.classList.contains("rm")) {
     typeEl(brandNameEl, null);
   }
+
+  /* scroll to top */
+  var scrollTopBtn = $("#scrollTop");
+  if (scrollTopBtn) {
+    var scrollTick = null;
+    window.addEventListener("scroll", function () {
+      if (scrollTick) return;
+      scrollTick = requestAnimationFrame(function () {
+        scrollTick = null;
+        scrollTopBtn.classList.toggle("visible", window.scrollY > 400);
+      });
+    }, { passive: true });
+    scrollTopBtn.addEventListener("click", function () {
+      SFX.click();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  /* 404 fallback: bad hash route */
+  (function () {
+    var h = location.hash.replace("#", "");
+    if (h && !views[h]) {
+      var stage = $("#stage");
+      if (stage) {
+        stage.innerHTML = '<section class="view active entered" data-view="404" role="tabpanel">' +
+          '<div class="error-404">' +
+            '<h1>404</h1>' +
+            '<h2>THIS HALLWAY DOES NOT EXIST</h2>' +
+            '<p>the room you are looking for has been reassigned to the toaster, the pigeon, or a department that was dissolved in 1987. ' +
+            'it may have existed once, in the way all hallways exist — briefly, and with strong opinions about carpet.</p>' +
+            '<div class="err-links">' +
+              '<a href="#home">RETURN TO LOBBY</a>' +
+              '<a href="https://github.com/notmicrosoft2000-cmd" target="_blank" rel="noopener">CHECK THE ARCHIVES</a>' +
+            '</div>' +
+            '<p class="err-code">REFERENCE: NP-404-' + Math.floor(Math.random() * 9999) + ' / DEPARTMENT: HALLWAY OPERATIONS / STATUS: ALLEGED</p>' +
+          '</div>' +
+        '</section>';
+        try { state.view = "404"; } catch (e) {}
+      }
+    }
+  })();
+
+  /* update badges on project cards */
+  (function () {
+    var updateTags = {};
+    try { updateTags = JSON.parse(localStorage.getItem("hub_update_tags") || "{}"); } catch (e) {}
+    Object.keys(PROJECTS).forEach(function (k) {
+      var p = PROJECTS[k];
+      var lastSeen = updateTags[p.repo];
+      if (lastSeen) {
+        var btn = document.querySelector('.wcard[data-go="' + k + '"]');
+        if (btn) {
+          btn.style.position = "relative";
+          var dot = document.createElement("span");
+          dot.className = "wcard-updated";
+          btn.appendChild(dot);
+        }
+      }
+    });
+
+    function checkUpdates() {
+      Object.keys(PROJECTS).forEach(function (k) {
+        var p = PROJECTS[k];
+        var ghUrl = "https://api.github.com/repos/notmicrosoft2000-cmd/" + p.repo;
+        var relUrl = ghUrl + "/releases/latest";
+        var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+        var opts = controller ? { signal: controller.signal } : {};
+        if (controller) setTimeout(function () { controller.abort(); }, 5000);
+
+        fetch(relUrl, opts).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
+          if (!data || !data.tag_name) return;
+          var tag = data.tag_name;
+          var lastSeen = updateTags[p.repo] || "";
+          if (lastSeen && lastSeen !== tag) {
+            var btn = document.querySelector('.wcard[data-go="' + k + '"]');
+            if (btn && !btn.querySelector(".wcard-updated")) {
+              var dot = document.createElement("span");
+              dot.className = "wcard-updated";
+              btn.appendChild(dot);
+            }
+          }
+          updateTags[p.repo] = tag;
+          try { localStorage.setItem("hub_update_tags", JSON.stringify(updateTags)); } catch (e) {}
+        })["catch"](function () {});
+      });
+    }
+
+    checkUpdates();
+    setInterval(checkUpdates, 300000);
+  })();
+
 })();

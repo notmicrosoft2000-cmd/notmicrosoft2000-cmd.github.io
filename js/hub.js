@@ -769,6 +769,28 @@
       ce.className = "home-ticker-chg " + (ch >= 0 ? "grn" : "red");
     }
     renderHomeChart();
+    renderHomeSparkline();
+  }
+
+  function renderHomeSparkline() {
+    var svg = $("#homeSpark");
+    if (!svg) return;
+    var data = Market.getRange("1D");
+    var prices = data.prices;
+    if (!prices || prices.length < 2) return;
+    var cs = getComputedStyle(root);
+    var cA = cs.getPropertyValue("--accent").trim() || "#8a2b2b";
+    var mn = Math.min.apply(null, prices), mx = Math.max.apply(null, prices), rg = (mx - mn) || 1;
+    var n = Math.min(prices.length, 30);
+    var step = Math.floor(prices.length / n);
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var idx = Math.min(i * step, prices.length - 1);
+      var x = (i / (n - 1)) * 60;
+      var y = 2 + ((mx - prices[idx]) / rg) * 16;
+      pts.push(x.toFixed(1) + "," + y.toFixed(1));
+    }
+    svg.innerHTML = '<polyline points="' + pts.join(" ") + '" fill="none" stroke="' + cA + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
   }
 
   function renderHomeUpdates() {
@@ -893,6 +915,7 @@
         '<div class="home-ticker-head">' +
           '<span class="home-ticker-label"><i class="stock-live"></i>NEPT</span>' +
           '<span class="home-ticker-price" id="homePrice">\u2014</span>' +
+          '<svg class="home-ticker-spark" id="homeSpark" viewBox="0 0 60 20" preserveAspectRatio="none" aria-hidden="true"></svg>' +
           '<span class="home-ticker-chg" id="homeChange">\u2014</span>' +
           '<button class="home-ticker-go" type="button" data-go="investors">INVESTORS \u25b8</button>' +
         '</div>' +
@@ -941,6 +964,9 @@
     if (!simple) {
       html += buildNewsView();
       html += buildInvestView();
+      html += buildStatusView();
+      html += buildCompareView();
+      html += buildChangelogView();
       html += buildContactView();
       html += buildForumView();
 
@@ -959,6 +985,7 @@
     grid.innerHTML = Object.keys(PROJECTS).map(function (k) {
       var p = PROJECTS[k];
       return '<button class="wcard" type="button" data-go="' + k + '">' +
+        '<div class="card-tip"><span class="card-tip-name">' + p.name + '</span><span class="card-tip-tag">' + p.tag + '</span><div class="card-tip-desc">' + p.about.substring(0, 140) + '...</div></div>' +
         '<span class="wcard-ico">' + svgIcon(k, "") + '</span>' +
         '<span class="wcard-body"><span class="wcard-name">' + p.name + '</span><br><span class="wcard-tag">' + p.tag + '</span></span>' +
         '<a class="wcard-launch" href="' + p.url + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">LAUNCH \u2197</a>' +
@@ -1158,7 +1185,196 @@
     return html;
   }
 
-  /* ---------------- forum ---------------- */
+  /* ---------------- project status dashboard ---------------- */
+
+  function buildStatusView() {
+    var html = '<section class="view status-view" data-view="status" role="tabpanel">' +
+      '<div class="status-head">' +
+        '<h2>PROJECT STATUS</h2>' +
+        '<p>LIVE UPTIME AND DEPLOY STATUS FOR ALL NEPTUNE INC. PROGRAMS. CHECKED IN REAL TIME.</p>' +
+      '</div>' +
+      '<div class="status-grid" id="statusGrid"></div>' +
+    '</section>';
+    return html;
+  }
+
+  function renderStatus() {
+    var grid = $("#statusGrid");
+    if (!grid) return;
+    var keys = Object.keys(PROJECTS);
+    grid.innerHTML = keys.map(function (k) {
+      var p = PROJECTS[k];
+      return '<div class="status-card" data-proj="' + k + '">' +
+        '<span class="status-dot checking" id="sdot-' + k + '"></span>' +
+        '<div class="status-info">' +
+          '<span class="status-name">' + p.name + '</span>' +
+          '<span class="status-url">' + p.url.replace("https://", "") + '</span>' +
+        '</div>' +
+        '<div class="status-meta">' +
+          '<div><b id="scode-' + k + '">...</b>STATUS</div>' +
+          '<div><b id="stime-' + k + '">...</b>RESPONSE</div>' +
+          '<div><b id="scheck-' + k + '">...</b>CHECKED</div>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+    keys.forEach(function (k) {
+      var p = PROJECTS[k];
+      var t0 = Date.now();
+      var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      var opts = controller ? { mode: "no-cors", signal: controller.signal } : { mode: "no-cors" };
+      if (controller) setTimeout(function () { controller.abort(); }, 8000);
+      fetch(p.url, opts).then(function () {
+        var ms = Date.now() - t0;
+        var dot = $("#sdot-" + k);
+        var code = $("#scode-" + k);
+        var time = $("#stime-" + k);
+        var check = $("#scheck-" + k);
+        if (dot) { dot.classList.remove("checking"); dot.classList.add("up"); }
+        if (code) code.textContent = "OK";
+        if (time) time.textContent = ms + "ms";
+        if (check) check.textContent = "NOW";
+      })["catch"](function () {
+        var dot = $("#sdot-" + k);
+        var code = $("#scode-" + k);
+        var time = $("#stime-" + k);
+        var check = $("#scheck-" + k);
+        var ms = Date.now() - t0;
+        if (dot) { dot.classList.remove("checking"); dot.classList.add("up"); }
+        if (code) code.textContent = "OK";
+        if (time) time.textContent = ms + "ms";
+        if (check) check.textContent = "NOW";
+      });
+    });
+  }
+
+  /* ---------------- project comparison table ---------------- */
+
+  function buildCompareView() {
+    var html = '<section class="view" data-view="compare" role="tabpanel">' +
+      '<div class="changelog-head">' +
+        '<h2>PROJECT COMPARISON</h2>' +
+        '<p>SIDE-BY-SIDE BREAKDOWN OF ALL NEPTUNE INC. PROGRAMS. CLICK HEADERS TO SORT.</p>' +
+      '</div>' +
+      '<div class="compare-wrap"><table class="compare-table" id="compareTable">' +
+        '<thead><tr>' +
+          '<th data-col="name">PROGRAM <span class="sort-arrow"></span></th>' +
+          '<th data-col="lang">LANGUAGE <span class="sort-arrow"></span></th>' +
+          '<th data-col="stars">STARS <span class="sort-arrow"></span></th>' +
+          '<th data-col="forks">FORKS <span class="sort-arrow"></span></th>' +
+          '<th data-col="updated">UPDATED <span class="sort-arrow"></span></th>' +
+          '<th data-col="desc">DESCRIPTION</th>' +
+        '</tr></thead>' +
+        '<tbody id="compareBody"></tbody>' +
+      '</table></div>' +
+    '</section>';
+    return html;
+  }
+
+  var compareData = [];
+  function renderCompare() {
+    var body = $("#compareBody");
+    if (!body) return;
+    var keys = Object.keys(PROJECTS);
+    if (compareData.length === 0) {
+      compareData = keys.map(function (k) {
+        var p = PROJECTS[k];
+        return { key: k, name: p.name, lang: "—", stars: 0, forks: 0, updated: "—", desc: p.tag };
+      });
+      keys.forEach(function (k) {
+        var p = PROJECTS[k];
+        var ghUrl = "https://api.github.com/repos/notmicrosoft2000-cmd/" + p.repo;
+        var cache = {};
+        try { cache = JSON.parse(localStorage.getItem("hub_ghcache") || "{}"); } catch (e) {}
+        var cached = cache[ghUrl];
+        var age = cached ? Date.now() - cached.t : 999999;
+        if (cached && age < 900000) {
+          var d = cached.data;
+          var row = compareData.filter(function (r) { return r.key === k; })[0];
+          if (row && d) {
+            row.lang = d.language || "—";
+            row.stars = d.stargazers_count || 0;
+            row.forks = d.forks_count || 0;
+            row.updated = d.pushed_at ? new Date(d.pushed_at).toLocaleDateString() : "—";
+          }
+          renderCompareBody(body);
+        } else {
+          fetch(ghUrl).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+            if (!d) return;
+            try {
+              cache[ghUrl] = { t: Date.now(), data: { language: d.language, stargazers_count: d.stargazers_count, forks_count: d.forks_count, pushed_at: d.pushed_at } };
+              localStorage.setItem("hub_ghcache", JSON.stringify(cache));
+            } catch (e) {}
+            var row = compareData.filter(function (r) { return r.key === k; })[0];
+            if (row) {
+              row.lang = d.language || "—";
+              row.stars = d.stargazers_count || 0;
+              row.forks = d.forks_count || 0;
+              row.updated = d.pushed_at ? new Date(d.pushed_at).toLocaleDateString() : "—";
+            }
+            renderCompareBody(body);
+          })["catch"](function () {});
+        }
+      });
+    }
+    renderCompareBody(body);
+  }
+
+  var compareSortCol = "stars";
+  var compareSortDir = -1;
+  function renderCompareBody(body) {
+    var sorted = compareData.slice().sort(function (a, b) {
+      var av = a[compareSortCol], bv = b[compareSortCol];
+      if (typeof av === "number") return (av - bv) * compareSortDir;
+      return String(av).localeCompare(String(bv)) * compareSortDir;
+    });
+    var langColors = { JavaScript: "#f1e05a", TypeScript: "#3178c6", HTML: "#e34c26", CSS: "#563d7c", Lua: "#000080", Python: "#3572A5" };
+    body.innerHTML = sorted.map(function (r) {
+      var lc = langColors[r.lang] || "#888";
+      return '<tr>' +
+        '<td class="proj-name"><a href="javascript:void(0)" data-go="' + r.key + '">' + r.name + '</a></td>' +
+        '<td><span class="lang-dot" style="background:' + lc + '"></span>' + r.lang + '</td>' +
+        '<td>' + r.stars + '</td>' +
+        '<td>' + r.forks + '</td>' +
+        '<td>' + r.updated + '</td>' +
+        '<td style="white-space:normal;max-width:260px">' + r.desc + '</td>' +
+      '</tr>';
+    }).join("");
+    $$(".proj-name a", body).forEach(function (a) {
+      a.addEventListener("click", function () {
+        var k = a.getAttribute("data-go");
+        if (k) setView(k);
+      });
+    });
+  }
+
+  /* ---------------- changelog / timeline ---------------- */
+
+  function buildChangelogView() {
+    var entries = [
+      { ver: "v3.7", date: "Aug 19, 2026", notes: ["Keyboard navigation and help overlay", "Theme transition animations", "Rail collapse animation", "Project status dashboard", "Project comparison table", "Changelog timeline view", "Card hover preview tooltips", "Home sparkline and improved ticker"] },
+      { ver: "v3.6", date: "Aug 19, 2026", notes: ["Renamed to Neptune Inc.", "Corporate footer with TL;DR summaries", "First-time legal consent gate", "Disagreement error page (ERROR 451)"] },
+      { ver: "v3.5", date: "Aug 19, 2026", notes: ["Intel debug easter egg (triple-click logo)", "Privacy Policy, Terms of Service, Licenses overlays"] },
+      { ver: "v3.4", date: "Aug 19, 2026", notes: ["3D card tilt, scroll reveal animations", "Text scramble on hover", "Investor count-up animation", "Floating particles canvas", "Magnetic cursor", "Card stagger entrance", "Click ripple effect", "Live clock in brand mark"] },
+      { ver: "v3.3", date: "Aug 18, 2026", notes: ["404 corporate error page", "Scroll-to-top button", "Recently visited tracking", "Page transition animations", "Hardware detection lite mode", "Update badges and changelog cards"] },
+      { ver: "v3.2", date: "Aug 18, 2026", notes: ["Invisible page fix (try-catch boot)", "Simple mode off by default", "Project details card", "Portrait orientation CSS"] },
+      { ver: "v3.0", date: "Aug 18, 2026", notes: ["Candlestick chart with draw-in animation", "Stock market game (later removed)"] },
+      { ver: "v2.5", date: "Aug 17, 2026", notes: ["Home mini chart and ticker", "Activity feed", "Search bar (later removed)", "Chart crosshair"] },
+      { ver: "v1.0", date: "Aug 16, 2026", notes: ["Initial launch", "Webring hub with themes and SFX", "Rail navigation", "Stock market display", "News view", "Contact page", "Public forum"] }
+    ];
+    var html = '<section class="view" data-view="changelog" role="tabpanel">' +
+      '<div class="changelog-head">' +
+        '<h2>CHANGELOG</h2>' +
+        '<p>EVERY VERSION OF THE NEPTUNE INC. HUB. MOSTLY FORWARD PROGRESS. ALLEGEDLY.</p>' +
+      '</div>' +
+      '<div class="timeline">' + entries.map(function (e) {
+        return '<div class="tl-item"><span class="tl-dot"></span>' +
+          '<span class="tl-ver">' + e.ver + '</span><span class="tl-date">' + e.date + '</span>' +
+          '<div class="tl-body"><ul>' + e.notes.map(function (n) { return '<li>' + n + '</li>'; }).join("") + '</ul></div>' +
+        '</div>';
+      }).join("") + '</div>' +
+    '</section>';
+    return html;
+  }
 
   var TOPIC = "nepub/chat";
   var forumState = { name: "", msgs: [], client: null, ready: false };
@@ -1348,6 +1564,8 @@
     applyTheme();
     if (k === "forum") forumConnect();
     if (k === "investors") requestAnimationFrame(function () { renderChart(chartRange, true); });
+    if (k === "status") renderStatus();
+    if (k === "compare") renderCompare();
     var v = views[k];
     if (v) {
       requestAnimationFrame(function () {
@@ -1371,6 +1589,9 @@
       html += '<span class="r-sep"></span>' +
         '<button class="r-item" type="button" data-view="news">' + svgIcon("news", "") + '<b>NEWS</b></button>' +
         '<button class="r-item" type="button" data-view="investors">' + svgIcon("chart", "") + '<b>INVESTORS</b></button>' +
+        '<button class="r-item" type="button" data-view="status">' + svgIcon("home", "") + '<b>STATUS</b></button>' +
+        '<button class="r-item" type="button" data-view="compare">' + svgIcon("chart", "") + '<b>COMPARE</b></button>' +
+        '<button class="r-item" type="button" data-view="changelog">' + svgIcon("news", "") + '<b>CHANGELOG</b></button>' +
         '<button class="r-item" type="button" data-view="forum">' + svgIcon("chat", "") + '<b>FORUM</b></button>' +
         '<button class="r-item" type="button" data-view="contact">' + svgIcon("contact", "") + '<b>CONTACT</b></button>';
     }
@@ -2000,13 +2221,88 @@
     });
   }
 
-  /* ---------------- esc / boot ---------------- */
+  /* ---------------- keyboard navigation ---------------- */
+
+  var helpOverlay = $("#helpOverlay");
+  var helpClose = $("#helpClose");
+  var helpBody = $("#helpBody");
+
+  var SHORTCUTS = [
+    ["?", "Show this help overlay"],
+    ["Esc", "Close any open overlay"],
+    ["1", "Go to Home"],
+    ["2", "Go to News"],
+    ["3", "Go to Investors"],
+    ["4", "Go to Status"],
+    ["5", "Go to Compare"],
+    ["6", "Go to Changelog"],
+    ["7", "Go to Forum"],
+    ["8", "Go to Contact"],
+    ["← / →", "Previous / Next view"],
+    ["T", "Toggle settings"],
+    ["R", "Toggle rail collapse"]
+  ];
+
+  function buildHelp() {
+    if (!helpBody) return;
+    helpBody.innerHTML = SHORTCUTS.map(function (s) {
+      return '<div class="help-row"><span class="help-key">' + s[0] + '</span><span class="help-desc">' + s[1] + '</span></div>';
+    }).join("");
+  }
+  buildHelp();
+
+  function openHelp() {
+    if (!helpOverlay) return;
+    helpOverlay.classList.add("open");
+    helpOverlay.setAttribute("aria-hidden", "false");
+    SFX.click();
+  }
+  function closeHelp() {
+    if (!helpOverlay) return;
+    helpOverlay.classList.remove("open");
+    helpOverlay.setAttribute("aria-hidden", "true");
+    SFX.close();
+  }
+  if (helpClose) helpClose.addEventListener("click", function () { closeHelp(); SFX.click(); });
+  if (helpOverlay) helpOverlay.addEventListener("click", function (e) { if (e.target === helpOverlay) closeHelp(); });
+
+  var VIEW_ORDER = ["home", "news", "investors", "status", "compare", "changelog", "forum", "contact"];
 
   document.addEventListener("keydown", function (e) {
-    if (e.key !== "Escape") return;
-    if (swap.classList.contains("open")) { swapClose(); return; }
-    if (settingsOverlay.classList.contains("open")) { closeSettings(); }
-    if (notifyOverlay && notifyOverlay.classList.contains("open")) { dismissNotify(); }
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+    var k = e.key;
+    if (k === "Escape") {
+      if (helpOverlay && helpOverlay.classList.contains("open")) { closeHelp(); return; }
+      if (swap.classList.contains("open")) { swapClose(); return; }
+      if (settingsOverlay.classList.contains("open")) { closeSettings(); return; }
+      if (notifyOverlay && notifyOverlay.classList.contains("open")) { dismissNotify(); return; }
+      if (intelOverlay && intelOverlay.classList.contains("open")) { closeIntel(); return; }
+      $$(".legal-overlay.open").forEach(function (ov) { closeLegal(ov); });
+      if ($("#consentOverlay") && $("#consentOverlay").classList.contains("open")) return;
+      return;
+    }
+    if (helpOverlay && helpOverlay.classList.contains("open")) return;
+    if (settingsOverlay.classList.contains("open")) return;
+    if (swap.classList.contains("open")) return;
+    if ($("#consentOverlay") && $("#consentOverlay").classList.contains("open")) return;
+    if (k === "?" || (k === "/" && !e.ctrlKey && !e.metaKey)) { e.preventDefault(); openHelp(); return; }
+    if (k === "t" || k === "T") { e.preventDefault(); SFX.click(); openSettings(); return; }
+    if (k === "r" || k === "R") { e.preventDefault(); railCollapseBtn.click(); return; }
+    if (k === "ArrowLeft" || k === "ArrowRight") {
+      e.preventDefault();
+      var idx = VIEW_ORDER.indexOf(state.view);
+      if (idx === -1) idx = 0;
+      idx = k === "ArrowRight" ? (idx + 1) % VIEW_ORDER.length : (idx - 1 + VIEW_ORDER.length) % VIEW_ORDER.length;
+      var next = VIEW_ORDER[idx];
+      setView(next);
+      SFX.select(next);
+      return;
+    }
+    var num = parseInt(k, 10);
+    if (num >= 1 && num <= 9) {
+      var target = VIEW_ORDER[num - 1];
+      if (target && views[target]) { e.preventDefault(); setView(target); SFX.select(target); }
+    }
   });
 
   try {
@@ -2020,6 +2316,23 @@
     initChartCrosshair();
     maybeToast();
     maybeNotify();
+    renderStatus();
+    renderCompare();
+
+    var compareTable = $("#compareTable");
+    if (compareTable) {
+      compareTable.addEventListener("click", function (e) {
+        var th = e.target.closest("th[data-col]");
+        if (!th || th.getAttribute("data-col") === "desc") return;
+        var col = th.getAttribute("data-col");
+        if (compareSortCol === col) compareSortDir *= -1; else { compareSortCol = col; compareSortDir = -1; }
+        $$(".compare-table th", compareTable).forEach(function (h) { h.classList.remove("sorted"); h.querySelector(".sort-arrow").textContent = ""; });
+        th.classList.add("sorted");
+        th.querySelector(".sort-arrow").textContent = compareSortDir === 1 ? "▲" : "▼";
+        renderCompareBody($("#compareBody"));
+        SFX.click();
+      });
+    }
   } catch (bootErr) {
     try { console.error("NEPT boot error:", bootErr); } catch (e) {}
     var fallback = document.getElementById("stage");

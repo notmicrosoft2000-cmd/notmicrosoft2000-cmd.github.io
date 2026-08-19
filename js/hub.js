@@ -2014,4 +2014,178 @@
     setInterval(checkUpdates, 300000);
   })();
 
+  /* =================== ANIMATIONS =================== */
+
+  if (!root.classList.contains("lite")) {
+
+    /* 1. floating particles */
+    (function () {
+      var cvs = $("#bgParticles");
+      if (!cvs) return;
+      var ctx = cvs.getContext("2d");
+      var W, H, dots = [];
+      var cs = getComputedStyle(root);
+      var accentCol = cs.getPropertyValue("--accent").trim() || "#8a2b2b";
+      var mutedCol = cs.getPropertyValue("--muted").trim() || "#888";
+      function resize() { W = cvs.width = window.innerWidth; H = cvs.height = window.innerHeight; }
+      resize();
+      window.addEventListener("resize", resize);
+      var count = Math.min(40, Math.floor((W * H) / 30000));
+      for (var i = 0; i < count; i++) {
+        dots.push({ x: Math.random() * W, y: Math.random() * H, r: 1 + Math.random() * 1.8, dx: (Math.random() - .5) * .25, dy: (Math.random() - .5) * .25, o: .08 + Math.random() * .15 });
+      }
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        for (var i = 0; i < dots.length; i++) {
+          var d = dots[i];
+          d.x += d.dx; d.y += d.dy;
+          if (d.x < -10) d.x = W + 10; if (d.x > W + 10) d.x = -10;
+          if (d.y < -10) d.y = H + 10; if (d.y > H + 10) d.y = -10;
+          ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+          ctx.fillStyle = accentCol; ctx.globalAlpha = d.o; ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        for (var i = 0; i < dots.length; i++) {
+          for (var j = i + 1; j < dots.length; j++) {
+            var dx = dots[i].x - dots[j].x, dy = dots[i].y - dots[j].y;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 140) {
+              ctx.beginPath(); ctx.moveTo(dots[i].x, dots[i].y); ctx.lineTo(dots[j].x, dots[j].y);
+              ctx.strokeStyle = accentCol; ctx.globalAlpha = (1 - dist / 140) * .07; ctx.lineWidth = .5; ctx.stroke();
+            }
+          }
+        }
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
+    /* 2. scroll-triggered reveals */
+    (function () {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("vis"); io.unobserve(e.target); } });
+      }, { threshold: 0.1 });
+      function scan() { $$(".ncard, .inv-stat, .contact-card, .filing-list li, .board-list li, .disf-item").forEach(function (el) { if (!el.classList.contains("vis")) { el.classList.add("reveal"); io.observe(el); } }); }
+      scan();
+      setInterval(scan, 3000);
+    })();
+
+    /* 3. text scramble on card hover */
+    (function () {
+      var CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
+      var pool = $$(".wcard-name");
+      pool.forEach(function (el) {
+        var orig = el.textContent;
+        var hovering = false;
+        el.closest(".wcard").addEventListener("mouseenter", function () {
+          if (hovering) return; hovering = true;
+          var i = 0;
+          var iv = setInterval(function () {
+            var s = "";
+            for (var j = 0; j < orig.length; j++) {
+              s += j < i ? orig.charAt(j) : CHARS.charAt(Math.floor(Math.random() * CHARS.length));
+            }
+            el.textContent = s;
+            i += 1;
+            if (i > orig.length) { clearInterval(iv); el.textContent = orig; hovering = false; }
+          }, 28);
+        });
+      });
+    })();
+
+    /* 4. typing count-up on investor page */
+    (function () {
+      var investorAnimated = false;
+      var origSetView = setView;
+      setView = function (k) {
+        origSetView(k);
+        if (k === "investors" && !investorAnimated) {
+          investorAnimated = true;
+          var targets = [
+            { id: "nepMcap", prefix: "$", suffix: "M", decimals: 0 },
+            { id: "nepShares", prefix: "", suffix: "K", decimals: 1 },
+            { id: "nepPE", prefix: "", suffix: "", decimals: 1 },
+            { id: "nepWkHi", prefix: "$", suffix: "", decimals: 2 },
+            { id: "nepWkLo", prefix: "$", suffix: "", decimals: 2 },
+            { id: "nepDiv", prefix: "", suffix: "%", decimals: 1 }
+          ];
+          targets.forEach(function (t) {
+            var el = document.getElementById(t.id);
+            if (!el) return;
+            var finalText = el.textContent;
+            var num = parseFloat(finalText.replace(/[^0-9.\-]/g, ""));
+            if (isNaN(num) || num === 0) return;
+            var start = 0;
+            var dur = 1200;
+            var startTime = null;
+            function step(ts) {
+              if (!startTime) startTime = ts;
+              var pct = Math.min((ts - startTime) / dur, 1);
+              var ease = 1 - Math.pow(1 - pct, 3);
+              var val = start + (num - start) * ease;
+              el.textContent = t.prefix + val.toFixed(t.decimals) + t.suffix;
+              if (pct < 1) requestAnimationFrame(step);
+              else el.textContent = finalText;
+            }
+            el.textContent = t.prefix + "0".repeat(String(Math.round(num)).length) + t.suffix;
+            requestAnimationFrame(step);
+          });
+        }
+      };
+    })();
+
+    /* 5. magnetic cursor toward buttons and cards */
+    (function () {
+      var MAGNETS = ".wcard, .pv-launch, .plink, .r-item, .home-ticker-go, .home-update, .home-recent-chip";
+      var RADIUS = 100;
+      var STRENGTH = .15;
+      document.addEventListener("mousemove", function (e) {
+        $$(MAGNETS).forEach(function (el) {
+          var rect = el.getBoundingClientRect();
+          var cx = rect.left + rect.width / 2;
+          var cy = rect.top + rect.height / 2;
+          var dx = e.clientX - cx;
+          var dy = e.clientY - cy;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < RADIUS) {
+            var pull = (1 - dist / RADIUS) * STRENGTH;
+            el.style.transform = "translate(" + (dx * pull).toFixed(1) + "px," + (dy * pull).toFixed(1) + "px)";
+          } else {
+            el.style.transform = "";
+          }
+        });
+      });
+    })();
+
+    /* 6. hover ripple on click */
+    (function () {
+      document.addEventListener("click", function (e) {
+        var ring = document.createElement("div");
+        ring.className = "ripple-ring";
+        ring.style.left = (e.clientX - 20) + "px";
+        ring.style.top = (e.clientY - 20) + "px";
+        document.body.appendChild(ring);
+        setTimeout(function () { if (ring.parentNode) ring.parentNode.removeChild(ring); }, 550);
+      });
+    })();
+
+    /* 7. live clock in brand mark */
+    (function () {
+      var brand = $(".brand-text");
+      if (!brand) return;
+      var clock = document.createElement("span");
+      clock.className = "brand-clock";
+      brand.appendChild(clock);
+      function tick() {
+        var now = new Date();
+        var h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+        clock.textContent = (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+
+  }
+
 })();

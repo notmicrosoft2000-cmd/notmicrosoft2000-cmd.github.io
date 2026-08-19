@@ -2028,6 +2028,55 @@ html.rm .bgfx { animation: none; }
 .lite .view.entering { animation: none; }
 .lite .fly-ico { display: none; }
 
+/* ---------- floating particles ---------- */
+
+.bg-particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+/* ---------- 3D card tilt ---------- */
+
+.wcard { perspective: 700px; transform-style: preserve-3d; will-change: transform; }
+.wcard:hover { transform: none; }
+
+/* ---------- scroll reveal ---------- */
+
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .55s ease, transform .55s ease; }
+.reveal.vis { opacity: 1; transform: translateY(0); }
+
+/* ---------- news ticker faster scroll ---------- */
+
+.tick-track .tt { animation-duration: 32s; }
+
+/* ---------- ripple ---------- */
+
+.ripple-ring { position: fixed; z-index: 9998; pointer-events: none; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); opacity: .6; transform: scale(0); animation: ripplePop .5s ease-out forwards; }
+@keyframes ripplePop { to { transform: scale(5); opacity: 0; } }
+
+/* ---------- card stagger entrance ---------- */
+
+.wcard { animation: cardIn .45s ease backwards; }
+.wcard:nth-child(1) { animation-delay: .04s; }
+.wcard:nth-child(2) { animation-delay: .09s; }
+.wcard:nth-child(3) { animation-delay: .14s; }
+.wcard:nth-child(4) { animation-delay: .19s; }
+.wcard:nth-child(5) { animation-delay: .24s; }
+.wcard:nth-child(6) { animation-delay: .29s; }
+.wcard:nth-child(7) { animation-delay: .34s; }
+.wcard:nth-child(8) { animation-delay: .39s; }
+@keyframes cardIn { from { opacity: 0; transform: translateY(20px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+/* ---------- brand clock ---------- */
+
+.brand-clock { font-family: var(--font-m); font-size: 9px; letter-spacing: .08em; color: var(--muted); opacity: .6; margin-left: 6px; animation: clockBlink 1s steps(1) infinite; }
+@keyframes clockBlink { 0%, 49% { opacity: .6; } 50%, 100% { opacity: .2; } }
+
+/* ---------- lite mode animation overrides ---------- */
+
+.lite .bg-particles { display: none; }
+.lite .ripple-ring { display: none; }
+.lite .wcard { animation: none; }
+.lite .reveal { transition: none; }
+.lite .reveal.vis { opacity: 1; transform: none; }
+
 @media (orientation: portrait), (max-width: 600px) {
   .stage { padding: 18px 12px 40px; max-width: 100%; }
   .hero { padding: 14px 0 8px; }

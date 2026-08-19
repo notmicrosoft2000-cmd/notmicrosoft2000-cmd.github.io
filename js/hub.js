@@ -494,8 +494,8 @@
     si("nepMcap", "$" + Market.mcap() + "M");
     si("nepShares", fmtNum(Market.shares()) + "K");
     si("nepPE", Market.pe());
-    si("nepWkHi", Market.fmt(Market.wk52hi()));
-    si("nepWkLo", Market.fmt(Market.wk52lo()));
+    si("nepWkHi", Market.wk52hi());
+    si("nepWkLo", Market.wk52lo());
     si("nepDiv", Market.divYield() + "%");
     var brk = $("#newsBreaking");
     if (brk) {
@@ -1761,7 +1761,7 @@
     try { console.error("NEPT boot error:", bootErr); } catch (e) {}
     var fallback = document.getElementById("stage");
     if (fallback) {
-      fallback.innerHTML = '<section class="view active entered" data-view="home" style="display:block"><div class="hero"><h2 class="hero-title">NEPTUNE<br>PRODUCTIONS</h2><p class="hero-sub">hallway error: ' + String(bootErr && bootErr.message ? bootErr.message : bootErr).replace(/</g, "&lt;") + '</p></div></section>';
+      fallback.innerHTML = '<section class="view active entered" data-view="home" style="display:block"><div class="hero"><h2 class="hero-title">NEPTUNE<br>PRODUCTIONS</h2><p class="hero-sub">something went wrong in the hallway. try refreshing.</p></div></section>';
     }
   }
 

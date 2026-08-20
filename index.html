@@ -111,6 +111,22 @@
 
   <button class="scroll-top" id="scrollTop" type="button" aria-label="scroll to top">&uarr;</button>
 
+  <!-- touch elements -->
+  <div class="swipe-indicator" id="swipeIndicator"></div>
+  <div class="pull-indicator" id="pullIndicator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+  <nav class="bottom-nav" id="bottomNav" aria-label="mobile navigation">
+    <div class="bottom-nav-inner">
+      <button class="bn-item active" type="button" data-view="home"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 28 L32 12 L54 28"/><path d="M18 32 v20 h28 V32"/><path d="M27 52 v-11 h10 v11"/></svg>HOME</button>
+      <button class="bn-item" type="button" data-view="news"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="14" width="48" height="36" rx="3"/><path d="M8 24 h48"/><path d="M14 32 h14 M14 38 h14 M14 44 h26 M34 32 h16 M34 38 h16"/></svg>NEWS</button>
+      <button class="bn-item" type="button" data-view="investors"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 52 h44"/><rect x="16" y="30" width="8" height="22"/><rect x="28" y="18" width="8" height="34"/><rect x="40" y="36" width="8" height="16"/><path d="M16 28 l8-2 4 8 8-14 4 10"/></svg>INVEST</button>
+      <button class="bn-item bn-more" type="button" data-more="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><circle cx="20" cy="32" r="4"/><circle cx="32" cy="32" r="4"/><circle cx="44" cy="32" r="4"/></svg>MORE
+        <div class="bn-more-menu" id="bnMoreMenu"></div>
+      </button>
+    </div>
+  </nav>
+  <div class="ctx-backdrop" id="ctxBackdrop"></div>
+  <div class="ctx-menu" id="ctxMenu"></div>
+
   <div class="help-overlay" id="helpOverlay" aria-hidden="true">
     <div class="help-panel">
       <div class="help-head">

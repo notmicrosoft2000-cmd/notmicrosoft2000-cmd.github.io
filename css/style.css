@@ -2809,3 +2809,281 @@ html.rm .bgfx { animation: none; }
 .tl-body { font-family: var(--font-b); font-size: 13px; color: var(--text); line-height: 1.6; margin-top: 6px; }
 .tl-body ul { margin: 4px 0 0; padding-left: 18px; }
 .tl-body li { margin-bottom: 3px; }
+
+/* ---------- touch: swipe indicator ---------- */
+
+.swipe-indicator {
+  display: none;
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  font-family: var(--font-m);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 6px 16px;
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+.swipe-indicator.show { opacity: 1; }
+@media (hover: none) and (pointer: coarse) { .swipe-indicator { display: block; } }
+
+/* ---------- touch: bottom nav bar ---------- */
+
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--panel) 94%, transparent);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--line);
+  padding: 6px 0 env(safe-area-inset-bottom, 6px);
+}
+.bottom-nav-inner {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.bn-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-family: var(--font-m);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  cursor: pointer;
+  transition: color .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.bn-item svg { width: 22px; height: 22px; }
+.bn-item.active { color: var(--accent); }
+.bn-item:active { opacity: .7; }
+.bn-more {
+  position: relative;
+}
+.bn-more-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 6px 0;
+  min-width: 160px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity .2s, transform .2s;
+}
+.bn-more-menu.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.bn-more-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-m);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  cursor: pointer;
+  text-align: left;
+  transition: background .15s;
+}
+.bn-more-item:active { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.bn-more-item svg { width: 16px; height: 16px; color: var(--muted); }
+@media (hover: none) and (pointer: coarse) { .bottom-nav { display: block; } .stage { padding-bottom: 120px; } }
+
+/* ---------- touch: swipeable cards carousel ---------- */
+
+.home-carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 20px 12px;
+  scrollbar-width: none;
+}
+.home-carousel::-webkit-scrollbar { display: none; }
+.home-carousel .wcard {
+  flex: 0 0 260px;
+  scroll-snap-align: start;
+}
+.carousel-indicator {
+  display: none;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 0;
+}
+.carousel-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--line);
+  transition: background .2s, width .2s;
+}
+.carousel-dot.active { background: var(--accent); width: 18px; border-radius: 3px; }
+@media (hover: none) and (pointer: coarse) {
+  .home-carousel { gap: 10px; padding: 0 14px 10px; }
+  .home-carousel .wcard { flex: 0 0 220px; }
+  .home-recent, .home-updates { display: none; }
+  .carousel-indicator { display: flex; }
+}
+
+/* ---------- touch: long-press context menu ---------- */
+
+.ctx-menu {
+  position: fixed;
+  z-index: 300;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow), 0 8px 32px rgba(0,0,0,.25);
+  padding: 6px 0;
+  min-width: 180px;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(.92);
+  transition: opacity .15s, transform .15s;
+}
+.ctx-menu.open { opacity: 1; pointer-events: auto; transform: scale(1); }
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-m);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  cursor: pointer;
+  text-align: left;
+  transition: background .12s;
+}
+.ctx-item:active { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.ctx-item svg { width: 15px; height: 15px; color: var(--muted); }
+.ctx-sep { height: 1px; background: var(--line); margin: 4px 0; }
+.ctx-hint {
+  padding: 6px 16px;
+  font-family: var(--font-m);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: .06em;
+}
+.ctx-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 299;
+}
+
+/* ---------- touch: haptic feedback ---------- */
+
+.haptic-light { -webkit-tap-highlight-color: transparent; }
+.haptic-light:active { animation: hapticFlash .12s ease; }
+@keyframes hapticFlash { 0% { opacity: 1; } 50% { opacity: .85; } 100% { opacity: 1; } }
+
+/* ---------- touch: pull-to-refresh ---------- */
+
+.pull-indicator {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50px);
+  z-index: 120;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .2s ease;
+  pointer-events: none;
+}
+.pull-indicator.visible { transform: translateX(-50%) translateY(20px); }
+.pull-indicator.refreshing { transform: translateX(-50%) translateY(20px); }
+.pull-indicator svg { width: 20px; height: 20px; color: var(--accent); }
+.pull-indicator.refreshing svg { animation: pullSpin .8s linear infinite; }
+@keyframes pullSpin { to { transform: rotate(360deg); } }
+
+/* ---------- touch: swipe-to-dismiss ---------- */
+
+.swipe-dismiss {
+  transition: transform .25s cubic-bezier(.22, 1.18, .35, 1);
+}
+.swipe-dismiss.dragging { transition: none; }
+
+/* ---------- touch: bottom sheet settings ---------- */
+
+@media (hover: none) and (pointer: coarse) {
+  .settings-overlay {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  .settings-panel {
+    width: 100% !important;
+    max-height: 85vh !important;
+    border-radius: var(--radius) var(--radius) 0 0 !important;
+    transform: translateY(100%) !important;
+  }
+  .settings-overlay.open .settings-panel { transform: translateY(0) !important; }
+  .settings-head::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    margin: 0 auto 12px;
+  }
+}
+
+/* ---------- touch: momentum / rubber-band scroll ---------- */
+
+@supports (-webkit-overflow-scrolling: touch) {
+  .stage { -webkit-overflow-scrolling: touch; }
+}
+.touch-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; overscroll-behavior-y: contain; }
+
+/* ---------- touch: general tap optimizations ---------- */
+
+@media (hover: none) and (pointer: coarse) {
+  .wcard, .r-item, .ncard, .inv-range, .news-nav span, .chip, .btn, button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .wcard { min-height: 56px; }
+  .r-item { min-height: 44px; }
+  .inv-range { min-width: 44px; min-height: 36px; }
+  .news-nav span { min-height: 36px; padding: 8px 14px; }
+}

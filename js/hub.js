@@ -997,6 +997,7 @@
         var k = c.getAttribute("data-go");
         flyIcon(c);
         setView(k);
+        haptic(8);
         SFX.select(k);
       });
     });
@@ -1560,6 +1561,7 @@
     if (old && views[old]) views[old].classList.remove("entered");
     Object.keys(views).forEach(function (v) { views[v].classList.toggle("active", v === k); });
     updateRail();
+    updateBottomNav();
     if (PROJECTS[k]) loadStats(k);
     applyTheme();
     if (k === "forum") forumConnect();
@@ -1631,6 +1633,7 @@
     if (!k) return;
     closeRail();
     setView(k);
+    haptic(8);
     if (k === "home") SFX.click(); else SFX.select(k);
   });
 
@@ -2305,6 +2308,303 @@
     }
   });
 
+  /* ---------------- touch: haptic feedback ---------------- */
+
+  function haptic(ms) {
+    try { if (navigator.vibrate) navigator.vibrate(ms || 10); } catch (e) {}
+  }
+
+  /* ---------------- touch: swipe navigation ---------------- */
+
+  var swipeEl = stage;
+  var swipeStartX = 0, swipeStartY = 0, swipeDX = 0, swipeLock = false;
+  var swipeIndicator = $("#swipeIndicator");
+
+  function showSwipeIndicator(text) {
+    if (!swipeIndicator) return;
+    swipeIndicator.textContent = text;
+    swipeIndicator.classList.add("show");
+  }
+  function hideSwipeIndicator() {
+    if (swipeIndicator) swipeIndicator.classList.remove("show");
+  }
+
+  if (swipeEl) {
+    swipeEl.addEventListener("touchstart", function (e) {
+      if (e.touches.length !== 1) return;
+      swipeStartX = e.touches[0].clientX;
+      swipeStartY = e.touches[0].clientY;
+      swipeDX = 0;
+      swipeLock = false;
+    }, { passive: true });
+
+    swipeEl.addEventListener("touchmove", function (e) {
+      if (e.touches.length !== 1 || swipeLock) return;
+      var dx = e.touches[0].clientX - swipeStartX;
+      var dy = e.touches[0].clientY - swipeStartY;
+      if (Math.abs(dy) > Math.abs(dx) + 10) { swipeLock = true; hideSwipeIndicator(); return; }
+      swipeDX = dx;
+      if (Math.abs(dx) > 30) {
+        var idx = VIEW_ORDER.indexOf(state.view);
+        if (dx < 0 && idx < VIEW_ORDER.length - 1) showSwipeIndicator(VIEW_ORDER[idx + 1].toUpperCase() + " \u2192");
+        else if (dx > 0 && idx > 0) showSwipeIndicator("\u2190 " + VIEW_ORDER[idx - 1].toUpperCase());
+        else hideSwipeIndicator();
+      } else { hideSwipeIndicator(); }
+    }, { passive: true });
+
+    swipeEl.addEventListener("touchend", function () {
+      hideSwipeIndicator();
+      if (Math.abs(swipeDX) < 60) return;
+      var idx = VIEW_ORDER.indexOf(state.view);
+      if (swipeDX < 0 && idx < VIEW_ORDER.length - 1) {
+        var next = VIEW_ORDER[idx + 1];
+        setView(next); haptic(8); SFX.select(next);
+      } else if (swipeDX > 0 && idx > 0) {
+        var prev = VIEW_ORDER[idx - 1];
+        setView(prev); haptic(8); SFX.select(prev);
+      }
+      swipeDX = 0;
+    }, { passive: true });
+  }
+
+  /* ---------------- touch: bottom nav bar ---------------- */
+
+  var bottomNav = $("#bottomNav");
+  var bnMoreMenu = $("#bnMoreMenu");
+
+  function buildBottomNav() {
+    if (!bnMoreMenu) return;
+    var extra = VIEW_ORDER.filter(function (v) { return v !== "home" && v !== "news" && v !== "investors"; });
+    bnMoreMenu.innerHTML = extra.map(function (v) {
+      var label = PROJECTS[v] ? PROJECTS[v].name : v.toUpperCase();
+      return '<button class="bn-more-item" type="button" data-view="' + v + '">' + svgIcon(PROJECTS[v] ? v : "home", "") + label + '</button>';
+    }).join("");
+    $$(".bn-more-item", bnMoreMenu).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var k = b.getAttribute("data-view");
+        bnMoreMenu.classList.remove("open");
+        setView(k); haptic(8); SFX.select(k);
+        updateBottomNav();
+      });
+    });
+  }
+  buildBottomNav();
+
+  function updateBottomNav() {
+    if (!bottomNav) return;
+    $$(".bn-item", bottomNav).forEach(function (b) {
+      if (b.getAttribute("data-more")) return;
+      b.classList.toggle("active", b.getAttribute("data-view") === state.view);
+    });
+  }
+
+  if (bottomNav) {
+    $$(".bn-item:not([data-more])", bottomNav).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var k = b.getAttribute("data-view");
+        setView(k); haptic(8); SFX.select(k);
+        updateBottomNav();
+      });
+    });
+    var moreBtn = $("[data-more]", bottomNav);
+    if (moreBtn) {
+      moreBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        bnMoreMenu.classList.toggle("open");
+        haptic(6);
+      });
+    }
+    document.addEventListener("click", function (e) {
+      if (bnMoreMenu && !e.target.closest(".bn-more")) bnMoreMenu.classList.remove("open");
+    });
+  }
+
+  /* ---------------- touch: swipeable cards carousel ---------------- */
+
+  function initCarousel() {
+    var grid = $("#homeGrid");
+    if (!grid || !touchDevice) return;
+    grid.classList.add("home-carousel");
+    var indicator = document.createElement("div");
+    indicator.className = "carousel-indicator";
+    indicator.id = "carouselIndicator";
+    var cards = $$(".wcard", grid);
+    cards.forEach(function () {
+      var dot = document.createElement("span");
+      dot.className = "carousel-dot";
+      indicator.appendChild(dot);
+    });
+    grid.parentNode.insertBefore(indicator, grid.nextSibling);
+    function updateDots() {
+      var scrollLeft = grid.scrollLeft;
+      var cardWidth = cards[0] ? cards[0].offsetWidth + 12 : 260;
+      var active = Math.round(scrollLeft / cardWidth);
+      $$(".carousel-dot", indicator).forEach(function (d, i) { d.classList.toggle("active", i === active); });
+    }
+    grid.addEventListener("scroll", updateDots, { passive: true });
+    updateDots();
+  }
+
+  /* ---------------- touch: long-press context menu ---------------- */
+
+  var ctxMenu = $("#ctxMenu");
+  var ctxBackdrop = $("#ctxBackdrop");
+  var longPressTimer = null;
+  var longPressTriggered = false;
+
+  function openContextMenu(projKey, x, y) {
+    if (!ctxMenu || !PROJECTS[projKey]) return;
+    var p = PROJECTS[projKey];
+    var items = [
+      { label: "OPEN WEBSITE", icon: "contact", action: function () { window.open(p.url, "_blank"); } },
+      { label: "COPY LINK", icon: "home", action: function () { try { navigator.clipboard.writeText(p.url); } catch (e) {} } },
+      { label: "VIEW DETAILS", icon: "chart", action: function () { setView(projKey); } },
+      { label: "VIEW REPOSITORY", icon: "news", action: function () { window.open("https://github.com/notmicrosoft2000-cmd/" + p.repo, "_blank"); } }
+    ];
+    ctxMenu.innerHTML = items.map(function (it, i) {
+      return '<button class="ctx-item" data-ctx="' + i + '">' + svgIcon(it.icon, "") + it.label + '</button>';
+    }).join("") + '<div class="ctx-sep"></div><div class="ctx-hint">' + p.name + ' \u2014 ' + p.tag + '</div>';
+    $$(".ctx-item", ctxMenu).forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var idx = parseInt(btn.getAttribute("data-ctx"), 10);
+        closeContextMenu();
+        haptic(10);
+        if (items[idx]) items[idx].action();
+      });
+    });
+    var menuW = 180, menuH = items.length * 44 + 30;
+    var mx = Math.min(x, window.innerWidth - menuW - 12);
+    var my = Math.min(y, window.innerHeight - menuH - 12);
+    mx = Math.max(12, mx);
+    my = Math.max(12, my);
+    ctxMenu.style.left = mx + "px";
+    ctxMenu.style.top = my + "px";
+    ctxMenu.classList.add("open");
+    ctxBackdrop.style.display = "block";
+    haptic(15);
+  }
+
+  function closeContextMenu() {
+    if (ctxMenu) ctxMenu.classList.remove("open");
+    if (ctxBackdrop) ctxBackdrop.style.display = "none";
+  }
+  if (ctxBackdrop) ctxBackdrop.addEventListener("click", closeContextMenu);
+
+  document.addEventListener("touchstart", function (e) {
+    var card = e.target.closest(".wcard[data-go]");
+    if (!card) return;
+    longPressTriggered = false;
+    var projKey = card.getAttribute("data-go");
+    var touch = e.touches[0];
+    longPressTimer = setTimeout(function () {
+      longPressTriggered = true;
+      openContextMenu(projKey, touch.clientX, touch.clientY);
+    }, 500);
+  }, { passive: true });
+
+  document.addEventListener("touchmove", function () {
+    clearTimeout(longPressTimer);
+  }, { passive: true });
+
+  document.addEventListener("touchend", function (e) {
+    clearTimeout(longPressTimer);
+    if (longPressTriggered) { e.preventDefault(); longPressTriggered = false; }
+  });
+
+  /* ---------------- touch: swipe to dismiss overlays ---------------- */
+
+  function initSwipeDismiss(overlayEl, panelSel) {
+    if (!overlayEl) return;
+    var panel = overlayEl.querySelector(panelSel);
+    if (!panel) return;
+    var startY = 0, curY = 0, dragging = false;
+    panel.addEventListener("touchstart", function (e) {
+      if (e.touches.length !== 1) return;
+      if (overlayEl.querySelector(".settings-head") && !e.target.closest(".settings-head")) return;
+      startY = e.touches[0].clientY;
+      curY = startY;
+      dragging = false;
+      panel.classList.add("swipe-dismiss");
+    }, { passive: true });
+    panel.addEventListener("touchmove", function (e) {
+      if (e.touches.length !== 1) return;
+      curY = e.touches[0].clientY;
+      var dy = curY - startY;
+      if (dy > 0) {
+        dragging = true;
+        panel.classList.add("dragging");
+        panel.style.transform = "translateY(" + dy + "px)";
+      }
+    }, { passive: true });
+    panel.addEventListener("touchend", function () {
+      panel.classList.remove("dragging");
+      var dy = curY - startY;
+      if (dragging && dy > 80) {
+        panel.style.transform = "";
+        panel.classList.remove("swipe-dismiss");
+        overlayEl.classList.remove("open");
+        overlayEl.setAttribute("aria-hidden", "true");
+        SFX.close();
+      } else {
+        panel.style.transform = "";
+        panel.classList.remove("swipe-dismiss");
+      }
+      dragging = false;
+    }, { passive: true });
+  }
+
+  /* ---------------- touch: pull-to-refresh ---------------- */
+
+  var pullIndicator = $("#pullIndicator");
+  var pullStartY = 0, pullActive = false, pullRefreshing = false;
+
+  function initPullRefresh() {
+    if (!pullIndicator || !touchDevice) return;
+    document.addEventListener("touchstart", function (e) {
+      if (e.touches.length !== 1) return;
+      if (window.scrollY > 10) return;
+      pullStartY = e.touches[0].clientY;
+      pullActive = false;
+    }, { passive: true });
+
+    document.addEventListener("touchmove", function (e) {
+      if (pullRefreshing || e.touches.length !== 1) return;
+      var dy = e.touches[0].clientY - pullStartY;
+      if (dy > 30 && window.scrollY <= 5) {
+        pullActive = true;
+        pullIndicator.classList.add("visible");
+      }
+    }, { passive: true });
+
+    document.addEventListener("touchend", function () {
+      if (!pullActive || pullRefreshing) return;
+      pullActive = false;
+      pullRefreshing = true;
+      pullIndicator.classList.add("refreshing");
+      haptic(15);
+      renderMarket();
+      renderHomeTicker();
+      renderStatus();
+      renderCompare();
+      setTimeout(function () {
+        pullIndicator.classList.remove("visible", "refreshing");
+        pullRefreshing = false;
+      }, 1200);
+    }, { passive: true });
+  }
+
+  /* ---------------- touch: init all ---------------- */
+
+  function initTouch() {
+    initCarousel();
+    initPullRefresh();
+    if (settingsOverlay) initSwipeDismiss(settingsOverlay, ".settings-panel");
+    if (helpOverlay) initSwipeDismiss(helpOverlay, ".help-panel");
+    if (intelOverlay) initSwipeDismiss(intelOverlay, ".intel-panel");
+    $$(".legal-overlay").forEach(function (ov) { initSwipeDismiss(ov, ".legal-panel"); });
+    if ($("#consentOverlay")) initSwipeDismiss($("#consentOverlay"), ".consent-panel");
+  }
+
   try {
     buildViews();
     setView("home");
@@ -2318,6 +2618,7 @@
     maybeNotify();
     renderStatus();
     renderCompare();
+    initTouch();
 
     var compareTable = $("#compareTable");
     if (compareTable) {

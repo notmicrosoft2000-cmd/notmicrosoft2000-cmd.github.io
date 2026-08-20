@@ -43,10 +43,7 @@
         showConsentError();
       });
     }
-    /* legal doc links inside consent popup */
-    var cp = $("#consentPrivacy"); if (cp) cp.addEventListener("click", function () { var el = $("#privacyOverlay"); if (el) { el.classList.add("open"); el.setAttribute("aria-hidden", "false"); } });
-    var ct = $("#consentTos"); if (ct) ct.addEventListener("click", function () { var el = $("#tosOverlay"); if (el) { el.classList.add("open"); el.setAttribute("aria-hidden", "false"); } });
-    var cl = $("#consentLicenses"); if (cl) cl.addEventListener("click", function () { var el = $("#licensesOverlay"); if (el) { el.classList.add("open"); el.setAttribute("aria-hidden", "false"); } });
+    /* legal docs now on legal.html */
     /* error screen buttons */
     var retry = $("#consentRetry");
     var closeTab = $("#consentCloseTab");
@@ -1913,25 +1910,7 @@
   $("#intelClose").addEventListener("click", function () { closeIntel(); SFX.click(); });
   intelOverlay.addEventListener("click", function (e) { if (e.target === intelOverlay) closeIntel(); });
 
-  /* legal overlays */
-  function openLegal(id) {
-    var el = document.getElementById(id);
-    if (el) { el.classList.add("open"); el.setAttribute("aria-hidden", "false"); SFX.click(); }
-  }
-  function closeLegal(el) {
-    el.classList.remove("open");
-    el.setAttribute("aria-hidden", "true");
-    SFX.close();
-  }
-  $$(".legalClose").forEach(function (btn) {
-    btn.addEventListener("click", function () { closeLegal(btn.closest(".legal-overlay")); SFX.click(); });
-  });
-  $$(".legal-overlay").forEach(function (ov) {
-    ov.addEventListener("click", function (e) { if (e.target === ov) closeLegal(ov); });
-  });
-  var fp = $("#footPrivacy"); if (fp) fp.addEventListener("click", function () { openLegal("privacyOverlay"); });
-  var ft = $("#footTos"); if (ft) ft.addEventListener("click", function () { openLegal("tosOverlay"); });
-  var fl = $("#footLicenses"); if (fl) fl.addEventListener("click", function () { openLegal("licensesOverlay"); });
+  /* legal docs moved to legal.html */
 
   function rebuildViews() {
     state.view = null;
@@ -2280,7 +2259,7 @@
       if (settingsOverlay.classList.contains("open")) { closeSettings(); return; }
       if (notifyOverlay && notifyOverlay.classList.contains("open")) { dismissNotify(); return; }
       if (intelOverlay && intelOverlay.classList.contains("open")) { closeIntel(); return; }
-      $$(".legal-overlay.open").forEach(function (ov) { closeLegal(ov); });
+      $$(".legal-overlay.open").forEach(function (ov) { ov.classList.remove("open"); ov.setAttribute("aria-hidden", "true"); });
       if ($("#consentOverlay") && $("#consentOverlay").classList.contains("open")) return;
       return;
     }
@@ -2601,7 +2580,7 @@
     if (settingsOverlay) initSwipeDismiss(settingsOverlay, ".settings-panel");
     if (helpOverlay) initSwipeDismiss(helpOverlay, ".help-panel");
     if (intelOverlay) initSwipeDismiss(intelOverlay, ".intel-panel");
-    $$(".legal-overlay").forEach(function (ov) { initSwipeDismiss(ov, ".legal-panel"); });
+    /* legal overlays moved to legal.html */
     if ($("#consentOverlay")) initSwipeDismiss($("#consentOverlay"), ".consent-panel");
   }
 

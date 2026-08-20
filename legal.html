@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Legal Documents &mdash; Neptune Inc.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #fff;
+      color: #1a1a1a;
+      font-family: Georgia, "Times New Roman", Times, serif;
+      font-size: 15px;
+      line-height: 1.8;
+      padding: 0;
+    }
+
+    .legal-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 40px;
+      border-bottom: 1px solid #ddd;
+      background: #fafafa;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: .08em;
+      color: #888;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .legal-topbar a {
+      color: #333;
+      text-decoration: none;
+      font-weight: 700;
+      transition: color .2s;
+    }
+    .legal-topbar a:hover { color: #8a2b2b; }
+    .legal-topbar-right { display: flex; gap: 20px; }
+
+    .legal-page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 40px 80px;
+    }
+
+    .legal-banner {
+      text-align: center;
+      padding: 40px 0 32px;
+      border-bottom: 3px double #ccc;
+      margin-bottom: 40px;
+    }
+    .legal-banner-logo {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      color: #8a2b2b;
+      margin-bottom: 6px;
+    }
+    .legal-banner h1 {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: #1a1a1a;
+      margin: 0 0 8px;
+    }
+    .legal-banner-sub {
+      font-size: 13px;
+      color: #888;
+      font-style: italic;
+    }
+    .legal-banner-notice {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      letter-spacing: .06em;
+      color: #aaa;
+      margin-top: 16px;
+      padding: 8px 16px;
+      border: 1px solid #eee;
+      display: inline-block;
+    }
+
+    .doc-nav {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      padding: 20px 0 40px;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 48px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+    .doc-nav a {
+      color: #555;
+      text-decoration: none;
+      padding: 6px 14px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      transition: all .2s;
+    }
+    .doc-nav a:hover { color: #8a2b2b; border-color: #8a2b2b; }
+
+    .legal-doc { margin-bottom: 64px; }
+    .legal-doc:last-child { margin-bottom: 0; }
+
+    .doc-title {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: #1a1a1a;
+      text-transform: uppercase;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #1a1a1a;
+      margin-bottom: 8px;
+    }
+    .doc-meta {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      letter-spacing: .06em;
+      color: #999;
+      margin-bottom: 32px;
+    }
+
+    .doc-section { margin-bottom: 28px; }
+    .doc-section-title {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: #333;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .doc-section p { margin-bottom: 10px; text-align: justify; hyphens: auto; }
+    .doc-section ul, .doc-section ol { margin: 8px 0 12px 28px; }
+    .doc-section li { margin-bottom: 4px; }
+
+    .doc-subsection { margin-left: 20px; margin-bottom: 16px; }
+    .doc-subsection-title {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .doc-caps {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+      line-height: 1.7;
+      padding: 16px 20px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+      margin: 12px 0;
+    }
+
+    .doc-pre {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      line-height: 1.6;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      padding: 20px 24px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 12px 0;
+    }
+
+    .doc-divider {
+      border: none;
+      border-top: 3px double #ccc;
+      margin: 48px 0;
+    }
+
+    .doc-toc {
+      background: #fafafa;
+      border: 1px solid #eee;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+    }
+    .doc-toc-title {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: #888;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .doc-toc ol {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 13px;
+    }
+    .doc-toc li { margin-bottom: 3px; }
+    .doc-toc a { color: #333; text-decoration: none; }
+    .doc-toc a:hover { color: #8a2b2b; text-decoration: underline; }
+
+    .legal-footer {
+      text-align: center;
+      padding: 32px 0;
+      border-top: 3px double #ccc;
+      margin-top: 48px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      letter-spacing: .06em;
+      color: #bbb;
+    }
+    .legal-footer a { color: #888; text-decoration: none; }
+    .legal-footer a:hover { color: #8a2b2b; }
+
+    .doc-note {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      color: #aaa;
+      letter-spacing: .04em;
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 640px) {
+      .legal-page { padding: 24px 20px 60px; }
+      .legal-topbar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+      .doc-nav { flex-wrap: wrap; gap: 10px; }
+      .doc-title { font-size: 15px; }
+      .doc-subsection { margin-left: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="legal-topbar">
+    <a href="index.html">&larr; BACK TO NEPTUNE INC.</a>
+    <div class="legal-topbar-right">
+      <span>DOCUMENTS</span>
+      <span>&copy; 2025&ndash;2026</span>
+    </div>
+  </div>
+
+  <div class="legal-page">
+
+    <div class="legal-banner">
+      <div class="legal-banner-logo">NI</div>
+      <h1>Legal Documents</h1>
+      <p class="legal-banner-sub">Neptune Inc. &mdash; A Fictional Company, Allegedly</p>
+      <div class="legal-banner-notice">DOCUMENT REFERENCE: NI-LEGAL-2026-REV.3 &mdash; CLASSIFICATION: PUBLIC (FOR SOME REASON)</div>
+    </div>
+
+    <nav class="doc-nav">
+      <a href="#privacy">I. Privacy Policy</a>
+      <a href="#terms">II. Terms of Service</a>
+      <a href="#licenses">III. Licenses</a>
+    </nav>
+
+    <!-- ================================================================== -->
+    <!-- PRIVACY POLICY                                                     -->
+    <!-- ================================================================== -->
+
+    <div class="legal-doc" id="privacy">
+      <h2 class="doc-title">Privacy Policy</h2>
+      <p class="doc-meta">Effective Date: August 19, 2026 &mdash; Version 3.0 &mdash; Document ID: NI-PP-2026-001</p>
+
+      <div class="doc-toc">
+        <div class="doc-toc-title">Table of Contents</div>
+        <ol>
+          <li><a href="#pp1">Preamble &amp; Purpose</a></li>
+          <li><a href="#pp2">Information We Do Not Collect</a></li>
+          <li><a href="#pp3">Information Stored Locally on Your Device</a></li>
+          <li><a href="#pp4">Third-Party Services</a></li>
+          <li><a href="#pp5">Cookies &amp; Tracking Technologies</a></li>
+          <li><a href="#pp6">Children's Privacy</a></li>
+          <li><a href="#pp7">Data Retention &amp; Deletion</a></li>
+          <li><a href="#pp8">Changes to This Policy</a></li>
+          <li><a href="#pp9">Contact &amp; Inquiries</a></li>
+          <li><a href="#pp10">Governing Disclaimers</a></li>
+        </ol>
+      </div>
+
+      <div class="doc-section" id="pp1">
+        <div class="doc-section-title">1. Preamble &amp; Purpose</div>
+        <p>Neptune Inc. (hereinafter referred to as the "Company," "we," "us," or "our," despite the fact that the Company does not exist in any legally recognized jurisdiction) operates the website located at notmicrosoft2000-cmd.github.io (hereinafter the "Site"). This Privacy Policy is intended to describe, with unnecessary thoroughness, how we handle information when you, the "Visitor" or "User," elect to spend your有限 time on the Site.</p>
+        <p>We wish to make absolutely clear, for the avoidance of doubt and without limiting the foregoing, that Neptune Inc. is a fictional entity created for creative and educational purposes. The Company is not a real company. It has no offices, no employees, no board of directors (though the toaster has been spotted in the boardroom), and no obligation to any regulatory body. This Privacy Policy, however, is real, in the sense that you are reading it and it applies to your use of the Site, which is also real, unfortunately.</p>
+        <p class="doc-note">The Company thanks you for reading this far. Most Visitors do not. The Company is not judging you. The Company is merely observing.</p>
+      </div>
+
+      <div class="doc-section" id="pp2">
+        <div class="doc-section-title">2. Information We Do Not Collect</div>
+        <p>The Company does not collect, transmit, store, process, aggregate, monetize, sell, barter, trade, lend, lease, sublease, or otherwise obtain any personal information on any server, database, cloud instance, punch card, or other data storage mechanism. The Company would not know what to do with your data if it had it, which it does not.</p>
+        <p>The Site is a static website hosted on GitHub Pages. There is no backend server. There is no database. There is no analytics service that transmits your data to us or to any third party for the purpose of understanding your behavior, which the Company has no interest in understanding, partly because the Company is fictional and partly because it would be creepy.</p>
+        <p>The Company does not use Google Analytics, Adobe Analytics, Mixpanel, Amplitude, Segment, Heap, Hotjar, FullStory, Plausible, Fathom, Matomo, Umami, PostHog, or any other analytics service. The Company is not even sure what most of those are.</p>
+      </div>
+
+      <div class="doc-section" id="pp3">
+        <div class="doc-section-title">3. Information Stored Locally on Your Device</div>
+        <p>The Site utilizes your browser's localStorage API to persist certain preferences and state. This data resides exclusively on your device and is never transmitted to us, to GitHub, to any third party, or to any celestial body. The Company has compiled the following exhaustive (and, the Company admits, somewhat tedious) list of stored items:</p>
+        <ul>
+          <li><strong>Theme preference</strong> &mdash; The visual theme you selected. The Company is pleased you made a choice.</li>
+          <li><strong>Simple mode</strong> &mdash; Whether you enabled or disabled the simplified view. No judgment either way.</li>
+          <li><strong>Reduced motion</strong> &mdash; Whether you disabled animations. The Company respects your vestibular system.</li>
+          <li><strong>Sound settings</strong> &mdash; Whether sound effects are enabled. The beeps are optional, but the Company is fond of them.</li>
+          <li><strong>Project matching</strong> &mdash; Whether the site restyles to match the active project. This is, the Company admits, a purely aesthetic decision with no functional consequence whatsoever.</li>
+          <li><strong>Recently visited</strong> &mdash; A list of up to 4 project keys you last visited. The Company does not judge your browsing habits.</li>
+          <li><strong>GitHub cache</strong> &mdash; Cached GitHub API responses for project statistics. These expire after 15 minutes, at which point the Company re-fetches them, whether you asked it to or not.</li>
+          <li><strong>Release seen tags</strong> &mdash; The last seen release tag for each project, used for update notifications. The Company is very proud of its update notifications.</li>
+          <li><strong>Intro/notification dismissed</strong> &mdash; Whether you dismissed the welcome toast or navigation hint. If you dismissed it, the Company will not show it again. The Company respects your decision, however misguided.</li>
+          <li><strong>Forum username</strong> &mdash; If you entered a username in the public forum. The Company hopes you chose wisely.</li>
+          <li><strong>Legal consent</strong> &mdash; Whether you agreed to the legal documents. The Company is legally required to store this. The Company is also legally required to inform you that it is not legally required to do anything, being fictional.</li>
+        </ul>
+        <p>You may clear all of this data at any time by clearing your browser's localStorage for this Site, or by using your browser's developer tools, or by performing a factory reset on your device, which the Company does not recommend but will not stop you from doing.</p>
+      </div>
+
+      <div class="doc-section" id="pp4">
+        <div class="doc-section-title">4. Third-Party Services</div>
+        <p>The Site interfaces with certain third-party services. The Company is contractually (allegedly) obligated to inform you of this:</p>
+
+        <div class="doc-subsection">
+          <div class="doc-subsection-title">4.1 GitHub API</div>
+          <p>When you visit a project page, the Site makes requests to the GitHub API (api.github.com) to fetch repository statistics and release information. These requests are made directly from your browser and are subject to <a href="https://docs.github.com/en/site-policy/privacy-github-privacy-statement" target="_blank" rel="noopener">GitHub's Privacy Statement</a>. The Company caches the responses in localStorage for 15 minutes to reduce API calls, which the Company feels is a reasonable and neighborly thing to do.</p>
+        </div>
+
+        <div class="doc-subsection">
+          <div class="doc-subsection-title">4.2 MQTT Broker</div>
+          <p>The public forum connects to a third-party MQTT broker (broker.emqx.io) to send and receive messages. Messages are transmitted in plaintext and are visible to anyone subscribed to the topic. The Company strongly advises against sending sensitive information through the forum. The Company also strongly advises against sending insensitive information through the forum, but this is a free country (allegedly). The forum broker is operated by EMQ Technologies Co., Ltd. and is subject to <a href="https://www.emqx.io/en/legal/terms" target="_blank" rel="noopener">EMQ's Terms of Service</a>.</p>
+        </div>
+
+        <div class="doc-subsection">
+          <div class="doc-subsection-title">4.3 Google Fonts</div>
+          <p>The Site loads typefaces from Google Fonts (fonts.googleapis.com). When you load the Site, Google may receive your IP address, browser information, and a reasonable approximation of your taste in typography. Google's privacy policy applies, and the Company suggests you take it up with Google if you have concerns, because the Company certainly will not.</p>
+        </div>
+      </div>
+
+      <div class="doc-section" id="pp5">
+        <div class="doc-section-title">5. Cookies &amp; Tracking Technologies</div>
+        <p>The Site does not use cookies. Not first-party cookies, not third-party cookies, not session cookies, not persistent cookies, not supercookies, not zombie cookies, not flash cookies, notEvercookies. The Site does not use web beacons, pixel tags, fingerprinting, device recognition, or any other tracking technology that the Company is aware of. If the Company becomes aware of a new tracking technology, it will not use that either.</p>
+        <p>The Company would like to take this opportunity to note that it finds cookies to be a perfectly acceptable snack but a deeply inappropriate method of user surveillance.</p>
+      </div>
+
+      <div class="doc-section" id="pp6">
+        <div class="doc-section-title">6. Children's Privacy</div>
+        <p>The Site is not directed at children under the age of 13, or at children of any age, really, though the Company suspects that children would find the orb quite compelling. The Company does not knowingly collect information from children. The Company does not knowingly collect information from anyone. The Company does not collect information.</p>
+      </div>
+
+      <div class="doc-section" id="pp7">
+        <div class="doc-section-title">7. Data Retention &amp; Deletion</div>
+        <p>Because the Company does not collect any data, there is nothing to retain. The data stored in your browser's localStorage persists until you delete it, until you clear your browser data, until the heat death of the universe, or until you switch to a different browser, whichever comes first. The Company has no power over your localStorage and would not exercise such power even if it could, on principle.</p>
+      </div>
+
+      <div class="doc-section" id="pp8">
+        <div class="doc-section-title">8. Changes to This Policy</div>
+        <p>The Company reserves the right to modify this Privacy Policy at any time, for any reason, or for no reason whatsoever. Changes will be reflected on the legal page with an updated effective date. The Company will not notify you of changes, because the Company has no way to contact you, because the Company does not collect your contact information, because this is a Privacy Policy about not collecting information. Continued use of the Site after changes are posted constitutes your acceptance of the updated policy, which you are probably not reading anyway.</p>
+      </div>
+
+      <div class="doc-section" id="pp9">
+        <div class="doc-section-title">9. Contact &amp; Inquiries</div>
+        <p>For questions about this Privacy Policy, you may contact the Company through the Site's contact page, open an issue on the GitHub repository, or send a carrier pigeon to the usual roof. The Company will respond within 3 to 7 business days, or approximately one pigeon, whichever is sooner. For urgent matters, the seance is available on Thursday evenings, though the Company cannot guarantee the accuracy of the response.</p>
+        <p>The Company would like to remind you that it is fictional and therefore cannot actually receive or respond to your inquiries. Your patience is appreciated.</p>
+      </div>
+
+      <div class="doc-section" id="pp10">
+        <div class="doc-section-title">10. Governing Disclaimers</div>
+        <div class="doc-caps">This Privacy Policy is a work of creative fiction. Neptune Inc. is a fictional entity. The Company, the Site, the privacy practices described herein, and this Privacy Policy itself are provided for entertainment and educational purposes only. Nothing in this document constitutes legal advice, a legal obligation, or a binding agreement with any real or fictional entity. If you have actual privacy concerns, please consult an actual attorney. The toaster is not qualified.</div>
+      </div>
+    </div>
+
+    <hr class="doc-divider">
+
+    <!-- ================================================================== -->
+    <!-- TERMS OF SERVICE                                                   -->
+    <!-- ================================================================== -->
+
+    <div class="legal-doc" id="terms">
+      <h2 class="doc-title">Terms of Service</h2>
+      <p class="doc-meta">Effective Date: August 19, 2026 &mdash; Version 3.0 &mdash; Document ID: NI-TOS-2026-001</p>
+
+      <div class="doc-toc">
+        <div class="doc-toc-title">Table of Contents</div>
+        <ol>
+          <li><a href="#ts1">Acceptance of Terms</a></li>
+          <li><a href="#ts2">Description of Service</a></li>
+          <li><a href="#ts3">Fictional Company &amp; Nature of the Enterprise</a></li>
+          <li><a href="#ts4">No Financial Advice, Investment Advice, or Advice of Any Kind</a></li>
+          <li><a href="#ts5">User Conduct &amp; Prohibited Activities</a></li>
+          <li><a href="#ts6">Public Forum &amp; User-Generated Content</a></li>
+          <li><a href="#ts7">Intellectual Property</a></li>
+          <li><a href="#ts8">Third-Party Links &amp; Services</a></li>
+          <li><a href="#ts9">Disclaimer of Warranties</a></li>
+          <li><a href="#ts10">Limitation of Liability</a></li>
+          <li><a href="#ts11">Indemnification</a></li>
+          <li><a href="#ts12">Modifications to Terms</a></li>
+          <li><a href="#ts13">Governing Law &amp; Dispute Resolution</a></li>
+          <li><a href="#ts14">Severability</a></li>
+          <li><a href="#ts15">Entire Agreement</a></li>
+        </ol>
+      </div>
+
+      <div class="doc-section" id="ts1">
+        <div class="doc-section-title">1. Acceptance of Terms</div>
+        <p>By accessing, browsing, or otherwise using the Neptune Inc. Hub (hereinafter the "Site"), you (hereinafter the "User" or, when the Company is feeling formal, "the Visitor") agree to be bound by these Terms of Service in their entirety. If you do not agree to these Terms, you are advised to discontinue use of the Site immediately and close this page with the quiet dignity of someone who has just read a Terms of Service agreement and decided, on balance, that it was not for them.</p>
+        <p>The Company would like to note that it has never actually enforced these Terms against anyone, on account of being fictional, but the Company appreciates your cooperation nonetheless.</p>
+      </div>
+
+      <div class="doc-section" id="ts2">
+        <div class="doc-section-title">2. Description of Service</div>
+        <p>The Site is a static website that serves as a central hub for projects created by Neptune Inc. It provides navigation between projects, project information, a public forum, a simulated stock market display, a changelog, a project comparison table, a project status dashboard, and various other features that the Company has spent an inordinate amount of time developing. The Site is hosted on GitHub Pages as a static site with no server-side processing, which means there is no server, which means there is no one home, which means the lights are on but nobody is home, metaphorically speaking.</p>
+      </div>
+
+      <div class="doc-section" id="ts3">
+        <div class="doc-section-title">3. Fictional Company &amp; Nature of the Enterprise</div>
+        <p>Neptune Inc. is a fictional company created for creative and educational purposes. The Company does not exist. It has never existed. It will not exist in the future. Any resemblance to real companies, persons, living or dead, events, or locales is entirely coincidental, and the Company would like to remind you that it is a work of fiction and that you should not, under any circumstances, attempt to invest in it, contact it, sue it, or otherwise interact with it as though it were a real entity.</p>
+        <p>The stock market display, financial data, news articles, investor information, shareholder lists, risk factors, and all other corporate materials presented on the Site are entirely fictional and algorithmically generated. They should not be construed as financial advice, a solicitation, an offer to buy or sell securities, or evidence that the Company has a marketing department, which it does not.</p>
+        <p>The Company would like to take this opportunity to note that its CUSIP number (640K 1987) is not a real CUSIP number, its NASDAQ listing (NEPT) is not a real listing, and its headquarters (the hallway) is not a real headquarters, though the hallway does exist in some capacity and does have opinions about zoning.</p>
+      </div>
+
+      <div class="doc-section" id="ts4">
+        <div class="doc-section-title">4. No Financial Advice, Investment Advice, or Advice of Any Kind</div>
+        <div class="doc-caps">Nothing on the Site constitutes financial, investment, trading, legal, tax, medical, dietary, relationship, or any other form of advice. The simulated stock ticker, charts, financial data, and market information are fictional and generated algorithmically using a PRNG seeded with the current date. You are advised, in the strongest possible terms, not to make any financial decisions based on information presented on the Site. If you have made financial decisions based on information presented on the Site, the Company suggests you consult a qualified professional and also possibly a therapist.</div>
+      </div>
+
+      <div class="doc-section" id="ts5">
+        <div class="doc-section-title">5. User Conduct &amp; Prohibited Activities</div>
+        <p>When using the Site, you agree not to:</p>
+        <ol type="a">
+          <li>Use the Site for any illegal purpose, though the Company is unclear on what illegal purposes one could possibly pursue on a static website about fictional software projects;</li>
+          <li>Attempt to disrupt, compromise, or otherwise interfere with the Site's infrastructure, though the Site's infrastructure consists entirely of static HTML files and the Company is not sure what there is to compromise;</li>
+          <li>Abuse the GitHub API or MQTT broker through the Site, though the Company acknowledges that rate-limiting exists for a reason and that reason is you;</li>
+          <li>Impersonate others in the public forum, though the Company notes that given the forum's quality, impersonation would be a rather elaborate form of vandalism;</li>
+          <li>Attempt to extract, scrape, or otherwise obtain the source code of the Site, which is already publicly available on GitHub under the MIT License, so this prohibition is largely theoretical;</li>
+          <li>Send unsolicited communications through the forum, because the pigeon has enough to deliver already;</li>
+          <li>Engage in any conduct that the Company, in its sole and absolute discretion, determines to be harmful, objectionable, or inconsistent with the spirit of the Site, which is to be a weird little corner of the internet where a fictional company pretends to be real.</li>
+        </ol>
+      </div>
+
+      <div class="doc-section" id="ts6">
+        <div class="doc-section-title">6. Public Forum &amp; User-Generated Content</div>
+        <p>The Site includes a public forum powered by a third-party MQTT broker. Messages are public, visible to all users, transmitted in plaintext, and stored in the browser's memory only (not persisted to disk). You are solely responsible for the content you post. Do not post illegal, harmful, sensitive, or otherwise inadvisable content.</p>
+        <p>The Company is not responsible for messages posted by third parties. The Company is not responsible for messages posted by first parties. The Company is not responsible for messages, period. The Company is fictional and has no legal capacity to assume responsibility for anything, including but not limited to the quality of discourse in the public forum, which has been described as "adequate" by the hallway.</p>
+        <p class="doc-note">The Company reminds you that the forum broker is operated by EMQ Technologies Co., Ltd. and is subject to their terms of service. The Company suggests you read those terms as well, though the Company suspects you will not.</p>
+      </div>
+
+      <div class="doc-section" id="ts7">
+        <div class="doc-section-title">7. Intellectual Property</div>
+        <p>The Site's source code is open source and available on GitHub under the MIT License. You are free to use, modify, and distribute the source code, provided you include the copyright notice and permission notice, which is a small price to pay for the privilege of owning a piece of a fictional company's codebase.</p>
+        <p>Project names, descriptions, and creative content are the intellectual property of their respective creators, who are, for the most part, the same person, who is also the person who created the fictional company, which means the intellectual property situation is, to put it diplomatically, somewhat circular.</p>
+        <p>Third-party assets (fonts, icons, and the general vibe) are used under their respective licenses. See the Licenses section below for details.</p>
+      </div>
+
+      <div class="doc-section" id="ts8">
+        <div class="doc-section-title">8. Third-Party Links &amp; Services</div>
+        <p>The Site contains links to third-party websites and services, including but not limited to GitHub, EMQ, and Google Fonts. These links are provided for your convenience. The Company has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third-party websites. The Company suggests you read their terms and policies, though the Company acknowledges the irony of a fictional company telling you to read terms and policies.</p>
+      </div>
+
+      <div class="doc-section" id="ts9">
+        <div class="doc-section-title">9. Disclaimer of Warranties</div>
+        <div class="doc-caps">The site is provided "as is" and "as available" without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, noninfringement, and the implied warranty that the site will be available when you want to use it, which the company cannot guarantee, on account of being fictional and also because github pages occasionally goes down.</div>
+        <div class="doc-caps">The company does not warrant that the site will be uninterrupted, error-free, free of harmful components, free of typographical errors, free of factual inaccuracies (being fictional, all facts are inaccurate), or that it will meet your expectations, which the company hopes are modest.</div>
+      </div>
+
+      <div class="doc-section" id="ts10">
+        <div class="doc-section-title">10. Limitation of Liability</div>
+        <div class="doc-caps">In no event shall Neptune Inc., its creators, its contributors, its toaster, its hallway, its pigeon, its orb, or any other alleged entity associated with the company be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, loss of use, data, or profits; business interruption; or the existential realization that you have just spent time on a fictional company's website reading its terms of service) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this site, even if advised of the possibility of such damage.</div>
+        <p>The Company would like to remind you, for the avoidance of doubt and without limiting the foregoing, that this is a fictional website. There are no real damages to speak of. The Company is sorry if this is disappointing.</p>
+      </div>
+
+      <div class="doc-section" id="ts11">
+        <div class="doc-section-title">11. Indemnification</div>
+        <p>You agree to indemnify, defend, and hold harmless Neptune Inc. (a fictional entity), its creators (a real person who would rather not be sued), its contributors (see: creator), and its alleged associates (a toaster, a hallway, a pigeon, an orb, a floppy disk, and an echo) from and against any and all claims, damages, losses, liabilities, costs, and expenses arising from your use of the Site, though the Company is not sure how your use of a static website could possibly give rise to any of these things.</p>
+      </div>
+
+      <div class="doc-section" id="ts12">
+        <div class="doc-section-title">12. Modifications to Terms</div>
+        <p>The Company reserves the right to modify these Terms at any time, for any reason, or for no reason whatsoever, though the Company acknowledges that it has better things to do. Changes will be posted on this page with an updated effective date. Your continued use of the Site after changes are posted constitutes your acceptance of the updated Terms, whether you have read them or not, which you have not.</p>
+      </div>
+
+      <div class="doc-section" id="ts13">
+        <div class="doc-section-title">13. Governing Law &amp; Dispute Resolution</div>
+        <p>These Terms shall be governed by and construed in accordance with applicable laws, without regard to conflict of law principles. Any dispute arising from these Terms or your use of the Site shall be resolved through binding arbitration, though the Company is not sure how you would arbitrate with a fictional company, and neither is the toaster.</p>
+      </div>
+
+      <div class="doc-section" id="ts14">
+        <div class="doc-section-title">14. Severability</div>
+        <p>If any provision of these Terms is found to be unenforceable, invalid, or otherwise ridiculous (which, the Company concedes, is possible), the remaining provisions shall remain in full force and effect, because the Company has copied this clause from every other Terms of Service agreement and sees no reason to stop now.</p>
+      </div>
+
+      <div class="doc-section" id="ts15">
+        <div class="doc-section-title">15. Entire Agreement</div>
+        <p>These Terms, together with the Privacy Policy and Licenses, constitute the entire agreement between you and Neptune Inc. (a fictional entity) regarding your use of the Site. This agreement supersedes all prior agreements, understandings, and representations, whether written or oral, though no prior agreements exist because the Company was just created and this is the first time anyone has read these Terms.</p>
+        <p>The Company thanks you for reading the Terms of Service in their entirety. Your dedication to legal compliance is noted and appreciated. The Company hopes you have a pleasant day.</p>
+      </div>
+    </div>
+
+    <hr class="doc-divider">
+
+    <!-- ================================================================== -->
+    <!-- LICENSES                                                            -->
+    <!-- ================================================================== -->
+
+    <div class="legal-doc" id="licenses">
+      <h2 class="doc-title">Licenses</h2>
+      <p class="doc-meta">Effective Date: August 19, 2026 &mdash; Version 1.0 &mdash; Document ID: NI-LIC-2026-001</p>
+
+      <div class="doc-toc">
+        <div class="doc-toc-title">Table of Contents</div>
+        <ol>
+          <li><a href="#lc1">Source Code &mdash; MIT License</a></li>
+          <li><a href="#lc2">Fonts &mdash; IBM Plex Mono</a></li>
+          <li><a href="#lc3">Fonts &mdash; VT323</a></li>
+          <li><a href="#lc4">Fonts &mdash; Dancing Script</a></li>
+          <li><a href="#lc5">Third-Party Services</a></li>
+        </ol>
+      </div>
+
+      <div class="doc-section" id="lc1">
+        <div class="doc-section-title">1. Source Code &mdash; MIT License</div>
+        <p>The Site's source code is licensed under the MIT License. The Company has included the full text below, because the Company is nothing if not thorough, and because the MIT License is short enough that no reasonable person could object to reading it.</p>
+        <pre class="doc-pre">Copyright (c) 2025-2026 notmicrosoft2000-cmd
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</pre>
+        <p class="doc-note">The Company would like to note that the MIT License is quite permissive and that the Company is pleased to make its fictional codebase available to the public. You are welcome.</p>
+      </div>
+
+      <div class="doc-section" id="lc2">
+        <div class="doc-section-title">2. Fonts &mdash; IBM Plex Mono</div>
+        <p>The IBM Plex Mono typeface is used throughout the Site. It is licensed under the SIL Open Font License, Version 1.1. The Company finds it to be a perfectly acceptable monospace font and hopes you do too.</p>
+        <p>Copyright &copy; 2017 IBM Corporation. Used under the terms of the <a href="https://scripts.sil.org/OFL" target="_blank" rel="noopener">SIL Open Font License</a>.</p>
+      </div>
+
+      <div class="doc-section" id="lc3">
+        <div class="doc-section-title">3. Fonts &mdash; VT323</div>
+        <p>The VT323 typeface is used for the Intel debug easter egg page, because the Company felt that a green-on-black terminal aesthetic required a terminal font, and the Company was right.</p>
+        <p>Licensed under the SIL Open Font License, Version 1.1. Copyright &copy; 2011 Peter Hull. Used under the terms of the <a href="https://scripts.sil.org/OFL" target="_blank" rel="noopener">SIL Open Font License</a>.</p>
+      </div>
+
+      <div class="doc-section" id="lc4">
+        <div class="doc-section-title">4. Fonts &mdash; Dancing Script</div>
+        <p>The Dancing Script typeface is used for headings in the webring default theme, because the Company wanted the webring to feel slightly less corporate than this page, which, in retrospect, was an ambitious goal.</p>
+        <p>Licensed under the SIL Open Font License, Version 1.1. Copyright &copy; 2011 Pablo Impallari. Used under the terms of the <a href="https://scripts.sil.org/OFL" target="_blank" rel="noopener">SIL Open Font License</a>.</p>
+      </div>
+
+      <div class="doc-section" id="lc5">
+        <div class="doc-section-title">5. Third-Party Services</div>
+        <div class="doc-subsection">
+          <div class="doc-subsection-title">5.1 MQTT Broker (EMQX)</div>
+          <p>The public forum uses the EMQX MQTT broker (broker.emqx.io), operated by EMQ Technologies Co., Ltd. Usage is subject to <a href="https://www.emqx.io/en/legal/terms" target="_blank" rel="noopener">EMQ's Terms of Service</a>. The Company would like to note that the broker is free and that the Company is grateful for its existence, though the Company has never met EMQ and cannot vouch for their character.</p>
+        </div>
+        <div class="doc-subsection">
+          <div class="doc-subsection-title">5.2 GitHub API</div>
+          <p>Repository statistics and release information are fetched from the GitHub API. Usage is subject to <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service" target="_blank" rel="noopener">GitHub's Terms of Service</a>. The Company would like to note that GitHub is a subsidiary of Microsoft, which is a real company, unlike Neptune Inc., and that the Company has no comment on the irony of a fictional company hosting its fictional operations on a real company's infrastructure.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="legal-footer">
+      <p>Neptune Inc. &copy; 2025&ndash;2026 &mdash; All rights reserved (fictionally).</p>
+      <p style="margin-top: 8px;"><a href="index.html">&larr; Return to the Hub</a></p>
+      <p style="margin-top: 4px;">DOCUMENT REFERENCE: NI-LEGAL-2026-REV.3</p>
+    </div>
+
+  </div>
+
+</body>
+</html>

@@ -196,10 +196,20 @@
       about: "Bakugo's Location is a live readout of a location that very definitely is not public information, which is precisely why it has a website. The coordinates have been redacted — allegedly — but the readout itself is real, is live, and is not blinking, because it does not need to blink to make its point. The target is moving. It moves slowly, deliberately, like someone who knows they are being watched and wants the watcher to know that they know. The camera is rolling. You did not install the camera. The camera installed itself, or was installed by the same people who redacted the coordinates, or by the readout, which has opinions. Analysts following the target describe its trajectory as 'deeply suspicious but oddly polite'. Nobody is comfortable. The readout is comfortable. The readout has never been more comfortable.",
       features: ["target tracking", "coordinate redaction", "night vision", "it is rolling", "you did not install the camera"],
       details: { STATUS: "Active", PLATFORM: "Web", STACK: "HTML / CSS / JS", GENRE: "Live tracker", FIRST_RELEASE: "2026" }
+    },
+    suspicion: {
+      name: "SUSPICION",
+      tag: "Among us style murder mystery. Discord bot.",
+      url: "https://notmicrosoft2000-cmd.github.io/suspicion-site/",
+      repo: "suspicion-site",
+      theme: "suspicion",
+      about: "Suspicion is an among us style murder mystery bot for Discord. 4-10 players. 14 rooms. 8 roles. Real minigames. The lobby is in a channel, everything else happens in your DMs. Bots play too — they talk, they lie, they vote. Optional LLM integration for dynamic bot dialogue.",
+      features: ["14 rooms", "8 roles", "real minigames", "bot AI with personalities", "DM-based panels"],
+      details: { STATUS: "Active", PLATFORM: "Discord", STACK: "Python / discord.py", GENRE: "Murder mystery", FIRST_RELEASE: "2026" }
     }
   };
 
-  var PREMADE = ["webring", "dark", "neon", "paper"];
+  var PREMADE = ["webring", "dark", "neon", "paper", "suspicion"];
 
   var NEWS_NAV = ["TOP", "MARKETS", "SCANDAL", "TECH", "LOCAL", "TRAGEDY"];
 

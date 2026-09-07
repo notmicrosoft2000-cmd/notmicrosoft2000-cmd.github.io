@@ -1,30 +1,31 @@
 :root {
-  --bg: #e9dfc4;
-  --bg2: #f3ead2;
-  --panel: #fff8e7;
-  --line: #c0a878;
-  --line2: #e0cfae;
-  --text: #3b2f1e;
-  --muted: #8a744f;
-  --accent: #8a2b2b;
-  --accent2: #b07f2e;
-  --font-d: "Dancing Script", "Brush Script MT", cursive;
-  --font-b: Georgia, "Times New Roman", serif;
-  --font-m: "IBM Plex Mono", ui-monospace, monospace;
-  --radius: 8px;
-  --shadow: 0 2px 10px rgba(90, 60, 20, .14);
-  --glow: 0 0 0 1px var(--accent), 0 0 14px rgba(138, 43, 43, .35);
+  --bg: #241f31;
+  --bg2: #302d44;
+  --panel: #302d44;
+  --line: #3d3846;
+  --line2: #5e5c64;
+  --text: #ffffff;
+  --muted: #77767b;
+  --accent: #3584e4;
+  --accent2: #1c71d8;
+  --font-d: "Cantarell", "Noto Sans", system-ui, sans-serif;
+  --font-b: "Cantarell", "Noto Sans", system-ui, sans-serif;
+  --font-m: "Cantarell", "Noto Sans", system-ui, sans-serif;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,.25), 0 8px 32px rgba(0,0,0,.35);
+  --glow: 0 0 0 2px var(--accent);
 }
 
 [data-theme="webring"] {
-  --bg: #e9dfc4; --bg2: #f3ead2; --panel: #fff8e7;
-  --line: #c0a878; --line2: #e0cfae;
-  --text: #3b2f1e; --muted: #8a744f;
-  --accent: #8a2b2b; --accent2: #b07f2e;
-  --font-d: "Dancing Script", "Brush Script MT", cursive;
-  --font-b: Georgia, "Times New Roman", serif;
-  --font-m: "IBM Plex Mono", ui-monospace, monospace;
-  --radius: 8px; --shadow: 0 2px 10px rgba(90, 60, 20, .14);
+  --bg: #241f31; --bg2: #302d44; --panel: #302d44;
+  --line: #3d3846; --line2: #5e5c64;
+  --text: #ffffff; --muted: #77767b;
+  --accent: #3584e4; --accent2: #1c71d8;
+  --font-d: "Cantarell", "Noto Sans", system-ui, sans-serif;
+  --font-b: "Cantarell", "Noto Sans", system-ui, sans-serif;
+  --font-m: "Cantarell", "Noto Sans", system-ui, sans-serif;
+  --radius: 12px; --shadow: 0 1px 3px rgba(0,0,0,.25), 0 8px 32px rgba(0,0,0,.35);
+  --glow: 0 0 0 2px var(--accent);
 }
 
 [data-theme="tqg"] {
@@ -3097,4 +3098,377 @@ html.rm .bgfx { animation: none; }
   .r-item { min-height: 44px; }
   .inv-range { min-width: 44px; min-height: 36px; }
   .news-nav span { min-height: 36px; padding: 8px 14px; }
+}
+
+/* ============================================================
+   GNOME HIG / Adwaita override layer
+   ============================================================ */
+
+/* --- disable decorative effects --- */
+body, a, button, select, input, label, .wcard, .tpreview, .m-item, .ctl, .ov-close, .set-row { cursor: auto !important; }
+.brand-mark { animation: none !important; }
+.hero-title { animation: none !important; text-shadow: none !important; }
+.section-title::after { animation: none !important; background: var(--line) !important; }
+.wcard { animation: none !important; }
+.wcard:hover { transform: none; }
+.bg-particles, .sw-crt, .sw-tear, .cur-ring { display: none !important; }
+
+/* --- reset all font-d references to system font --- */
+.hero-title,
+.hero-kicker,
+.section-title,
+.set-section-title,
+.settings-head h2,
+.brand-name,
+.pv-name,
+.foot-logo,
+.foot-col-title,
+.foot-name,
+.pv-changelog-title,
+.inv-head,
+.status-head,
+.news-masthead,
+.contact-head,
+.forum-title,
+.inv-corp-item,
+.timeline .tl-ver {
+  font-family: var(--font-b);
+}
+
+/* --- body --- */
+body {
+  font-family: var(--font-b);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* --- header bar (GNOME style) --- */
+.top {
+  background: color-mix(in srgb, var(--panel) 95%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  height: 56px;
+}
+.brand-name { font-weight: 700; font-size: 16px; letter-spacing: .02em; }
+.brand-mark {
+  box-shadow: none;
+  border-radius: var(--radius);
+}
+.home-btn, .menu-btn {
+  border-radius: var(--radius);
+  border: none;
+  background: transparent;
+  color: var(--text);
+}
+.home-btn:hover, .menu-btn:hover {
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  transform: none;
+}
+.home-btn.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* --- hero --- */
+.hero-title {
+  font-size: clamp(36px, 8vw, 72px);
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.hero-kicker {
+  border: none;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: .08em;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.hero-sub { color: var(--muted); font-size: 14px; }
+
+/* --- section headings --- */
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.section-title::after { height: 1px; }
+.section-tag { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+
+/* --- webring cards (GNOME boxed list) --- */
+.webring { gap: 8px; }
+.wcard {
+  border: none;
+  background: color-mix(in srgb, var(--bg2) 60%, var(--panel));
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.12);
+  transition: background .15s;
+}
+.wcard:hover {
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg2));
+  border-color: transparent;
+  box-shadow: none;
+}
+.wcard-name { color: var(--text); font-weight: 700; }
+.wcard-launch {
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--radius);
+  font-size: 12px;
+  padding: 8px 16px;
+  font-weight: 600;
+}
+.wcard-launch:hover {
+  background: var(--accent2);
+  color: #fff;
+}
+
+/* --- news items --- */
+.news { gap: 6px; }
+.nitem {
+  border: none;
+  background: color-mix(in srgb, var(--bg2) 60%, var(--panel));
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.nitem b { color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: 11px; }
+
+/* --- overlays (GNOME modal style) --- */
+.menu-overlay, .settings-overlay {
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(8px);
+}
+.menu-panel {
+  background: var(--panel);
+  border: none;
+  border-left: 1px solid var(--line);
+  box-shadow: -8px 0 32px rgba(0,0,0,.4);
+}
+.m-item {
+  border: none;
+  background: transparent;
+  border-radius: var(--radius);
+  min-height: 44px;
+}
+.m-item:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: transparent;
+  transform: none;
+}
+.m-item.active {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.settings-panel {
+  border: none;
+  background: var(--panel);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 48px rgba(0,0,0,.5);
+}
+.settings-head {
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.set-section-title { font-size: 16px; font-weight: 700; }
+.set-section-title::after { background: var(--line); }
+
+/* --- ov-close button --- */
+.ov-close {
+  border: none;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  border-radius: var(--radius);
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text);
+}
+.ov-close:hover {
+  background: color-mix(in srgb, var(--text) 14%, transparent);
+  color: var(--text);
+}
+
+/* --- rail (GNOME sidebar style) --- */
+.rail {
+  background: color-mix(in srgb, var(--panel) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid var(--line);
+}
+.r-item { border-radius: var(--radius); min-height: 40px; }
+.r-item:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.r-item.active { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
+
+/* --- project view --- */
+.pv-head { gap: 16px; }
+.pv-ico {
+  border: none;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  box-shadow: none;
+  border-radius: var(--radius);
+}
+.pv-name { font-size: 28px; font-weight: 700; letter-spacing: -0.01em; }
+.pv-tag { color: var(--muted); }
+.pv-desc { color: var(--text); line-height: 1.7; }
+.pv-chips { gap: 8px; }
+.pv-chips .chip {
+  border: none;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-radius: var(--radius);
+  font-size: 12px;
+  padding: 6px 14px;
+}
+.pv-launch {
+  border: none;
+  background: #33d17a;
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 10px 24px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.pv-launch:hover { background: #26a269; color: #fff; }
+
+/* --- investor/stock section --- */
+.inv-grid { gap: 8px; }
+.inv-stat {
+  background: color-mix(in srgb, var(--bg2) 60%, var(--panel));
+  border: none;
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.inv-table { border-collapse: collapse; }
+.inv-table th, .inv-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+/* --- contact section --- */
+.contact-card {
+  border: none;
+  background: color-mix(in srgb, var(--bg2) 60%, var(--panel));
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+/* --- status cards --- */
+.status-card {
+  border: none;
+  background: color-mix(in srgb, var(--bg2) 60%, var(--panel));
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+/* --- forum --- */
+.forum-msgs {
+  background: color-mix(in srgb, var(--bg2) 40%, var(--panel));
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+}
+.forum-send {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--bg2);
+}
+
+/* --- footer --- */
+.foot {
+  border-top: 1px solid var(--line);
+  background: var(--bg2);
+  font-size: 12px;
+}
+.foot-inner { border-bottom: 1px solid var(--line); }
+.foot-logo { font-size: 14px; }
+.foot-col-title { text-transform: uppercase; letter-spacing: .1em; font-size: 10px; }
+
+/* --- notify overlay --- */
+.notif-overlay {
+  background: rgba(0,0,0,.4);
+  backdrop-filter: blur(6px);
+}
+
+/* --- toast --- */
+.toast {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
+  font-size: 13px;
+}
+
+/* --- changelog --- */
+.tl-item { border-left: 2px solid var(--line); }
+.tl-dot { background: var(--accent); }
+
+/* --- compare --- */
+.compare-table th, .compare-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 10px 14px;
+}
+
+/* --- consent overlay --- */
+#consentOverlay {
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(8px);
+}
+
+/* --- theme preview cards --- */
+.tpreview {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg2);
+}
+.tprev-bar { background: var(--line); border-radius: var(--radius) var(--radius) 0 0; }
+.tprev-panel { background: var(--panel); border-radius: 0 0 var(--radius) var(--radius); }
+.tprev-btn { background: var(--accent); color: #fff; border-radius: 6px; }
+
+/* --- chip / button base --- */
+.chip, .btn, button {
+  border-radius: var(--radius);
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+/* --- scrollbar --- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* --- selection --- */
+::selection { background: var(--accent); color: #fff; }
+
+/* --- view transitions (simplify) --- */
+@keyframes viewin {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- light mode --- */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f6f5f4;
+    --bg2: #ffffff;
+    --panel: #ffffff;
+    --line: #deddda;
+    --line2: #c0bfbc;
+    --text: #241f31;
+    --muted: #77767b;
+    --accent: #1c71d8;
+    --accent2: #1a5fb4;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 8px 32px rgba(0,0,0,.1);
+    --glow: 0 0 0 2px var(--accent);
+  }
+  .top, .rail, .settings-head {
+    background: color-mix(in srgb, var(--panel) 92%, transparent);
+  }
+  .menu-panel {
+    background: var(--panel);
+    box-shadow: -4px 0 24px rgba(0,0,0,.15);
+  }
+  .settings-panel { box-shadow: 0 12px 48px rgba(0,0,0,.15); }
+  .m-item.active { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .r-item.active { background: color-mix(in srgb, var(--accent) 12%, transparent); }
 }

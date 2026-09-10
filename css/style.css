@@ -127,6 +127,17 @@
   --radius: 2px; --shadow: 0 0 24px rgba(0, 255, 0, .15);
 }
 
+[data-theme="gnulte"] {
+  --bg: #030708; --bg2: #070d0e; --panel: #0a1212;
+  --line: #10201f; --line2: #1a2e2c;
+  --text: #d6f2ee; --muted: #5f8a86;
+  --accent: #00e5ff; --accent2: #0092b5;
+  --font-d: "VT323", ui-monospace, monospace;
+  --font-b: "IBM Plex Mono", ui-monospace, monospace;
+  --font-m: "IBM Plex Mono", ui-monospace, monospace;
+  --radius: 2px; --shadow: 0 0 24px rgba(0, 229, 255, .22);
+}
+
 [data-theme="dark"] {
   --bg: #0e0e13; --bg2: #14141c; --panel: #17171f;
   --line: #262633; --line2: #31313f;
@@ -167,7 +178,7 @@
 }
 
 [data-theme] { --scale-d: 1; }
-[data-theme="tqg"], [data-theme="tst"], [data-theme="dos"], [data-theme="slowfuck"], [data-theme="bakugo"] { --scale-d: 1.35; }
+[data-theme="tqg"], [data-theme="tst"], [data-theme="dos"], [data-theme="slowfuck"], [data-theme="bakugo"], [data-theme="gnulte"] { --scale-d: 1.35; }
 [data-theme="webring"] { --scale-d: 1.06; }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

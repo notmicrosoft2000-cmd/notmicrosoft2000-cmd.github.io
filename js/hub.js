@@ -85,6 +85,7 @@
     neptuneos: '<circle cx="32" cy="30" r="18"/><ellipse cx="32" cy="34" rx="27" ry="9" transform="rotate(-18 32 34)"/><circle cx="52" cy="18" r="2.6"/>',
     dropchat: '<circle cx="23" cy="27" r="10"/><circle cx="42" cy="37" r="10"/><path d="M15 34 l-6 9 10-3"/><path d="M34 45 l3 8 6-8"/>',
     slowfuck: '<path d="M8 46 a24 24 0 1 1 48 0"/><path d="M32 46 L32 24"/><path d="M32 46 L46 41"/><circle cx="32" cy="46" r="3.2"/>',
+    gnulte: '<rect x="10" y="6" width="44" height="34" rx="3"/><path d="M10 16 h44"/><path d="M17 12 l-1 2 M21 12 l-1 2"/><path d="M17 28 l7-9 6 9 6-11 6 11 4-6"/>',
     bakugo: '<circle cx="32" cy="32" r="21"/><path d="M32 4 v14 M32 46 v14 M4 32 h14 M46 32 h14"/><circle cx="32" cy="32" r="3.4"/>',
     home: '<path d="M10 28 L32 12 L54 28"/><path d="M18 32 v20 h28 V32"/><path d="M27 52 v-11 h10 v11"/>',
     gear: '<circle cx="32" cy="32" r="9"/><path d="M32 10 v8 M32 46 v8 M10 32 h8 M46 32 h8 M16 16 l6 6 M42 42 l6 6 M48 16 l-6 6 M22 42 l-6 6"/>',
@@ -107,7 +108,7 @@
   var ACCENT = {
     webring: "#8a2b2b", dark: "#7c8cf0", neon: "#ff2fd6", paper: "#245edb",
     tqg: "#00dc00", tst: "#ffb020", normidian: "#7a2a1a", dos: "#00d8ff",
-    neptuneos: "#4fa4ff", dropchat: "#7bb0f6", slowfuck: "#ff3b30", bakugo: "#3ddc84"
+    neptuneos: "#4fa4ff", dropchat: "#7bb0f6", slowfuck: "#ff3b30", bakugo: "#3ddc84", gnulte: "#00e5ff"
   };
 
   function win(k, title, body) {
@@ -206,6 +207,16 @@
       about: "Suspicion is an among us style murder mystery bot for Discord. 4-10 players. 14 rooms. 8 roles. Real minigames. The lobby is in a channel, everything else happens in your DMs. Bots play too — they talk, they lie, they vote. Optional LLM integration for dynamic bot dialogue.",
       features: ["14 rooms", "8 roles", "real minigames", "bot AI with personalities", "DM-based panels"],
       details: { STATUS: "Active", PLATFORM: "Discord", STACK: "Python / discord.py", GENRE: "Murder mystery", FIRST_RELEASE: "2026" }
+    },
+    gnulte: {
+      name: "GNULTE",
+      tag: "The network becomes a test lab. Authorised only.",
+      url: "https://notmicrosoft2000-cmd.github.io/gnulte/",
+      repo: "gnulte",
+      theme: "gnulte",
+      about: "GNULTE is GNULTE's LAN Network Testing Environment, which is a polite way of saying it can make a device on your network feel the entire internet with terrible knees. It scans your LAN and learns every device — the router, your phone, that TV that has been awake since 2017 for reasons it will not share — then it does the oldest trick in the book: routing the target's traffic through your machine and adding latency, jitter, loss, duplication and reordering with the precision of a surgeon who is not in a hurry. It asks you to accept a disclaimer first, and it means it; it keeps asking until it is certain you mean it too. Every parameter is sanity-checked so you cannot type nonsense into the void. Every spoof process is watched and politely restarted if it sneezes. Every run ends in a report with graphs, because even chaos deserves documentation. It ships a dashboard that pings your targets once a second and renders their suffering live, a stealth mode that disguises its own name, themes you can preview from a settings app, and a companion scanner — gnulte-scan — that needs no root at all, which the tool mentions more often than it needs to. It is version eight and it has never once apologised.",
+      features: ["ARP spoof + tc netem shaping", "live per-target dashboard", "self-healing spoof watcher", "post-test report with SVG graphs", "--stealth low-visibility mode", "gnulte-scan companion"],
+      details: { STATUS: "Active", PLATFORM: "Linux terminal", STACK: "Bash / iproute2 / dsniff", GENRE: "Network testing tool", FIRST_RELEASE: "2026" }
     }
   };
 
@@ -446,12 +457,12 @@
       toggleOff: function () { tone(660, 380, 0.1, "triangle", 0.09); },
       chat: function () { tone(1400, 1800, 0.06, "sine", 0.03); },
       select: function (k) {
-        var m = { tqg: 60, tst: 110, normidian: 196, dos: 55, neptuneos: 146, dropchat: 262, slowfuck: 49, bakugo: 123 };
+        var m = { tqg: 60, tst: 110, normidian: 196, dos: 55, neptuneos: 146, dropchat: 262, slowfuck: 49, bakugo: 123, gnulte: 52 };
         var f = m[k] || 100;
         tone(f, f * 1.6, 0.13, "square", 0.05);
       },
       launch: function (k) {
-        var m = { tqg: 90, tst: 140, normidian: 220, dos: 50, neptuneos: 180, dropchat: 330, slowfuck: 60, bakugo: 160 };
+        var m = { tqg: 90, tst: 140, normidian: 220, dos: 50, neptuneos: 180, dropchat: 330, slowfuck: 60, bakugo: 160, gnulte: 31 };
         var f = m[k] || 120;
         tone(f, f * 0.55, 0.7, "sawtooth", 0.12);
         tone(f * 2, f * 1.2, 0.45, "square", 0.05, 0.05);
@@ -2099,6 +2110,7 @@
       neptuneos: '<div class="sw-win"><div class="sw-win-bar"><i></i><i></i><i></i><span>NeptuneOS</span></div><div class="sw-win-body"><b>N\u25b8OS</b></div></div><div class="sw-dots"><i></i><i></i><i></i></div>',
       dropchat: '<div class="sw-conn"><span class="sw-node a">A</span><span class="sw-node b">B</span><span class="sw-link"></span><span class="sw-msg m1">anyone up?</span><span class="sw-msg m2">drop in, it\u2019s cool</span></div>',
       slowfuck: '<div class="sw-net"><span class="sw-spin"></span><span class="sw-flat"><i></i></span><span class="sw-lag">[*] LAG ACTIVE</span></div>',
+      gnulte: '<div class="sw-crt"></div><div class="sw-pct">0%</div><div class="sw-line">[*] AUTHORISED REPLY PATH · LATENCY ACTIVE</div>',
       bakugo: '<div class="sw-cam"><span class="sw-camrec">REC \u25cf</span><span class="sw-cross"></span><span class="sw-target">\u25b8</span></div>'
     };
   }
@@ -2118,6 +2130,7 @@
     });
 
     if (k === "tqg") tqgCounter();
+    if (k === "gnulte") gnultePct();
 
     var url = p.url;
     swapTimer = setTimeout(function () { window.location.href = url; }, DURATION);
@@ -2165,6 +2178,16 @@
       }
     }
     typeLine();
+  }
+
+  function gnultePct() {
+    var start = performance.now();
+    swapPctTimer = setTimeout(function tick() {
+      var pct = Math.min(100, Math.round(((performance.now() - start) / DURATION) * 100));
+      var el = $(".sw-pct", swapPiece);
+      if (el) el.textContent = pct + "%";
+      if (pct < 100) swapPctTimer = setTimeout(tick, 90);
+    }, 90);
   }
 
   function swapClose() {

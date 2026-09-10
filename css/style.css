@@ -94,17 +94,6 @@
   --radius: 10px; --shadow: 0 8px 24px rgba(0, 0, 20, .4);
 }
 
-[data-theme="slowfuck"] {
-  --bg: #160404; --bg2: #1d0808; --panel: #200808;
-  --line: #3a1410; --line2: #4a1a14;
-  --text: #ffd9d5; --muted: #a85f5a;
-  --accent: #ff3b30; --accent2: #7a0f0a;
-  --font-d: "VT323", ui-monospace, monospace;
-  --font-b: "IBM Plex Mono", ui-monospace, monospace;
-  --font-m: "IBM Plex Mono", ui-monospace, monospace;
-  --radius: 4px; --shadow: 0 0 24px rgba(255, 59, 48, .25);
-}
-
 [data-theme="bakugo"] {
   --bg: #050b06; --bg2: #07130b; --panel: #0a140c;
   --line: #17301f; --line2: #1f3d29;
@@ -178,7 +167,7 @@
 }
 
 [data-theme] { --scale-d: 1; }
-[data-theme="tqg"], [data-theme="tst"], [data-theme="dos"], [data-theme="slowfuck"], [data-theme="bakugo"], [data-theme="gnulte"] { --scale-d: 1.35; }
+[data-theme="tqg"], [data-theme="tst"], [data-theme="dos"], [data-theme="bakugo"], [data-theme="gnulte"] { --scale-d: 1.35; }
 [data-theme="webring"] { --scale-d: 1.06; }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -517,9 +506,9 @@ button { font-family: inherit; font-size: inherit; }
 }
 
 .view[data-view="tqg"] .pv-desc, .view[data-view="tst"] .pv-desc, .view[data-view="dos"] .pv-desc,
-.view[data-view="slowfuck"] .pv-desc, .view[data-view="bakugo"] .pv-desc { position: relative; overflow: hidden; }
+.view[data-view="bakugo"] .pv-desc { position: relative; overflow: hidden; }
 .view[data-view="tqg"] .pv-desc::after, .view[data-view="tst"] .pv-desc::after, .view[data-view="dos"] .pv-desc::after,
-.view[data-view="slowfuck"] .pv-desc::after, .view[data-view="bakugo"] .pv-desc::after {
+.view[data-view="bakugo"] .pv-desc::after {
   content: "";
   position: absolute;
   inset: 0;

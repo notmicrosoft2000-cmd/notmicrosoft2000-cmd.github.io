@@ -84,7 +84,6 @@
     dos: '<rect x="8" y="16" width="48" height="32" rx="2"/><path d="M8 26 h48"/><circle cx="17" cy="21" r="2"/><circle cx="25" cy="21" r="2"/><circle cx="33" cy="21" r="2"/><path d="M18 36 h20"/><path d="M18 42 h12"/><path d="M44 33 l8 7 -8 7"/>',
     neptuneos: '<circle cx="32" cy="30" r="18"/><ellipse cx="32" cy="34" rx="27" ry="9" transform="rotate(-18 32 34)"/><circle cx="52" cy="18" r="2.6"/>',
     dropchat: '<circle cx="23" cy="27" r="10"/><circle cx="42" cy="37" r="10"/><path d="M15 34 l-6 9 10-3"/><path d="M34 45 l3 8 6-8"/>',
-    slowfuck: '<path d="M8 46 a24 24 0 1 1 48 0"/><path d="M32 46 L32 24"/><path d="M32 46 L46 41"/><circle cx="32" cy="46" r="3.2"/>',
     gnulte: '<rect x="10" y="6" width="44" height="34" rx="3"/><path d="M10 16 h44"/><path d="M17 12 l-1 2 M21 12 l-1 2"/><path d="M17 28 l7-9 6 9 6-11 6 11 4-6"/>',
     bakugo: '<circle cx="32" cy="32" r="21"/><path d="M32 4 v14 M32 46 v14 M4 32 h14 M46 32 h14"/><circle cx="32" cy="32" r="3.4"/>',
     home: '<path d="M10 28 L32 12 L54 28"/><path d="M18 32 v20 h28 V32"/><path d="M27 52 v-11 h10 v11"/>',
@@ -108,7 +107,7 @@
   var ACCENT = {
     webring: "#8a2b2b", dark: "#7c8cf0", neon: "#ff2fd6", paper: "#245edb",
     tqg: "#00dc00", tst: "#ffb020", normidian: "#7a2a1a", dos: "#00d8ff",
-    neptuneos: "#4fa4ff", dropchat: "#7bb0f6", slowfuck: "#ff3b30", bakugo: "#3ddc84", gnulte: "#00e5ff"
+    neptuneos: "#4fa4ff", dropchat: "#7bb0f6", bakugo: "#3ddc84", gnulte: "#00e5ff"
   };
 
   function win(k, title, body) {
@@ -177,16 +176,6 @@
       about: "DropChat is a chat room and a file drop that lives on your own Wi-Fi, which makes it either the safest thing online or a local legend, and it refuses to pick a side because it does not believe in sides, it believes in LAN. It is one python file. That is the entire product. There are no accounts, no passwords, no terms of service longer than a grocery list, and no way to be anonymous because everyone on the network is already, if you think about it, someone. You can type to your house. You can drag a file onto the page and it will exist on another device, which is a form of magic the machine does not even pretend to explain. Users report that chats left open overnight develop a personality, and the file drop occasionally accepts files you never dropped, from machines you never owned. The vibes are, by all accounts, excellent.",
       features: ["LAN chat", "drag-and-drop files", "no accounts", "single python file", "excellent vibes"],
       details: { STATUS: "Active", PLATFORM: "Local network", STACK: "Python / HTML", GENRE: "Chat / File share", FIRST_RELEASE: "2026" }
-    },
-    slowfuck: {
-      name: "SLOWFUCK PRO",
-      tag: "A terminal network operations tool with a lag engine.",
-      url: "https://notmicrosoft2000-cmd.github.io/slowfuck-pro/",
-      repo: "slowfuck-pro",
-      theme: "slowfuck",
-      about: "SlowFuck Pro is a network operations tool for people who have reconsidered speed and found it lacking. It scans your LAN. It labels every device, which your router is doing a poor job of, honestly, and which SlowFuck Pro does with the confidence of a census taker with a clipboard and no fear. It probes ports. It discovers things. Then it does the thing the tool is actually famous for: it slows the entire network down on purpose, one deliberate packet at a time, like a conductor slowing an orchestra into a dirge. The tool does not apologise. It has a spinner that turns in the wrong direction on purpose. It reports progress in packets-per-fortnight. Its flagship scan was scheduled for a weekend, used the entire weekend, and requested a second one. It is professional. It is slow. It is, users report, the first network tool that has ever made them feel seen.",
-      features: ["LAN scanning", "device labels", "port probing", "intentional latency", "a spinner in the wrong direction"],
-      details: { STATUS: "Active", PLATFORM: "Web / Terminal", STACK: "HTML / CSS / JS", GENRE: "Network tool", FIRST_RELEASE: "2026" }
     },
     bakugo: {
       name: "BAKUGO'S LOCATION",
@@ -457,12 +446,12 @@
       toggleOff: function () { tone(660, 380, 0.1, "triangle", 0.09); },
       chat: function () { tone(1400, 1800, 0.06, "sine", 0.03); },
       select: function (k) {
-        var m = { tqg: 60, tst: 110, normidian: 196, dos: 55, neptuneos: 146, dropchat: 262, slowfuck: 49, bakugo: 123, gnulte: 52 };
+        var m = { tqg: 60, tst: 110, normidian: 196, dos: 55, neptuneos: 146, dropchat: 262, bakugo: 123, gnulte: 52 };
         var f = m[k] || 100;
         tone(f, f * 1.6, 0.13, "square", 0.05);
       },
       launch: function (k) {
-        var m = { tqg: 90, tst: 140, normidian: 220, dos: 50, neptuneos: 180, dropchat: 330, slowfuck: 60, bakugo: 160, gnulte: 31 };
+        var m = { tqg: 90, tst: 140, normidian: 220, dos: 50, neptuneos: 180, dropchat: 330, bakugo: 160, gnulte: 31 };
         var f = m[k] || 120;
         tone(f, f * 0.55, 0.7, "sawtooth", 0.12);
         tone(f * 2, f * 1.2, 0.45, "square", 0.05, 0.05);
@@ -2109,7 +2098,6 @@
       dos: '<div class="sw-term"><div class="sw-term-bar">NEPTUNE-DOS</div><div class="sw-term-body"><span class="sw-tl">Neptune-DOS 13.2</span><span class="sw-tl">Copyright 1987 (allegedly)</span><span class="sw-tl">640K OK</span><span class="sw-tl">C:\\NEPTUNE32&gt;<b>boot</b><span class="sw-cur">\u2588</span></span></div></div>',
       neptuneos: '<div class="sw-win"><div class="sw-win-bar"><i></i><i></i><i></i><span>NeptuneOS</span></div><div class="sw-win-body"><b>N\u25b8OS</b></div></div><div class="sw-dots"><i></i><i></i><i></i></div>',
       dropchat: '<div class="sw-conn"><span class="sw-node a">A</span><span class="sw-node b">B</span><span class="sw-link"></span><span class="sw-msg m1">anyone up?</span><span class="sw-msg m2">drop in, it\u2019s cool</span></div>',
-      slowfuck: '<div class="sw-net"><span class="sw-spin"></span><span class="sw-flat"><i></i></span><span class="sw-lag">[*] LAG ACTIVE</span></div>',
       gnulte: '<div class="sw-crt"></div><div class="sw-pct">0%</div><div class="sw-line">[*] AUTHORISED REPLY PATH · LATENCY ACTIVE</div>',
       bakugo: '<div class="sw-cam"><span class="sw-camrec">REC \u25cf</span><span class="sw-cross"></span><span class="sw-target">\u25b8</span></div>'
     };

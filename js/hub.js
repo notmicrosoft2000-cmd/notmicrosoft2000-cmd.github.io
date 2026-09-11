@@ -931,6 +931,11 @@
       '<div class="home-updates" id="homeUpdates"></div>' +
       '<div class="home-recent" id="homeRecent"></div>' +
       '<div class="webring" id="homeGrid"></div>' +
+      '<div class="arch-section" id="homeArch" style="display:none">' +
+        '<h3 class="arch-title">PAUSED DEVELOPMENT</h3>' +
+        '<p class="arch-note">no longer maintained. still runs. not coming back.</p>' +
+        '<div class="arch-grid" id="archGrid"></div>' +
+      '</div>' +
     '</section>';
 
     Object.keys(PROJECTS).forEach(function (k) {
@@ -988,18 +993,31 @@
       });
     });
 
-    var grid = $("#homeGrid");
-    grid.innerHTML = Object.keys(PROJECTS).map(function (k) {
+    var PAUSED = { tqg: 1, tst: 1, dos: 1, dropchat: 1, bakugo: 1 };
+
+    function cardHtml(k) {
       var p = PROJECTS[k];
-      return '<button class="wcard" type="button" data-go="' + k + '">' +
+      return '<button class="wcard' + (PAUSED[k] ? ' wcard-paused' : '') + '" type="button" data-go="' + k + '">' +
         '<div class="card-tip"><span class="card-tip-name">' + p.name + '</span><span class="card-tip-tag">' + p.tag + '</span><div class="card-tip-desc">' + p.about.substring(0, 140) + '...</div></div>' +
         '<span class="wcard-ico">' + svgIcon(k, "") + '</span>' +
-        '<span class="wcard-body"><span class="wcard-name">' + p.name + '</span><br><span class="wcard-tag">' + p.tag + '</span></span>' +
+        '<span class="wcard-body"><span class="wcard-name">' + p.name + (PAUSED[k] ? ' <em class="wcard-pause">PAUSED</em>' : '') + '</span><br><span class="wcard-tag">' + p.tag + '</span></span>' +
         '<a class="wcard-launch" href="' + p.url + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">LAUNCH \u2197</a>' +
       '</button>';
-    }).join("");
+    }
 
-    $$(".wcard", grid).forEach(function (c) {
+    var grid = $("#homeGrid");
+    var archSection = $("#homeArch");
+    var archGrid = $("#archGrid");
+    var activeKeys = Object.keys(PROJECTS).filter(function (k) { return !PAUSED[k]; });
+    var archKeys = Object.keys(PROJECTS).filter(function (k) { return PAUSED[k]; });
+    grid.innerHTML = activeKeys.map(cardHtml).join("");
+    if (archSection) archSection.style.display = "";
+    if (archGrid) archGrid.innerHTML = archKeys.map(cardHtml).join("");
+
+    $$(".wcard", grid).forEach(bindCard);
+    $$(".wcard", archGrid).forEach(bindCard);
+
+    function bindCard(c) {
       c.addEventListener("click", function () {
         var k = c.getAttribute("data-go");
         flyIcon(c);
@@ -1007,7 +1025,7 @@
         haptic(8);
         SFX.select(k);
       });
-    });
+    }
 
     $$("[data-launch]", stage).forEach(function (b) {
       b.addEventListener("click", function () { launch(b.getAttribute("data-launch")); });
